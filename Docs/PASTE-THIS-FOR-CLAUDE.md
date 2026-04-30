@@ -101,12 +101,12 @@ Classroom-Connect/
 ```
 
 ## Current Status
-- **Current Phase:** Phase 1 — In progress
-- **Last Session:** April 30, 2026 — Built quiz engine with scoring, leaderboard, and teacher-controlled answer reveal
-- **Next Step:** Add real-time student name tracking on teacher dashboard, then continue Phase 1 polish
+- **Current Phase:** Phase 1 — Nearly complete
+- **Last Session:** April 30, 2026 — Added real-time student name tracking on teacher dashboard
+- **Next Step:** Final Phase 1 polish and edge cases, then move to Phase 2 (Lesson Builder)
 
 ## Session Log
 | Date | What Was Done | Next Steps |
 |------|--------------|------------|
 | April 30, 2026 | Setup: GitHub repo, Git, VS Code, Node.js, project docs | Begin Phase 1 |
-| April 30, 2026 | Phase 1: Built server, lobby, quiz engine, Kahoot-style scoring, leaderboard, teacher-controlled answer reveal | Add student name tracking on teacher dashboard |
+| April 30, 2026 | Phase 1: Built server, lobby, quiz engine, scoring, leaderboard, teacher-controlled reveal, real-time per-student answer tracking | Final Phase 1 polish, then Phase 2 |
