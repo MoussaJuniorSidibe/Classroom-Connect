@@ -15,7 +15,7 @@ let currentQuestion = null;
 let questionStartTime = null;
 let questionIndex = -1;
 let sessionActive = false;
-const pendingResults = new Map(); // Store results until teacher reveals
+const pendingResults = new Map();
 
 // Sample questions for testing
 const questions = [
@@ -81,6 +81,10 @@ io.on("connection", (socket) => {
     console.log(`Student joined: ${name}`);
     io.emit("student-list", getStudentList());
 
+    // Send updated detailed status to teacher
+    io.emit("answer-status", getAnswerStatus());
+    io.emit("detailed-answer-status", getDetailedAnswerStatus());
+
     if (sessionActive && currentQuestion) {
       socket.emit("question", {
         index: questionIndex,
@@ -134,6 +138,7 @@ io.on("connection", (socket) => {
     });
 
     io.emit("answer-status", getAnswerStatus());
+    io.emit("detailed-answer-status", getDetailedAnswerStatus());
     console.log(`Question ${questionIndex + 1}/${questions.length}: ${currentQuestion.question}`);
   });
 
@@ -156,7 +161,6 @@ io.on("connection", (socket) => {
       responseTime: responseTime
     });
 
-    // Store the result — don't send to student yet
     pendingResults.set(socket.id, {
       isCorrect: isCorrect,
       points: points,
@@ -164,23 +168,20 @@ io.on("connection", (socket) => {
       correctIndex: currentQuestion.correctIndex
     });
 
-    // Tell the student their answer was received (but not if it's correct)
     socket.emit("answer-received");
 
-    // Update teacher's dashboard
+    // Send both summary and detailed status
     io.emit("answer-status", getAnswerStatus());
+    io.emit("detailed-answer-status", getDetailedAnswerStatus());
 
     console.log(`${student.name} submitted answer (result hidden until reveal)`);
   });
 
-  // When teacher reveals the results
   socket.on("show-results", () => {
-    // Now send each student their individual result
     pendingResults.forEach((result, socketId) => {
       io.to(socketId).emit("answer-result", result);
     });
 
-    // Also tell students who didn't answer
     students.forEach((student, socketId) => {
       if (!student.hasAnswered) {
         io.to(socketId).emit("answer-result", {
@@ -193,10 +194,8 @@ io.on("connection", (socket) => {
       }
     });
 
-    // Send results summary to teacher
     const results = getQuestionResults();
     io.emit("question-results", results);
-
     console.log("Teacher revealed results!");
   });
 
@@ -208,6 +207,7 @@ io.on("connection", (socket) => {
       pendingResults.delete(socket.id);
       io.emit("student-list", getStudentList());
       io.emit("answer-status", getAnswerStatus());
+      io.emit("detailed-answer-status", getDetailedAnswerStatus());
     }
   });
 });
@@ -230,6 +230,13 @@ function getAnswerStatus() {
   const total = students.size;
   const answered = Array.from(students.values()).filter(s => s.hasAnswered).length;
   return { answered, total };
+}
+
+function getDetailedAnswerStatus() {
+  return Array.from(students.values()).map(s => ({
+    name: s.name,
+    hasAnswered: s.hasAnswered
+  }));
 }
 
 function getQuestionResults() {

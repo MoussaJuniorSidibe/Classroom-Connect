@@ -146,24 +146,67 @@
             line-height: 1.4;
         }
 
-        .answer-tracker {
+        /* ANSWER TRACKER */
+        .answer-summary {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 12px;
-            padding: 16px;
+            padding: 14px;
             background: #0f172a;
             border-radius: 10px;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
 
-        .answer-tracker .count {
+        .answer-summary .count {
             font-size: 2rem;
             font-weight: 800;
             color: #3b82f6;
         }
 
-        .answer-tracker .label { color: #94a3b8; font-size: 0.95rem; }
+        .answer-summary .label { color: #94a3b8; font-size: 0.95rem; }
+
+        /* STUDENT ANSWER TRACKER GRID */
+        .student-tracker {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .tracker-chip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .tracker-chip.waiting {
+            background: #1a1f2e;
+            border: 1px solid #334155;
+            color: #64748b;
+        }
+
+        .tracker-chip.answered {
+            background: #064e3b;
+            border: 1px solid #10b981;
+            color: #a7f3d0;
+            animation: chipPop 0.3s ease;
+        }
+
+        .tracker-icon {
+            font-size: 0.8rem;
+        }
+
+        @keyframes chipPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
 
         .all-answered-hint {
             text-align: center;
@@ -173,6 +216,7 @@
             display: none;
         }
 
+        /* RESULTS */
         .results-bar-container { margin-bottom: 12px; }
 
         .results-bar-label {
@@ -282,10 +326,14 @@
             <div class="card">
                 <div class="question-number" id="questionNumber">Question 1 of 5</div>
                 <div class="question-text" id="questionText"></div>
-                <div class="answer-tracker">
+
+                <div class="answer-summary">
                     <div class="count" id="answeredCount">0</div>
                     <div class="label">of <span id="totalStudents">0</span> answered</div>
                 </div>
+
+                <div class="student-tracker" id="studentTracker"></div>
+
                 <div class="all-answered-hint" id="allAnsweredHint">✓ All students have answered!</div>
                 <button class="btn btn-warning" onclick="showResults()">Reveal Answer</button>
             </div>
@@ -328,6 +376,7 @@
             document.getElementById(screenId).classList.add("active");
         }
 
+        // Student list updates (lobby)
         socket.on("student-list", (students) => {
             const list = document.getElementById("studentList");
             const count = document.getElementById("studentCount");
@@ -347,6 +396,37 @@
             }).join("");
         });
 
+        // Answer count summary
+        socket.on("answer-status", (status) => {
+            document.getElementById("answeredCount").textContent = status.answered;
+            document.getElementById("totalStudents").textContent = status.total;
+
+            if (status.answered === status.total && status.total > 0) {
+                document.getElementById("allAnsweredHint").style.display = "block";
+            } else {
+                document.getElementById("allAnsweredHint").style.display = "none";
+            }
+        });
+
+        // Detailed per-student answer tracking
+        socket.on("detailed-answer-status", (students) => {
+            const tracker = document.getElementById("studentTracker");
+
+            tracker.innerHTML = students.map((s) => {
+                if (s.hasAnswered) {
+                    return `<div class="tracker-chip answered">
+                        <span class="tracker-icon">✓</span>
+                        ${s.name}
+                    </div>`;
+                } else {
+                    return `<div class="tracker-chip waiting">
+                        <span class="tracker-icon">⏳</span>
+                        ${s.name}
+                    </div>`;
+                }
+            }).join("");
+        });
+
         function startSession() {
             socket.emit("start-session");
             socket.emit("next-question");
@@ -358,15 +438,6 @@
             document.getElementById("questionNumber").textContent = `Question ${data.index + 1} of ${data.total}`;
             document.getElementById("questionText").textContent = data.question;
             document.getElementById("allAnsweredHint").style.display = "none";
-        });
-
-        socket.on("answer-status", (status) => {
-            document.getElementById("answeredCount").textContent = status.answered;
-            document.getElementById("totalStudents").textContent = status.total;
-
-            if (status.answered === status.total && status.total > 0) {
-                document.getElementById("allAnsweredHint").style.display = "block";
-            }
         });
 
         function showResults() {
