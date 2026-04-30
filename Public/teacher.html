@@ -5,146 +5,246 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Classroom Connect — Teacher</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background: #0f172a;
             color: #f1f5f9;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px 20px;
+            padding: 30px 20px;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
         .header h1 {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             font-weight: 800;
             background: linear-gradient(135deg, #3b82f6, #8b5cf6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
 
-        .header p {
-            color: #94a3b8;
-            font-size: 1.1rem;
+        .header p { color: #94a3b8; font-size: 1rem; }
+
+        .main-layout {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
-        .connection-info {
+        .card {
             background: #1e293b;
             border: 1px solid #334155;
             border-radius: 16px;
-            padding: 24px 32px;
+            padding: 24px;
+        }
+
+        .connection-info {
             text-align: center;
-            margin-bottom: 40px;
-            max-width: 500px;
-            width: 100%;
+            padding: 16px 24px;
         }
 
         .connection-info label {
             color: #94a3b8;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
         .connection-info .address {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 700;
             color: #3b82f6;
-            margin-top: 8px;
+            margin-top: 4px;
             font-family: monospace;
-        }
-
-        .lobby {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 16px;
-            padding: 32px;
-            max-width: 600px;
-            width: 100%;
         }
 
         .lobby-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
+            margin-bottom: 16px;
         }
 
-        .lobby-header h2 {
-            font-size: 1.4rem;
-            font-weight: 700;
-        }
+        .lobby-header h2 { font-size: 1.2rem; }
 
-        .student-count {
+        .badge {
             background: #3b82f6;
             color: white;
-            padding: 6px 16px;
+            padding: 4px 14px;
             border-radius: 20px;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.9rem;
         }
 
-        .student-list {
-            list-style: none;
+        .student-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
-        .student-list li {
+        .student-chip {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
+            gap: 8px;
+            padding: 8px 14px;
             background: #0f172a;
-            border-radius: 10px;
-            margin-bottom: 8px;
-            font-size: 1.1rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
             animation: slideIn 0.3s ease;
         }
 
-        .student-avatar {
-            width: 36px;
-            height: 36px;
+        .student-dot {
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.9rem;
-            color: white;
         }
 
         .empty-state {
             text-align: center;
-            padding: 40px;
+            padding: 20px;
             color: #64748b;
         }
 
-        .empty-state .icon {
-            font-size: 3rem;
-            margin-bottom: 12px;
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+            width: 100%;
         }
 
+        .btn:hover { opacity: 0.9; }
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; }
+        .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+        .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+        .question-number {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .answer-tracker {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 16px;
+            background: #0f172a;
+            border-radius: 10px;
+            margin-bottom: 16px;
+        }
+
+        .answer-tracker .count {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #3b82f6;
+        }
+
+        .answer-tracker .label { color: #94a3b8; font-size: 0.95rem; }
+
+        .all-answered-hint {
+            text-align: center;
+            color: #10b981;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: none;
+        }
+
+        .results-bar-container { margin-bottom: 12px; }
+
+        .results-bar-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            font-size: 0.95rem;
+        }
+
+        .results-bar-label .option-text { color: #e2e8f0; }
+        .results-bar-label .option-count { color: #94a3b8; }
+
+        .results-bar {
+            height: 32px;
+            background: #0f172a;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .results-bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.6s ease;
+            min-width: 2px;
+        }
+
+        .results-bar-fill.correct { background: linear-gradient(135deg, #10b981, #059669); }
+        .results-bar-fill.incorrect { background: linear-gradient(135deg, #ef4444, #dc2626); }
+
+        .correct-indicator { color: #10b981; font-weight: 700; }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 16px;
+            background: #0f172a;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .leaderboard-rank {
+            font-size: 1.5rem;
+            font-weight: 800;
+            width: 40px;
+            text-align: center;
+        }
+
+        .rank-1 { color: #fbbf24; }
+        .rank-2 { color: #94a3b8; }
+        .rank-3 { color: #b45309; }
+
+        .leaderboard-name { flex: 1; font-size: 1.1rem; font-weight: 600; }
+        .leaderboard-score { font-size: 1.1rem; font-weight: 800; color: #3b82f6; }
+
+        .final-title {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -154,64 +254,182 @@
         <p>Teacher Dashboard</p>
     </div>
 
-    <div class="connection-info">
-        <label>Students connect to:</label>
-        <div class="address" id="studentAddress">Loading...</div>
-    </div>
-
-    <div class="lobby">
-        <div class="lobby-header">
-            <h2>Student Lobby</h2>
-            <span class="student-count" id="studentCount">0 students</span>
+    <div class="main-layout">
+        <div class="card connection-info">
+            <label>Students connect to:</label>
+            <div class="address" id="studentAddress">Loading...</div>
         </div>
-        <ul class="student-list" id="studentList">
-            <li class="empty-state">
-                <div>
-                    <div class="icon">⏳</div>
-                    <div>Waiting for students to connect...</div>
+
+        <!-- LOBBY SCREEN -->
+        <div class="screen active" id="lobbyScreen">
+            <div class="card">
+                <div class="lobby-header">
+                    <h2>Student Lobby</h2>
+                    <span class="badge" id="studentCount">0 students</span>
                 </div>
-            </li>
-        </ul>
+                <div class="student-grid" id="studentList">
+                    <div class="empty-state">⏳ Waiting for students to connect...</div>
+                </div>
+            </div>
+            <br>
+            <button class="btn btn-primary" id="startBtn" onclick="startSession()" disabled>
+                Start Session
+            </button>
+        </div>
+
+        <!-- QUESTION SCREEN -->
+        <div class="screen" id="questionScreen">
+            <div class="card">
+                <div class="question-number" id="questionNumber">Question 1 of 5</div>
+                <div class="question-text" id="questionText"></div>
+                <div class="answer-tracker">
+                    <div class="count" id="answeredCount">0</div>
+                    <div class="label">of <span id="totalStudents">0</span> answered</div>
+                </div>
+                <div class="all-answered-hint" id="allAnsweredHint">✓ All students have answered!</div>
+                <button class="btn btn-warning" onclick="showResults()">Reveal Answer</button>
+            </div>
+        </div>
+
+        <!-- RESULTS SCREEN -->
+        <div class="screen" id="resultsScreen">
+            <div class="card">
+                <div class="question-number" id="resultsQuestionNumber"></div>
+                <div class="question-text" id="resultsQuestionText" style="font-size:1.1rem;margin-bottom:16px;"></div>
+                <div id="resultsBars"></div>
+                <div style="text-align:center;margin-top:12px;margin-bottom:16px;">
+                    <span id="correctSummary" class="correct-indicator"></span>
+                </div>
+                <div id="miniLeaderboard" style="margin-bottom:16px;"></div>
+                <button class="btn btn-success" id="nextBtn" onclick="nextQuestion()">Next Question</button>
+            </div>
+        </div>
+
+        <!-- FINAL LEADERBOARD SCREEN -->
+        <div class="screen" id="leaderboardScreen">
+            <div class="card">
+                <div class="final-title">🏆 Final Leaderboard</div>
+                <div id="leaderboardList"></div>
+            </div>
+        </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
+        const colors = ["#3b82f6","#8b5cf6","#ec4899","#f59e0b","#10b981","#ef4444","#06b6d4","#f97316"];
+        let questionIndex = -1;
 
-        // Display the student connection address
         const address = window.location.hostname + ":" + window.location.port + "/student.html";
         document.getElementById("studentAddress").textContent = address;
 
-        // Color palette for student avatars
-        const colors = ["#3b82f6", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981", "#ef4444", "#06b6d4", "#f97316"];
+        function showScreen(screenId) {
+            document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+            document.getElementById(screenId).classList.add("active");
+        }
 
-        // Listen for student list updates
         socket.on("student-list", (students) => {
             const list = document.getElementById("studentList");
             const count = document.getElementById("studentCount");
+            const startBtn = document.getElementById("startBtn");
 
             count.textContent = students.length + (students.length === 1 ? " student" : " students");
+            startBtn.disabled = students.length === 0;
 
             if (students.length === 0) {
-                list.innerHTML = `
-                    <li class="empty-state">
-                        <div>
-                            <div class="icon">⏳</div>
-                            <div>Waiting for students to connect...</div>
-                        </div>
-                    </li>
-                `;
+                list.innerHTML = '<div class="empty-state">⏳ Waiting for students to connect...</div>';
                 return;
             }
 
-            list.innerHTML = students.map((student, index) => {
-                const initial = student.name.charAt(0).toUpperCase();
-                const color = colors[index % colors.length];
+            list.innerHTML = students.map((s, i) => {
+                const color = colors[i % colors.length];
+                return `<div class="student-chip"><div class="student-dot" style="background:${color}"></div>${s.name}</div>`;
+            }).join("");
+        });
+
+        function startSession() {
+            socket.emit("start-session");
+            socket.emit("next-question");
+        }
+
+        socket.on("question", (data) => {
+            questionIndex = data.index;
+            showScreen("questionScreen");
+            document.getElementById("questionNumber").textContent = `Question ${data.index + 1} of ${data.total}`;
+            document.getElementById("questionText").textContent = data.question;
+            document.getElementById("allAnsweredHint").style.display = "none";
+        });
+
+        socket.on("answer-status", (status) => {
+            document.getElementById("answeredCount").textContent = status.answered;
+            document.getElementById("totalStudents").textContent = status.total;
+
+            if (status.answered === status.total && status.total > 0) {
+                document.getElementById("allAnsweredHint").style.display = "block";
+            }
+        });
+
+        function showResults() {
+            socket.emit("show-results");
+        }
+
+        socket.on("question-results", (results) => {
+            showScreen("resultsScreen");
+            document.getElementById("resultsQuestionText").textContent = results.question;
+            document.getElementById("resultsQuestionNumber").textContent = `Question ${questionIndex + 1} — Results`;
+
+            const maxCount = Math.max(...results.optionCounts, 1);
+
+            document.getElementById("resultsBars").innerHTML = results.options.map((opt, i) => {
+                const count = results.optionCounts[i];
+                const isCorrect = i === results.correctIndex;
+                const width = (count / maxCount) * 100;
+                const cls = isCorrect ? "correct" : "incorrect";
+                const marker = isCorrect ? " ✓" : "";
                 return `
-                    <li>
-                        <div class="student-avatar" style="background: ${color}">${initial}</div>
-                        <span>${student.name}</span>
-                    </li>
+                    <div class="results-bar-container">
+                        <div class="results-bar-label">
+                            <span class="option-text">${opt}${marker}</span>
+                            <span class="option-count">${count} ${count === 1 ? "student" : "students"}</span>
+                        </div>
+                        <div class="results-bar">
+                            <div class="results-bar-fill ${cls}" style="width:${width}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+
+            document.getElementById("correctSummary").textContent =
+                `${results.correctCount} of ${results.totalStudents} answered correctly`;
+
+            if (results.leaderboard.length > 0) {
+                document.getElementById("miniLeaderboard").innerHTML =
+                    "<h3 style='margin-bottom:10px;font-size:1rem;color:#94a3b8;'>Top 5</h3>" +
+                    results.leaderboard.map((s, i) => `
+                        <div class="leaderboard-item" style="padding:8px 12px;margin-bottom:4px;">
+                            <div class="leaderboard-rank rank-${i+1}" style="font-size:1.1rem;width:28px;">${i+1}</div>
+                            <div class="leaderboard-name" style="font-size:0.95rem;">${s.name}</div>
+                            <div class="leaderboard-score" style="font-size:0.95rem;">${s.score} pts</div>
+                        </div>
+                    `).join("");
+            }
+        });
+
+        function nextQuestion() {
+            socket.emit("next-question");
+        }
+
+        socket.on("session-ended", (leaderboard) => {
+            showScreen("leaderboardScreen");
+            document.getElementById("leaderboardList").innerHTML = leaderboard.map((s, i) => {
+                const rankClass = i < 3 ? `rank-${i+1}` : "";
+                const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i+1}`;
+                return `
+                    <div class="leaderboard-item">
+                        <div class="leaderboard-rank ${rankClass}">${medal}</div>
+                        <div class="leaderboard-name">${s.name}</div>
+                        <div class="leaderboard-score">${s.score} pts</div>
+                    </div>
                 `;
             }).join("");
         });

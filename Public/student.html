@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Classroom Connect — Student</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -22,47 +18,40 @@
             padding: 20px;
         }
 
-        .container {
-            max-width: 400px;
-            width: 100%;
-        }
+        .container { max-width: 420px; width: 100%; }
 
-        /* JOIN SCREEN */
-        .join-screen {
-            text-align: center;
-        }
+        .screen { display: none; }
+        .screen.active { display: block; }
 
-        .join-screen h1 {
+        .title {
             font-size: 2rem;
             font-weight: 800;
             background: linear-gradient(135deg, #3b82f6, #8b5cf6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 8px;
+            text-align: center;
         }
 
-        .join-screen p {
-            color: #94a3b8;
-            margin-bottom: 32px;
-        }
+        .subtitle { color: #94a3b8; margin-bottom: 32px; text-align: center; }
 
-        .join-form {
+        .card {
             background: #1e293b;
             border: 1px solid #334155;
             border-radius: 16px;
-            padding: 32px;
+            padding: 28px;
         }
 
-        .join-form label {
+        .card label {
             display: block;
             color: #94a3b8;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             margin-bottom: 8px;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
-        .join-form input {
+        .card input {
             width: 100%;
             padding: 14px 18px;
             background: #0f172a;
@@ -75,15 +64,11 @@
             transition: border-color 0.2s;
         }
 
-        .join-form input:focus {
-            border-color: #3b82f6;
-        }
+        .card input:focus { border-color: #3b82f6; }
 
-        .join-form button {
+        .btn {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            color: white;
             border: none;
             border-radius: 10px;
             font-size: 1.1rem;
@@ -92,59 +77,23 @@
             transition: transform 0.1s, opacity 0.2s;
         }
 
-        .join-form button:hover {
-            opacity: 0.9;
-        }
-
-        .join-form button:active {
-            transform: scale(0.98);
-        }
-
-        /* WAITING SCREEN */
-        .waiting-screen {
-            display: none;
-            text-align: center;
-        }
-
-        .waiting-screen h1 {
-            font-size: 2rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
-        }
+        .btn:hover { opacity: 0.9; }
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; }
 
         .welcome-name {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             color: #8b5cf6;
             font-weight: 700;
             margin-bottom: 8px;
+            text-align: center;
         }
 
         .waiting-message {
             color: #94a3b8;
-            font-size: 1.1rem;
-            margin-bottom: 32px;
-        }
-
-        .student-count-display {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 16px;
-            padding: 24px;
-        }
-
-        .student-count-display .number {
-            font-size: 3rem;
-            font-weight: 800;
-            color: #3b82f6;
-        }
-
-        .student-count-display .label {
-            color: #94a3b8;
-            font-size: 0.95rem;
-            margin-top: 4px;
+            font-size: 1rem;
+            margin-bottom: 24px;
+            text-align: center;
         }
 
         .pulse {
@@ -161,67 +110,335 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.3; }
         }
+
+        .count-box {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .count-box .number { font-size: 2.5rem; font-weight: 800; color: #3b82f6; }
+        .count-box .label { color: #94a3b8; font-size: 0.9rem; margin-top: 4px; }
+
+        /* QUESTION */
+        .question-meta {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        .timer {
+            font-size: 1.1rem;
+            color: #f59e0b;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .timer.urgent { color: #ef4444; animation: pulse 0.5s infinite; }
+
+        .options { display: flex; flex-direction: column; gap: 10px; }
+
+        .option-btn {
+            padding: 16px;
+            background: #0f172a;
+            border: 2px solid #334155;
+            border-radius: 12px;
+            color: #f1f5f9;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .option-btn:hover { border-color: #3b82f6; background: #1a2744; }
+        .option-btn:active { transform: scale(0.98); }
+        .option-btn.selected { border-color: #3b82f6; background: #1e3a5f; }
+        .option-btn.correct { border-color: #10b981; background: #064e3b; }
+        .option-btn.incorrect { border-color: #ef4444; background: #450a0a; }
+        .option-btn.show-correct { border-color: #10b981; background: #064e3b; }
+        .option-btn.disabled { pointer-events: none; opacity: 0.7; }
+
+        .option-letter {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            line-height: 28px;
+            text-align: center;
+            background: #334155;
+            border-radius: 6px;
+            margin-right: 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        /* ANSWER LOCKED SCREEN */
+        .locked-icon {
+            font-size: 3.5rem;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .locked-text {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #3b82f6;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        /* FEEDBACK */
+        .feedback-icon { font-size: 4rem; margin-bottom: 12px; text-align: center; }
+        .feedback-text { font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; text-align: center; }
+        .feedback-correct { color: #10b981; }
+        .feedback-incorrect { color: #ef4444; }
+        .feedback-points { font-size: 1.2rem; color: #3b82f6; font-weight: 700; margin-bottom: 8px; text-align: center; }
+        .feedback-total { color: #94a3b8; font-size: 1rem; text-align: center; }
+
+        /* LEADERBOARD */
+        .final-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .leaderboard-item.me { border-color: #3b82f6; background: #1e3a5f; }
+
+        .lb-rank { font-size: 1.3rem; font-weight: 800; width: 36px; text-align: center; }
+        .rank-1 { color: #fbbf24; }
+        .rank-2 { color: #94a3b8; }
+        .rank-3 { color: #b45309; }
+        .lb-name { flex: 1; font-weight: 600; font-size: 1rem; }
+        .lb-score { font-weight: 800; color: #3b82f6; font-size: 1rem; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <!-- JOIN SCREEN -->
-        <div class="join-screen" id="joinScreen">
-            <h1>Classroom Connect</h1>
-            <p>Enter your name to join the session</p>
-            <div class="join-form">
+        <div class="screen active" id="joinScreen">
+            <div class="title">Classroom Connect</div>
+            <div class="subtitle">Enter your name to join the session</div>
+            <div class="card">
                 <label>Your Name</label>
                 <input type="text" id="nameInput" placeholder="Type your name..." maxlength="30" autocomplete="off">
-                <button id="joinButton" onclick="joinSession()">Join Session</button>
+                <button class="btn btn-primary" onclick="joinSession()">Join Session</button>
             </div>
         </div>
 
         <!-- WAITING SCREEN -->
-        <div class="waiting-screen" id="waitingScreen">
-            <h1>Classroom Connect</h1>
+        <div class="screen" id="waitingScreen">
+            <div class="title">Classroom Connect</div>
             <div class="welcome-name" id="welcomeName"></div>
             <div class="waiting-message">
                 <span class="pulse"></span>
                 Connected — waiting for the teacher to start...
             </div>
-            <div class="student-count-display">
+            <div class="count-box">
                 <div class="number" id="waitingCount">0</div>
                 <div class="label">students connected</div>
             </div>
+        </div>
+
+        <!-- QUESTION SCREEN -->
+        <div class="screen" id="questionScreen">
+            <div class="question-meta" id="questionMeta">Question 1 of 5</div>
+            <div class="question-text" id="questionText"></div>
+            <div class="timer" id="timer"></div>
+            <div class="options" id="optionsContainer"></div>
+        </div>
+
+        <!-- ANSWER LOCKED SCREEN (waiting for teacher to reveal) -->
+        <div class="screen" id="lockedScreen">
+            <div class="locked-icon">🔒</div>
+            <div class="locked-text">Answer locked in!</div>
+            <div class="waiting-message">
+                <span class="pulse"></span>
+                Waiting for the teacher to reveal the answer...
+            </div>
+        </div>
+
+        <!-- FEEDBACK SCREEN -->
+        <div class="screen" id="feedbackScreen">
+            <div class="feedback-icon" id="feedbackIcon"></div>
+            <div class="feedback-text" id="feedbackText"></div>
+            <div class="feedback-points" id="feedbackPoints"></div>
+            <div class="feedback-total" id="feedbackTotal"></div>
+            <br>
+            <div class="waiting-message">
+                <span class="pulse"></span>
+                Waiting for the next question...
+            </div>
+        </div>
+
+        <!-- FINAL LEADERBOARD -->
+        <div class="screen" id="leaderboardScreen">
+            <div class="final-title">🏆 Final Results</div>
+            <div id="leaderboardList"></div>
         </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
+        let playerName = "";
+        let timerInterval = null;
+        let selectedAnswerIndex = -1;
 
-        // Allow pressing Enter to join
-        document.getElementById("nameInput").addEventListener("keypress", function(e) {
-            if (e.key === "Enter") {
-                joinSession();
-            }
+        function showScreen(id) {
+            document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+            document.getElementById(id).classList.add("active");
+        }
+
+        document.getElementById("nameInput").addEventListener("keypress", (e) => {
+            if (e.key === "Enter") joinSession();
         });
 
         function joinSession() {
             const name = document.getElementById("nameInput").value.trim();
-
             if (!name) {
                 document.getElementById("nameInput").style.borderColor = "#ef4444";
                 return;
             }
-
-            // Send name to server
+            playerName = name;
             socket.emit("student-join", name);
-
-            // Switch to waiting screen
-            document.getElementById("joinScreen").style.display = "none";
-            document.getElementById("waitingScreen").style.display = "block";
+            showScreen("waitingScreen");
             document.getElementById("welcomeName").textContent = "Welcome, " + name + "!";
         }
 
-        // Listen for student count updates
         socket.on("student-list", (students) => {
             document.getElementById("waitingCount").textContent = students.length;
+        });
+
+        socket.on("session-started", () => {});
+
+        // Receive a question
+        socket.on("question", (data) => {
+            selectedAnswerIndex = -1;
+            showScreen("questionScreen");
+            document.getElementById("questionMeta").textContent = `Question ${data.index + 1} of ${data.total}`;
+            document.getElementById("questionText").textContent = data.question;
+
+            const letters = ["A", "B", "C", "D"];
+            const container = document.getElementById("optionsContainer");
+            container.innerHTML = data.options.map((opt, i) => {
+                const letter = letters[i] || String(i + 1);
+                return `<button class="option-btn" onclick="submitAnswer(${i}, this)">
+                    <span class="option-letter">${letter}</span>${opt}
+                </button>`;
+            }).join("");
+
+            startTimer(data.timeLimit);
+        });
+
+        function startTimer(seconds) {
+            clearInterval(timerInterval);
+            let remaining = seconds;
+            const timerEl = document.getElementById("timer");
+            timerEl.textContent = `⏱ ${remaining}s`;
+            timerEl.className = "timer";
+
+            timerInterval = setInterval(() => {
+                remaining--;
+                timerEl.textContent = `⏱ ${remaining}s`;
+                if (remaining <= 5) timerEl.className = "timer urgent";
+                if (remaining <= 0) {
+                    clearInterval(timerInterval);
+                    timerEl.textContent = "⏱ Time's up!";
+                    document.querySelectorAll(".option-btn").forEach(btn => btn.classList.add("disabled"));
+                }
+            }, 1000);
+        }
+
+        function submitAnswer(index, btnElement) {
+            clearInterval(timerInterval);
+            selectedAnswerIndex = index;
+
+            document.querySelectorAll(".option-btn").forEach(btn => btn.classList.add("disabled"));
+            btnElement.classList.add("selected");
+
+            socket.emit("submit-answer", index);
+        }
+
+        // Answer received by server — go to locked screen
+        socket.on("answer-received", () => {
+            showScreen("lockedScreen");
+        });
+
+        // Teacher revealed the answer — show feedback
+        socket.on("answer-result", (result) => {
+            showScreen("feedbackScreen");
+
+            if (result.didNotAnswer) {
+                document.getElementById("feedbackIcon").textContent = "⏰";
+                document.getElementById("feedbackText").textContent = "Time ran out!";
+                document.getElementById("feedbackText").className = "feedback-text feedback-incorrect";
+                document.getElementById("feedbackPoints").textContent = "+0 points";
+            } else if (result.isCorrect) {
+                document.getElementById("feedbackIcon").textContent = "🎉";
+                document.getElementById("feedbackText").textContent = "Correct!";
+                document.getElementById("feedbackText").className = "feedback-text feedback-correct";
+                document.getElementById("feedbackPoints").textContent = "+" + result.points + " points";
+            } else {
+                document.getElementById("feedbackIcon").textContent = "😔";
+                document.getElementById("feedbackText").textContent = "Not quite!";
+                document.getElementById("feedbackText").className = "feedback-text feedback-incorrect";
+                document.getElementById("feedbackPoints").textContent = "+0 points";
+            }
+
+            document.getElementById("feedbackTotal").textContent = "Total score: " + result.totalScore + " pts";
+        });
+
+        // Final leaderboard
+        socket.on("session-ended", (leaderboard) => {
+            showScreen("leaderboardScreen");
+            document.getElementById("leaderboardList").innerHTML = leaderboard.map((s, i) => {
+                const isMe = s.name === playerName;
+                const rankClass = i < 3 ? `rank-${i+1}` : "";
+                const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i+1}`;
+                const meClass = isMe ? "me" : "";
+                return `
+                    <div class="leaderboard-item ${meClass}">
+                        <div class="lb-rank ${rankClass}">${medal}</div>
+                        <div class="lb-name">${s.name}${isMe ? " (You)" : ""}</div>
+                        <div class="lb-score">${s.score} pts</div>
+                    </div>
+                `;
+            }).join("");
         });
     </script>
 </body>
