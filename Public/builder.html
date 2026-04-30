@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classroom Connect — Lesson Builder</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #0f172a;
+            color: #f1f5f9;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+        }
+
+        .header p { color: #94a3b8; font-size: 1rem; }
+
+        .nav-link {
+            display: inline-block;
+            color: #3b82f6;
+            text-decoration: none;
+            margin-top: 8px;
+            font-size: 0.9rem;
+        }
+
+        .nav-link:hover { text-decoration: underline; }
+
+        .main-layout {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        /* FORM ELEMENTS */
+        label {
+            display: block;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input[type="text"], input[type="number"], textarea, select {
+            width: 100%;
+            padding: 12px 16px;
+            background: #0f172a;
+            border: 2px solid #334155;
+            border-radius: 10px;
+            color: #f1f5f9;
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+            margin-bottom: 16px;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, textarea:focus, select:focus { border-color: #3b82f6; }
+
+        textarea { resize: vertical; min-height: 80px; }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+        }
+
+        /* BUTTONS */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        .btn:hover { opacity: 0.9; }
+        .btn:active { transform: scale(0.98); }
+
+        .btn-primary { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; }
+        .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-secondary { background: #334155; color: #e2e8f0; }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+        }
+
+        .btn-full { width: 100%; }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* LESSON TITLE */
+        .lesson-title-input {
+            font-size: 1.3rem;
+            font-weight: 700;
+            padding: 16px;
+        }
+
+        /* ADD SLIDE BUTTONS */
+        .add-slide-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .add-slide-bar .btn { flex: 1; }
+
+        /* SLIDE LIST */
+        .slide-list { margin-bottom: 20px; }
+
+        .slide-item {
+            background: #0f172a;
+            border: 2px solid #334155;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 10px;
+            animation: slideIn 0.3s ease;
+            transition: border-color 0.2s;
+        }
+
+        .slide-item:hover { border-color: #475569; }
+        .slide-item.editing { border-color: #3b82f6; }
+
+        .slide-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .slide-number {
+            background: #334155;
+            color: #94a3b8;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .slide-type-badge {
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-content { background: #1e3a5f; color: #60a5fa; }
+        .badge-question { background: #3b1f63; color: #c084fc; }
+
+        .slide-title-text {
+            flex: 1;
+            font-weight: 600;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .slide-actions {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .icon-btn {
+            background: none;
+            border: 1px solid #334155;
+            color: #94a3b8;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .icon-btn:hover { background: #334155; color: #f1f5f9; }
+        .icon-btn.delete:hover { background: #450a0a; color: #ef4444; border-color: #ef4444; }
+
+        .slide-preview {
+            color: #64748b;
+            font-size: 0.85rem;
+            padding-left: 44px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* SLIDE EDITOR */
+        .slide-editor {
+            display: none;
+            background: #1e293b;
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 10px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .slide-editor.active { display: block; }
+
+        .slide-editor h3 {
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+            color: #e2e8f0;
+        }
+
+        .option-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .option-row input[type="text"] {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .option-row .correct-radio {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #10b981;
+        }
+
+        .option-label {
+            color: #94a3b8;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        .timer-row {
+            display: flex;
+            gap: 16px;
+            align-items: end;
+        }
+
+        .timer-row > div { flex: 1; }
+
+        /* EMPTY STATE */
+        .empty-slides {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+        }
+
+        .empty-slides .icon { font-size: 2.5rem; margin-bottom: 8px; }
+
+        /* SAVE BAR */
+        .save-bar {
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .save-status {
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        .save-status.saved { color: #10b981; }
+
+        /* SCREEN MANAGEMENT */
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* LESSON LIST */
+        .lesson-list-item {
+            background: #0f172a;
+            border: 2px solid #334155;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .lesson-list-item:hover { border-color: #3b82f6; }
+
+        .lesson-info h3 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .lesson-meta {
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        .lesson-actions { display: flex; gap: 6px; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Lesson Builder</h1>
+        <p>Create interactive lessons for your classroom</p>
+        <a href="/teacher.html" class="nav-link">← Back to Teacher Dashboard</a>
+    </div>
+
+    <div class="main-layout">
+        <!-- LESSON LIST SCREEN -->
+        <div class="screen active" id="listScreen">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                <h2 style="font-size:1.3rem;">My Lessons</h2>
+                <button class="btn btn-primary" onclick="createNewLesson()">+ New Lesson</button>
+            </div>
+            <div id="lessonList">
+                <div class="empty-slides">
+                    <div class="icon">📚</div>
+                    <div>No lessons yet. Create your first lesson!</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EDITOR SCREEN -->
+        <div class="screen" id="editorScreen">
+            <div class="card">
+                <label>Lesson Title</label>
+                <input type="text" id="lessonTitle" class="lesson-title-input" placeholder="e.g., Introduction to Photosynthesis">
+            </div>
+
+            <div class="add-slide-bar">
+                <button class="btn btn-secondary" onclick="addContentSlide()">+ Content Slide</button>
+                <button class="btn btn-secondary" onclick="addQuestionSlide('mcq')">+ MCQ Question</button>
+                <button class="btn btn-secondary" onclick="addQuestionSlide('truefalse')">+ True/False</button>
+            </div>
+
+            <div class="slide-list" id="slideList">
+                <div class="empty-slides" id="emptySlides">
+                    <div class="icon">📝</div>
+                    <div>Add your first slide using the buttons above</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="save-bar">
+                    <span class="save-status" id="saveStatus">Not saved</span>
+                    <div class="btn-group">
+                        <button class="btn btn-secondary" onclick="backToList()">← Back</button>
+                        <button class="btn btn-success" onclick="saveLesson()">Save Lesson</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ====== STATE ======
+        let currentLessonId = null;
+        let slides = [];
+        let editingSlideIndex = -1;
+
+        // ====== SCREEN MANAGEMENT ======
+        function showScreen(id) {
+            document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+            document.getElementById(id).classList.add("active");
+        }
+
+        // ====== LESSON LIST ======
+        async function loadLessons() {
+            const res = await fetch("/api/lessons");
+            const lessons = await res.json();
+            const container = document.getElementById("lessonList");
+
+            if (lessons.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-slides">
+                        <div class="icon">📚</div>
+                        <div>No lessons yet. Create your first lesson!</div>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = lessons.map(l => `
+                <div class="lesson-list-item">
+                    <div class="lesson-info" onclick="editLesson('${l.id}')">
+                        <h3>${l.title || "Untitled Lesson"}</h3>
+                        <div class="lesson-meta">${l.contentCount} content slide${l.contentCount !== 1 ? "s" : ""} · ${l.questionCount} question${l.questionCount !== 1 ? "s" : ""}</div>
+                    </div>
+                    <div class="lesson-actions">
+                        <button class="icon-btn" onclick="editLesson('${l.id}')" title="Edit">✏️</button>
+                        <button class="icon-btn delete" onclick="deleteLesson('${l.id}', event)" title="Delete">🗑️</button>
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        function createNewLesson() {
+            currentLessonId = null;
+            slides = [];
+            document.getElementById("lessonTitle").value = "";
+            document.getElementById("saveStatus").textContent = "Not saved";
+            document.getElementById("saveStatus").className = "save-status";
+            editingSlideIndex = -1;
+            renderSlides();
+            showScreen("editorScreen");
+        }
+
+        async function editLesson(id) {
+            const res = await fetch(`/api/lessons/${id}`);
+            const lesson = await res.json();
+            currentLessonId = lesson.id;
+            slides = lesson.slides || [];
+            document.getElementById("lessonTitle").value = lesson.title || "";
+            document.getElementById("saveStatus").textContent = "Saved";
+            document.getElementById("saveStatus").className = "save-status saved";
+            editingSlideIndex = -1;
+            renderSlides();
+            showScreen("editorScreen");
+        }
+
+        async function deleteLesson(id, event) {
+            event.stopPropagation();
+            if (!confirm("Delete this lesson? This cannot be undone.")) return;
+            await fetch(`/api/lessons/${id}`, { method: "DELETE" });
+            loadLessons();
+        }
+
+        function backToList() {
+            showScreen("listScreen");
+            loadLessons();
+        }
+
+        // ====== SLIDE MANAGEMENT ======
+        function addContentSlide() {
+            slides.push({
+                type: "content",
+                title: "",
+                body: ""
+            });
+            editingSlideIndex = slides.length - 1;
+            markUnsaved();
+            renderSlides();
+        }
+
+        function addQuestionSlide(questionType) {
+            if (questionType === "truefalse") {
+                slides.push({
+                    type: "question",
+                    questionType: "truefalse",
+                    question: "",
+                    options: ["True", "False"],
+                    correctIndex: 0,
+                    timeLimit: 15
+                });
+            } else {
+                slides.push({
+                    type: "question",
+                    questionType: "mcq",
+                    question: "",
+                    options: ["", "", "", ""],
+                    correctIndex: 0,
+                    timeLimit: 20
+                });
+            }
+            editingSlideIndex = slides.length - 1;
+            markUnsaved();
+            renderSlides();
+        }
+
+        function moveSlide(index, direction) {
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= slides.length) return;
+            const temp = slides[index];
+            slides[index] = slides[newIndex];
+            slides[newIndex] = temp;
+            if (editingSlideIndex === index) editingSlideIndex = newIndex;
+            else if (editingSlideIndex === newIndex) editingSlideIndex = index;
+            markUnsaved();
+            renderSlides();
+        }
+
+        function deleteSlide(index) {
+            slides.splice(index, 1);
+            if (editingSlideIndex === index) editingSlideIndex = -1;
+            else if (editingSlideIndex > index) editingSlideIndex--;
+            markUnsaved();
+            renderSlides();
+        }
+
+        function toggleEdit(index) {
+            editingSlideIndex = editingSlideIndex === index ? -1 : index;
+            renderSlides();
+        }
+
+        // ====== RENDERING ======
+        function renderSlides() {
+            const container = document.getElementById("slideList");
+            const emptyState = document.getElementById("emptySlides");
+
+            if (slides.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-slides" id="emptySlides">
+                        <div class="icon">📝</div>
+                        <div>Add your first slide using the buttons above</div>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = slides.map((slide, i) => {
+                const isEditing = editingSlideIndex === i;
+                const isContent = slide.type === "content";
+                const badgeClass = isContent ? "badge-content" : "badge-question";
+                const badgeText = isContent ? "Content" : (slide.questionType === "truefalse" ? "True/False" : "MCQ");
+                const displayTitle = isContent
+                    ? (slide.title || "Untitled slide")
+                    : (slide.question || "Untitled question");
+
+                let html = `
+                    <div class="slide-item ${isEditing ? 'editing' : ''}" onclick="toggleEdit(${i})">
+                        <div class="slide-header">
+                            <div class="slide-number">${i + 1}</div>
+                            <span class="slide-type-badge ${badgeClass}">${badgeText}</span>
+                            <div class="slide-title-text">${displayTitle}</div>
+                            <div class="slide-actions" onclick="event.stopPropagation()">
+                                <button class="icon-btn" onclick="moveSlide(${i}, -1)" ${i === 0 ? 'disabled style="opacity:0.3"' : ''} title="Move up">↑</button>
+                                <button class="icon-btn" onclick="moveSlide(${i}, 1)" ${i === slides.length - 1 ? 'disabled style="opacity:0.3"' : ''} title="Move down">↓</button>
+                                <button class="icon-btn delete" onclick="deleteSlide(${i})" title="Delete">✕</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                if (isEditing) {
+                    html += renderEditor(slide, i);
+                }
+
+                return html;
+            }).join("");
+        }
+
+        function renderEditor(slide, index) {
+            if (slide.type === "content") {
+                return `
+                    <div class="slide-editor active" onclick="event.stopPropagation()">
+                        <h3>Edit Content Slide</h3>
+                        <label>Slide Title</label>
+                        <input type="text" value="${escapeHtml(slide.title)}"
+                            oninput="updateSlideField(${index}, 'title', this.value)"
+                            placeholder="e.g., What is Photosynthesis?">
+                        <label>Content</label>
+                        <textarea rows="5"
+                            oninput="updateSlideField(${index}, 'body', this.value)"
+                            placeholder="Write your teaching content here...">${escapeHtml(slide.body)}</textarea>
+                        <button class="btn btn-sm btn-secondary" onclick="toggleEdit(${index})">Done</button>
+                    </div>
+                `;
+            }
+
+            if (slide.questionType === "truefalse") {
+                return `
+                    <div class="slide-editor active" onclick="event.stopPropagation()">
+                        <h3>Edit True/False Question</h3>
+                        <label>Question</label>
+                        <input type="text" value="${escapeHtml(slide.question)}"
+                            oninput="updateSlideField(${index}, 'question', this.value)"
+                            placeholder="e.g., The Earth is flat.">
+                        <label>Correct Answer</label>
+                        <div style="display:flex;gap:10px;margin-bottom:16px;">
+                            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;text-transform:none;letter-spacing:0;">
+                                <input type="radio" name="correct_${index}" class="correct-radio"
+                                    ${slide.correctIndex === 0 ? "checked" : ""}
+                                    onchange="updateSlideField(${index}, 'correctIndex', 0)"> True
+                            </label>
+                            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;text-transform:none;letter-spacing:0;">
+                                <input type="radio" name="correct_${index}" class="correct-radio"
+                                    ${slide.correctIndex === 1 ? "checked" : ""}
+                                    onchange="updateSlideField(${index}, 'correctIndex', 1)"> False
+                            </label>
+                        </div>
+                        <div class="timer-row">
+                            <div>
+                                <label>Time Limit (seconds)</label>
+                                <input type="number" value="${slide.timeLimit}" min="5" max="120"
+                                    oninput="updateSlideField(${index}, 'timeLimit', parseInt(this.value))">
+                            </div>
+                        </div>
+                        <button class="btn btn-sm btn-secondary" onclick="toggleEdit(${index})">Done</button>
+                    </div>
+                `;
+            }
+
+            // MCQ editor
+            const optionsHtml = slide.options.map((opt, oi) => `
+                <div class="option-row">
+                    <input type="radio" name="correct_${index}" class="correct-radio"
+                        ${slide.correctIndex === oi ? "checked" : ""}
+                        onchange="updateSlideField(${index}, 'correctIndex', ${oi})"
+                        title="Mark as correct">
+                    <input type="text" value="${escapeHtml(opt)}"
+                        oninput="updateOption(${index}, ${oi}, this.value)"
+                        placeholder="Option ${oi + 1}">
+                    ${slide.options.length > 2 ? `<button class="icon-btn delete" onclick="removeOption(${index}, ${oi})" title="Remove" style="flex-shrink:0;">✕</button>` : ""}
+                </div>
+            `).join("");
+
+            return `
+                <div class="slide-editor active" onclick="event.stopPropagation()">
+                    <h3>Edit Multiple Choice Question</h3>
+                    <label>Question</label>
+                    <input type="text" value="${escapeHtml(slide.question)}"
+                        oninput="updateSlideField(${index}, 'question', this.value)"
+                        placeholder="e.g., What is the capital of France?">
+                    <label>Options (select the correct answer)</label>
+                    ${optionsHtml}
+                    ${slide.options.length < 6 ? `<button class="btn btn-sm btn-secondary" onclick="addOption(${index})" style="margin-top:4px;margin-bottom:16px;">+ Add Option</button>` : ""}
+                    <div class="timer-row">
+                        <div>
+                            <label>Time Limit (seconds)</label>
+                            <input type="number" value="${slide.timeLimit}" min="5" max="120"
+                                oninput="updateSlideField(${index}, 'timeLimit', parseInt(this.value))">
+                        </div>
+                    </div>
+                    <br>
+                    <button class="btn btn-sm btn-secondary" onclick="toggleEdit(${index})">Done</button>
+                </div>
+            `;
+        }
+
+        // ====== SLIDE DATA UPDATES ======
+        function updateSlideField(index, field, value) {
+            slides[index][field] = value;
+            markUnsaved();
+            // Re-render just the slide item header to update the title preview
+            const items = document.querySelectorAll(".slide-item");
+            if (items[index]) {
+                const slide = slides[index];
+                const isContent = slide.type === "content";
+                const displayTitle = isContent
+                    ? (slide.title || "Untitled slide")
+                    : (slide.question || "Untitled question");
+                const titleEl = items[index].querySelector(".slide-title-text");
+                if (titleEl) titleEl.textContent = displayTitle;
+            }
+        }
+
+        function updateOption(slideIndex, optionIndex, value) {
+            slides[slideIndex].options[optionIndex] = value;
+            markUnsaved();
+        }
+
+        function addOption(slideIndex) {
+            slides[slideIndex].options.push("");
+            markUnsaved();
+            renderSlides();
+        }
+
+        function removeOption(slideIndex, optionIndex) {
+            const slide = slides[slideIndex];
+            slide.options.splice(optionIndex, 1);
+            if (slide.correctIndex >= slide.options.length) {
+                slide.correctIndex = slide.options.length - 1;
+            }
+            markUnsaved();
+            renderSlides();
+        }
+
+        // ====== SAVE ======
+        async function saveLesson() {
+            const title = document.getElementById("lessonTitle").value.trim();
+            if (!title) {
+                document.getElementById("lessonTitle").style.borderColor = "#ef4444";
+                document.getElementById("lessonTitle").focus();
+                return;
+            }
+
+            if (slides.length === 0) {
+                alert("Add at least one slide before saving.");
+                return;
+            }
+
+            const lesson = {
+                id: currentLessonId,
+                title: title,
+                slides: slides
+            };
+
+            const res = await fetch("/api/lessons", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(lesson)
+            });
+
+            const data = await res.json();
+            currentLessonId = data.id;
+
+            document.getElementById("saveStatus").textContent = "Saved ✓";
+            document.getElementById("saveStatus").className = "save-status saved";
+        }
+
+        function markUnsaved() {
+            document.getElementById("saveStatus").textContent = "Unsaved changes";
+            document.getElementById("saveStatus").className = "save-status";
+        }
+
+        // ====== UTILITIES ======
+        function escapeHtml(str) {
+            if (!str) return "";
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+
+        // ====== INIT ======
+        loadLessons();
+    </script>
+</body>
+</html>

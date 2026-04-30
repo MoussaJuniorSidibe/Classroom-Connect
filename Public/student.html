@@ -43,37 +43,22 @@
         }
 
         .card label {
-            display: block;
-            color: #94a3b8;
-            font-size: 0.85rem;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            display: block; color: #94a3b8; font-size: 0.85rem;
+            margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;
         }
 
         .card input {
-            width: 100%;
-            padding: 14px 18px;
-            background: #0f172a;
-            border: 2px solid #334155;
-            border-radius: 10px;
-            color: #f1f5f9;
-            font-size: 1.1rem;
-            outline: none;
-            margin-bottom: 20px;
+            width: 100%; padding: 14px 18px; background: #0f172a;
+            border: 2px solid #334155; border-radius: 10px; color: #f1f5f9;
+            font-size: 1.1rem; outline: none; margin-bottom: 20px;
             transition: border-color 0.2s;
         }
 
         .card input:focus { border-color: #3b82f6; }
 
         .btn {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            cursor: pointer;
+            width: 100%; padding: 14px; border: none; border-radius: 10px;
+            font-size: 1.1rem; font-weight: 700; cursor: pointer;
             transition: transform 0.1s, opacity 0.2s;
         }
 
@@ -81,125 +66,83 @@
         .btn:active { transform: scale(0.98); }
         .btn-primary { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; }
 
-        .welcome-name {
-            font-size: 1.2rem;
-            color: #8b5cf6;
-            font-weight: 700;
-            margin-bottom: 8px;
-            text-align: center;
-        }
+        .welcome-name { font-size: 1.2rem; color: #8b5cf6; font-weight: 700; margin-bottom: 8px; text-align: center; }
 
-        .waiting-message {
-            color: #94a3b8;
-            font-size: 1rem;
-            margin-bottom: 24px;
-            text-align: center;
-        }
+        .waiting-message { color: #94a3b8; font-size: 1rem; margin-bottom: 24px; text-align: center; }
 
         .pulse {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            background: #10b981;
-            border-radius: 50%;
-            margin-right: 8px;
+            display: inline-block; width: 10px; height: 10px;
+            background: #10b981; border-radius: 50%; margin-right: 8px;
             animation: pulse 2s infinite;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
         .count-box {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 16px;
-            padding: 24px;
-            text-align: center;
+            background: #1e293b; border: 1px solid #334155;
+            border-radius: 16px; padding: 24px; text-align: center;
         }
 
         .count-box .number { font-size: 2.5rem; font-weight: 800; color: #3b82f6; }
         .count-box .label { color: #94a3b8; font-size: 0.9rem; margin-top: 4px; }
 
+        /* CONTENT SLIDE */
+        .slide-counter {
+            text-align: center; color: #94a3b8; font-size: 0.85rem;
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+        }
+
+        .slide-type-indicator {
+            display: inline-block; padding: 3px 10px; border-radius: 6px;
+            font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 12px;
+        }
+
+        .type-content { background: #1e3a5f; color: #60a5fa; }
+
+        .content-slide-title {
+            font-size: 1.3rem; font-weight: 700; margin-bottom: 12px; line-height: 1.4;
+        }
+
+        .content-slide-body {
+            color: #cbd5e1; font-size: 1rem; line-height: 1.7; white-space: pre-wrap;
+        }
+
         /* QUESTION */
         .question-meta {
-            color: #94a3b8;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-            text-align: center;
+            color: #94a3b8; font-size: 0.85rem; text-transform: uppercase;
+            letter-spacing: 1px; margin-bottom: 8px; text-align: center;
         }
 
         .question-text {
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-            line-height: 1.4;
-            text-align: center;
+            font-size: 1.3rem; font-weight: 700; margin-bottom: 8px;
+            line-height: 1.4; text-align: center;
         }
 
-        .timer {
-            font-size: 1.1rem;
-            color: #f59e0b;
-            font-weight: 700;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
+        .timer { font-size: 1.1rem; color: #f59e0b; font-weight: 700; margin-bottom: 20px; text-align: center; }
         .timer.urgent { color: #ef4444; animation: pulse 0.5s infinite; }
 
         .options { display: flex; flex-direction: column; gap: 10px; }
 
         .option-btn {
-            padding: 16px;
-            background: #0f172a;
-            border: 2px solid #334155;
-            border-radius: 12px;
-            color: #f1f5f9;
-            font-size: 1.05rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: left;
+            padding: 16px; background: #0f172a; border: 2px solid #334155;
+            border-radius: 12px; color: #f1f5f9; font-size: 1.05rem; font-weight: 600;
+            cursor: pointer; transition: all 0.2s; text-align: left;
         }
 
         .option-btn:hover { border-color: #3b82f6; background: #1a2744; }
         .option-btn:active { transform: scale(0.98); }
         .option-btn.selected { border-color: #3b82f6; background: #1e3a5f; }
-        .option-btn.correct { border-color: #10b981; background: #064e3b; }
-        .option-btn.incorrect { border-color: #ef4444; background: #450a0a; }
-        .option-btn.show-correct { border-color: #10b981; background: #064e3b; }
         .option-btn.disabled { pointer-events: none; opacity: 0.7; }
 
         .option-letter {
-            display: inline-block;
-            width: 28px;
-            height: 28px;
-            line-height: 28px;
-            text-align: center;
-            background: #334155;
-            border-radius: 6px;
-            margin-right: 10px;
-            font-size: 0.85rem;
-            font-weight: 700;
+            display: inline-block; width: 28px; height: 28px; line-height: 28px;
+            text-align: center; background: #334155; border-radius: 6px;
+            margin-right: 10px; font-size: 0.85rem; font-weight: 700;
         }
 
-        /* ANSWER LOCKED SCREEN */
-        .locked-icon {
-            font-size: 3.5rem;
-            margin-bottom: 12px;
-            text-align: center;
-        }
-
-        .locked-text {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #3b82f6;
-            margin-bottom: 8px;
-            text-align: center;
-        }
+        /* LOCKED */
+        .locked-icon { font-size: 3.5rem; margin-bottom: 12px; text-align: center; }
+        .locked-text { font-size: 1.3rem; font-weight: 700; color: #3b82f6; margin-bottom: 8px; text-align: center; }
 
         /* FEEDBACK */
         .feedback-icon { font-size: 4rem; margin-bottom: 12px; text-align: center; }
@@ -211,25 +154,15 @@
 
         /* LEADERBOARD */
         .final-title {
-            font-size: 1.8rem;
-            font-weight: 800;
-            margin-bottom: 20px;
-            text-align: center;
+            font-size: 1.8rem; font-weight: 800; margin-bottom: 20px; text-align: center;
             background: linear-gradient(135deg, #fbbf24, #f59e0b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
         .leaderboard-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 10px;
-            margin-bottom: 8px;
-            animation: slideIn 0.3s ease;
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+            background: #1e293b; border: 1px solid #334155; border-radius: 10px;
+            margin-bottom: 8px; animation: slideIn 0.3s ease;
         }
 
         .leaderboard-item.me { border-color: #3b82f6; background: #1e3a5f; }
@@ -241,10 +174,7 @@
         .lb-name { flex: 1; font-weight: 600; font-size: 1rem; }
         .lb-score { font-weight: 800; color: #3b82f6; font-size: 1rem; }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -274,6 +204,16 @@
             </div>
         </div>
 
+        <!-- CONTENT SLIDE SCREEN -->
+        <div class="screen" id="contentScreen">
+            <div class="card">
+                <div class="slide-counter" id="contentSlideCounter">Slide 1 of 10</div>
+                <span class="slide-type-indicator type-content">Lesson</span>
+                <div class="content-slide-title" id="studentContentTitle"></div>
+                <div class="content-slide-body" id="studentContentBody"></div>
+            </div>
+        </div>
+
         <!-- QUESTION SCREEN -->
         <div class="screen" id="questionScreen">
             <div class="question-meta" id="questionMeta">Question 1 of 5</div>
@@ -282,7 +222,7 @@
             <div class="options" id="optionsContainer"></div>
         </div>
 
-        <!-- ANSWER LOCKED SCREEN (waiting for teacher to reveal) -->
+        <!-- ANSWER LOCKED SCREEN -->
         <div class="screen" id="lockedScreen">
             <div class="locked-icon">🔒</div>
             <div class="locked-text">Answer locked in!</div>
@@ -301,7 +241,7 @@
             <br>
             <div class="waiting-message">
                 <span class="pulse"></span>
-                Waiting for the next question...
+                Waiting for the next slide...
             </div>
         </div>
 
@@ -317,7 +257,6 @@
         const socket = io();
         let playerName = "";
         let timerInterval = null;
-        let selectedAnswerIndex = -1;
 
         function showScreen(id) {
             document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
@@ -346,14 +285,21 @@
 
         socket.on("session-started", () => {});
 
-        // Receive a question
+        // Content slide
+        socket.on("content-slide", (data) => {
+            showScreen("contentScreen");
+            document.getElementById("contentSlideCounter").textContent = `Slide ${data.index + 1} of ${data.total}`;
+            document.getElementById("studentContentTitle").textContent = data.title;
+            document.getElementById("studentContentBody").textContent = data.body;
+        });
+
+        // Question
         socket.on("question", (data) => {
-            selectedAnswerIndex = -1;
             showScreen("questionScreen");
             document.getElementById("questionMeta").textContent = `Question ${data.index + 1} of ${data.total}`;
             document.getElementById("questionText").textContent = data.question;
 
-            const letters = ["A", "B", "C", "D"];
+            const letters = ["A", "B", "C", "D", "E", "F"];
             const container = document.getElementById("optionsContainer");
             container.innerHTML = data.options.map((opt, i) => {
                 const letter = letters[i] || String(i + 1);
@@ -386,20 +332,15 @@
 
         function submitAnswer(index, btnElement) {
             clearInterval(timerInterval);
-            selectedAnswerIndex = index;
-
             document.querySelectorAll(".option-btn").forEach(btn => btn.classList.add("disabled"));
             btnElement.classList.add("selected");
-
             socket.emit("submit-answer", index);
         }
 
-        // Answer received by server — go to locked screen
         socket.on("answer-received", () => {
             showScreen("lockedScreen");
         });
 
-        // Teacher revealed the answer — show feedback
         socket.on("answer-result", (result) => {
             showScreen("feedbackScreen");
 
@@ -423,16 +364,14 @@
             document.getElementById("feedbackTotal").textContent = "Total score: " + result.totalScore + " pts";
         });
 
-        // Final leaderboard
         socket.on("session-ended", (leaderboard) => {
             showScreen("leaderboardScreen");
             document.getElementById("leaderboardList").innerHTML = leaderboard.map((s, i) => {
                 const isMe = s.name === playerName;
                 const rankClass = i < 3 ? `rank-${i+1}` : "";
                 const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i+1}`;
-                const meClass = isMe ? "me" : "";
                 return `
-                    <div class="leaderboard-item ${meClass}">
+                    <div class="leaderboard-item ${isMe ? 'me' : ''}">
                         <div class="lb-rank ${rankClass}">${medal}</div>
                         <div class="lb-name">${s.name}${isMe ? " (You)" : ""}</div>
                         <div class="lb-score">${s.score} pts</div>

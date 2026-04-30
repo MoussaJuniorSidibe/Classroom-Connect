@@ -1,0 +1,41 @@
+{
+  "id": "lesson_1777580237758",
+  "title": "If-Clause",
+  "slides": [
+    {
+      "type": "content",
+      "title": "If-Clause",
+      "body": "Here is the lesson"
+    },
+    {
+      "type": "question",
+      "questionType": "mcq",
+      "question": "Are you right?",
+      "options": [
+        "Yes",
+        "No",
+        "NOO",
+        "NOOOOO"
+      ],
+      "correctIndex": 0,
+      "timeLimit": 20
+    },
+    {
+      "type": "content",
+      "title": "",
+      "body": ""
+    },
+    {
+      "type": "question",
+      "questionType": "truefalse",
+      "question": "Is it true or false",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correctIndex": 0,
+      "timeLimit": 15
+    }
+  ],
+  "updatedAt": "2026-04-30T20:17:19.361Z"
+}
