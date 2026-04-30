@@ -141,15 +141,14 @@ Classroom-Connect/
 ```
 
 ## Current Status
-<!-- UPDATE THIS SECTION AFTER EACH SESSION -->
-- **Current Phase:** Phase 2 — In progress
-- **Last Session:** April 30, 2026 — Built lesson builder, content slide delivery, lesson selection on teacher dashboard
-- **Next Step:** Add image support in content slides, bilingual interface (French/English)
+- **Current Phase:** Phase 2 — Nearly complete
+- **Last Session:** April 30, 2026 — Added bilingual French/English toggle to all interfaces
+- **Next Step:** Add image support in content slides, then Phase 2 is complete
 
 ## Session Log
-<!-- ADD NEW ENTRIES AFTER EACH SESSION -->
 | Date | What Was Done | Next Steps |
 |------|--------------|------------|
 | April 30, 2026 | Setup: GitHub repo, Git, VS Code, Node.js, project docs | Begin Phase 1 |
 | April 30, 2026 | Phase 1: Server, lobby, quiz engine, scoring, leaderboard, teacher-controlled reveal, per-student tracking | Begin Phase 2 |
-| April 30, 2026 | Phase 2: Lesson builder with content/question slides, lesson saving/loading, teacher lesson selection, content slide delivery to students | Add images, bilingual toggle |
+| April 30, 2026 | Phase 2: Lesson builder, content/question slides, lesson saving/loading, teacher lesson selection, content slide delivery | Add bilingual toggle |
+| April 30, 2026 | Phase 2: Bilingual French/English toggle across student, teacher, and builder interfaces | Add image support in content slides |
