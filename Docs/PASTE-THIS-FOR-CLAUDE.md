@@ -101,13 +101,12 @@ Classroom-Connect/
 ```
 
 ## Current Status
-<!-- UPDATE THIS SECTION AFTER EACH SESSION -->
-- **Current Phase:** Phase 1 — Not started
-- **Last Session:** April 30, 2026 — Set up GitHub repo, created project documentation
-- **Next Step:** Begin Phase 1 build — server setup and basic live quiz
+- **Current Phase:** Phase 1 — In progress
+- **Last Session:** April 30, 2026 — Built server, teacher lobby, student join screen
+- **Next Step:** Add quiz questions, scoring, and leaderboard
 
 ## Session Log
-<!-- ADD NEW ENTRIES AFTER EACH SESSION -->
 | Date | What Was Done | Next Steps |
 |------|--------------|------------|
-| April 30, 2026 | Created GitHub repo, installed Git + VS Code, created project docs | Begin Phase 1 |
+| April 30, 2026 | Setup: GitHub repo, Git, VS Code, project docs | Begin Phase 1 |
+| April 30, 2026 | Phase 1: Built Node.js server with Socket.IO, teacher lobby showing connected students, student join screen | Add questions, scoring, leaderboard |
