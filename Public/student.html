@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classroom Connect — Student</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #0f172a;
+            color: #f1f5f9;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 400px;
+            width: 100%;
+        }
+
+        /* JOIN SCREEN */
+        .join-screen {
+            text-align: center;
+        }
+
+        .join-screen h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .join-screen p {
+            color: #94a3b8;
+            margin-bottom: 32px;
+        }
+
+        .join-form {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 32px;
+        }
+
+        .join-form label {
+            display: block;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .join-form input {
+            width: 100%;
+            padding: 14px 18px;
+            background: #0f172a;
+            border: 2px solid #334155;
+            border-radius: 10px;
+            color: #f1f5f9;
+            font-size: 1.1rem;
+            outline: none;
+            margin-bottom: 20px;
+            transition: border-color 0.2s;
+        }
+
+        .join-form input:focus {
+            border-color: #3b82f6;
+        }
+
+        .join-form button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        .join-form button:hover {
+            opacity: 0.9;
+        }
+
+        .join-form button:active {
+            transform: scale(0.98);
+        }
+
+        /* WAITING SCREEN */
+        .waiting-screen {
+            display: none;
+            text-align: center;
+        }
+
+        .waiting-screen h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .welcome-name {
+            font-size: 1.3rem;
+            color: #8b5cf6;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .waiting-message {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            margin-bottom: 32px;
+        }
+
+        .student-count-display {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .student-count-display .number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #3b82f6;
+        }
+
+        .student-count-display .label {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            margin-top: 4px;
+        }
+
+        .pulse {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #10b981;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- JOIN SCREEN -->
+        <div class="join-screen" id="joinScreen">
+            <h1>Classroom Connect</h1>
+            <p>Enter your name to join the session</p>
+            <div class="join-form">
+                <label>Your Name</label>
+                <input type="text" id="nameInput" placeholder="Type your name..." maxlength="30" autocomplete="off">
+                <button id="joinButton" onclick="joinSession()">Join Session</button>
+            </div>
+        </div>
+
+        <!-- WAITING SCREEN -->
+        <div class="waiting-screen" id="waitingScreen">
+            <h1>Classroom Connect</h1>
+            <div class="welcome-name" id="welcomeName"></div>
+            <div class="waiting-message">
+                <span class="pulse"></span>
+                Connected — waiting for the teacher to start...
+            </div>
+            <div class="student-count-display">
+                <div class="number" id="waitingCount">0</div>
+                <div class="label">students connected</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        // Allow pressing Enter to join
+        document.getElementById("nameInput").addEventListener("keypress", function(e) {
+            if (e.key === "Enter") {
+                joinSession();
+            }
+        });
+
+        function joinSession() {
+            const name = document.getElementById("nameInput").value.trim();
+
+            if (!name) {
+                document.getElementById("nameInput").style.borderColor = "#ef4444";
+                return;
+            }
+
+            // Send name to server
+            socket.emit("student-join", name);
+
+            // Switch to waiting screen
+            document.getElementById("joinScreen").style.display = "none";
+            document.getElementById("waitingScreen").style.display = "block";
+            document.getElementById("welcomeName").textContent = "Welcome, " + name + "!";
+        }
+
+        // Listen for student count updates
+        socket.on("student-list", (students) => {
+            document.getElementById("waitingCount").textContent = students.length;
+        });
+    </script>
+</body>
+</html>
