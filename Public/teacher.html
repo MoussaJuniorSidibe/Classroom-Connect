@@ -6,254 +6,107 @@
     <title>Classroom Connect — Teacher</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: #0f172a;
-            color: #f1f5f9;
-            min-height: 100vh;
-            padding: 30px 20px;
+            background: #0f172a; color: #f1f5f9; min-height: 100vh; padding: 30px 20px;
         }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
+        .header { text-align: center; margin-bottom: 30px; }
         .header h1 {
-            font-size: 2.2rem;
-            font-weight: 800;
+            font-size: 2.2rem; font-weight: 800;
             background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 4px;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px;
         }
-
         .header p { color: #94a3b8; font-size: 1rem; }
-
-        .nav-link {
-            display: inline-block;
-            color: #3b82f6;
-            text-decoration: none;
-            margin-top: 8px;
-            font-size: 0.9rem;
-        }
-
+        .nav-link { display: inline-block; color: #3b82f6; text-decoration: none; margin-top: 8px; font-size: 0.9rem; }
         .nav-link:hover { text-decoration: underline; }
 
-        .main-layout {
-            max-width: 900px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+        .lang-toggle {
+            position: fixed; top: 16px; right: 16px;
+            background: #334155; color: #e2e8f0; border: 1px solid #475569;
+            padding: 6px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 700;
+            cursor: pointer; z-index: 100; transition: all 0.2s;
         }
+        .lang-toggle:hover { background: #475569; }
 
-        .card {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 16px;
-            padding: 24px;
-        }
+        .main-layout { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 24px; }
+        .connection-info { text-align: center; padding: 16px 24px; }
+        .connection-info label { color: #94a3b8; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+        .connection-info .address { font-size: 1.5rem; font-weight: 700; color: #3b82f6; margin-top: 4px; font-family: monospace; }
 
-        .connection-info {
-            text-align: center;
-            padding: 16px 24px;
-        }
-
-        .connection-info label {
-            color: #94a3b8;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .connection-info .address {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #3b82f6;
-            margin-top: 4px;
-            font-family: monospace;
-        }
-
-        /* BUTTONS */
         .btn {
-            padding: 14px 28px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: transform 0.1s, opacity 0.2s;
-            width: 100%;
+            padding: 14px 28px; border: none; border-radius: 10px; font-size: 1.1rem;
+            font-weight: 700; cursor: pointer; transition: transform 0.1s, opacity 0.2s; width: 100%;
         }
-
-        .btn:hover { opacity: 0.9; }
-        .btn:active { transform: scale(0.98); }
+        .btn:hover { opacity: 0.9; } .btn:active { transform: scale(0.98); }
         .btn-primary { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; }
         .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: white; }
         .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
         .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
-        .badge {
-            background: #3b82f6;
-            color: white;
-            padding: 4px 14px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 0.9rem;
-        }
+        .badge { background: #3b82f6; color: white; padding: 4px 14px; border-radius: 20px; font-weight: 700; font-size: 0.9rem; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .section-header h2 { font-size: 1.2rem; }
 
-        /* LESSON SELECT */
         .lesson-select-item {
-            background: #0f172a;
-            border: 2px solid #334155;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
+            background: #0f172a; border: 2px solid #334155; border-radius: 12px;
+            padding: 16px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s;
         }
-
         .lesson-select-item:hover { border-color: #3b82f6; }
         .lesson-select-item.selected { border-color: #3b82f6; background: #1e3a5f; }
-
         .lesson-select-item h3 { font-size: 1.05rem; margin-bottom: 4px; }
         .lesson-select-meta { color: #64748b; font-size: 0.85rem; }
 
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .section-header h2 { font-size: 1.2rem; }
-
-        /* LOBBY */
         .student-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-
         .student-chip {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 14px;
-            background: #0f172a;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            animation: slideIn 0.3s ease;
+            display: flex; align-items: center; gap: 8px; padding: 8px 14px;
+            background: #0f172a; border-radius: 8px; font-size: 0.95rem; animation: slideIn 0.3s ease;
         }
-
         .student-dot { width: 10px; height: 10px; border-radius: 50%; }
-
         .empty-state { text-align: center; padding: 20px; color: #64748b; }
 
-        /* SLIDE INFO */
-        .slide-counter {
-            text-align: center;
-            color: #94a3b8;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-
+        .slide-counter { text-align: center; color: #94a3b8; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
         .slide-type-indicator {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            margin-bottom: 12px;
+            display: inline-block; padding: 3px 10px; border-radius: 6px;
+            font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 12px;
         }
-
         .type-content { background: #1e3a5f; color: #60a5fa; }
         .type-question { background: #3b1f63; color: #c084fc; }
+        .content-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 12px; line-height: 1.4; }
+        .content-body { color: #cbd5e1; font-size: 1.05rem; line-height: 1.7; white-space: pre-wrap; }
+        .question-text { font-size: 1.4rem; font-weight: 700; margin-bottom: 20px; line-height: 1.4; }
 
-        .content-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: 12px;
-            line-height: 1.4;
-        }
-
-        .content-body {
-            color: #cbd5e1;
-            font-size: 1.05rem;
-            line-height: 1.7;
-            white-space: pre-wrap;
-        }
-
-        .question-text {
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            line-height: 1.4;
-        }
-
-        /* ANSWER TRACKER */
         .answer-summary {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            padding: 14px;
-            background: #0f172a;
-            border-radius: 10px;
-            margin-bottom: 12px;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            padding: 14px; background: #0f172a; border-radius: 10px; margin-bottom: 12px;
         }
-
         .answer-summary .count { font-size: 2rem; font-weight: 800; color: #3b82f6; }
         .answer-summary .label { color: #94a3b8; font-size: 0.95rem; }
 
         .student-tracker { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
-
         .tracker-chip {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            display: flex; align-items: center; gap: 6px; padding: 6px 12px;
+            border-radius: 8px; font-size: 0.85rem; font-weight: 600; transition: all 0.3s ease;
         }
-
         .tracker-chip.waiting { background: #1a1f2e; border: 1px solid #334155; color: #64748b; }
         .tracker-chip.answered { background: #064e3b; border: 1px solid #10b981; color: #a7f3d0; animation: chipPop 0.3s ease; }
+        .all-answered-hint { text-align: center; color: #10b981; font-weight: 600; margin-bottom: 12px; display: none; }
 
-        .all-answered-hint {
-            text-align: center;
-            color: #10b981;
-            font-weight: 600;
-            margin-bottom: 12px;
-            display: none;
-        }
-
-        /* RESULTS */
         .results-bar-container { margin-bottom: 12px; }
         .results-bar-label { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.95rem; }
-        .results-bar-label .option-text { color: #e2e8f0; }
-        .results-bar-label .option-count { color: #94a3b8; }
+        .results-bar-label .option-text { color: #e2e8f0; } .results-bar-label .option-count { color: #94a3b8; }
         .results-bar { height: 32px; background: #0f172a; border-radius: 6px; overflow: hidden; }
         .results-bar-fill { height: 100%; border-radius: 6px; transition: width 0.6s ease; min-width: 2px; }
         .results-bar-fill.correct { background: linear-gradient(135deg, #10b981, #059669); }
         .results-bar-fill.incorrect { background: linear-gradient(135deg, #ef4444, #dc2626); }
         .correct-indicator { color: #10b981; font-weight: 700; }
 
-        /* LEADERBOARD */
         .leaderboard-item {
-            display: flex; align-items: center; gap: 16px;
-            padding: 14px 16px; background: #0f172a;
-            border-radius: 10px; margin-bottom: 8px;
-            animation: slideIn 0.3s ease;
+            display: flex; align-items: center; gap: 16px; padding: 14px 16px;
+            background: #0f172a; border-radius: 10px; margin-bottom: 8px; animation: slideIn 0.3s ease;
         }
-
         .leaderboard-rank { font-size: 1.5rem; font-weight: 800; width: 40px; text-align: center; }
-        .rank-1 { color: #fbbf24; }
-        .rank-2 { color: #94a3b8; }
-        .rank-3 { color: #b45309; }
+        .rank-1 { color: #fbbf24; } .rank-2 { color: #94a3b8; } .rank-3 { color: #b45309; }
         .leaderboard-name { flex: 1; font-size: 1.1rem; font-weight: 600; }
         .leaderboard-score { font-size: 1.1rem; font-weight: 800; color: #3b82f6; }
 
@@ -263,85 +116,74 @@
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
-        .screen { display: none; }
-        .screen.active { display: block; }
-
+        .screen { display: none; } .screen.active { display: block; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes chipPop { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
+    <button class="lang-toggle" id="langToggle" onclick="toggleLanguage()">FR</button>
+
     <div class="header">
         <h1>Classroom Connect</h1>
-        <p>Teacher Dashboard</p>
-        <a href="/builder.html" class="nav-link">→ Open Lesson Builder</a>
+        <p id="headerSubtitle"></p>
+        <a href="/builder.html" class="nav-link" id="builderLink"></a>
     </div>
 
     <div class="main-layout">
         <div class="card connection-info">
-            <label>Students connect to:</label>
+            <label id="connectLabel"></label>
             <div class="address" id="studentAddress">Loading...</div>
         </div>
 
-        <!-- LESSON SELECT + LOBBY SCREEN -->
+        <!-- LOBBY -->
         <div class="screen active" id="lobbyScreen">
             <div class="card">
                 <div class="section-header">
-                    <h2>Select a Lesson</h2>
+                    <h2 id="selectLessonTitle"></h2>
                 </div>
-                <div id="lessonSelect">
-                    <div class="empty-state">Loading lessons...</div>
-                </div>
+                <div id="lessonSelect"><div class="empty-state">Loading...</div></div>
             </div>
-
             <div class="card" style="margin-top:16px;">
                 <div class="section-header">
-                    <h2>Student Lobby</h2>
-                    <span class="badge" id="studentCount">0 students</span>
+                    <h2 id="lobbyTitle"></h2>
+                    <span class="badge" id="studentCount">0</span>
                 </div>
-                <div class="student-grid" id="studentList">
-                    <div class="empty-state">⏳ Waiting for students to connect...</div>
-                </div>
+                <div class="student-grid" id="studentList"></div>
             </div>
-
             <br>
-            <button class="btn btn-primary" id="startBtn" onclick="startSession()" disabled>
-                Start Session
-            </button>
+            <button class="btn btn-primary" id="startBtn" onclick="startSession()" disabled></button>
         </div>
 
-        <!-- CONTENT SLIDE SCREEN -->
+        <!-- CONTENT SLIDE -->
         <div class="screen" id="contentScreen">
             <div class="card">
-                <div class="slide-counter" id="contentSlideCounter">Slide 1 of 10</div>
-                <span class="slide-type-indicator type-content">Content</span>
+                <div class="slide-counter" id="contentSlideCounter"></div>
+                <span class="slide-type-indicator type-content" id="contentTypeLabel"></span>
                 <div class="content-title" id="contentTitle"></div>
                 <div class="content-body" id="contentBody"></div>
             </div>
             <br>
-            <button class="btn btn-success" onclick="nextSlide()">Next Slide →</button>
+            <button class="btn btn-success" id="contentNextBtn" onclick="nextSlide()"></button>
         </div>
 
-        <!-- QUESTION SCREEN -->
+        <!-- QUESTION -->
         <div class="screen" id="questionScreen">
             <div class="card">
-                <div class="slide-counter" id="questionSlideCounter">Slide 3 of 10</div>
-                <span class="slide-type-indicator type-question">Question</span>
+                <div class="slide-counter" id="questionSlideCounter"></div>
+                <span class="slide-type-indicator type-question" id="questionTypeLabel"></span>
                 <div class="question-text" id="questionText"></div>
-
                 <div class="answer-summary">
                     <div class="count" id="answeredCount">0</div>
-                    <div class="label">of <span id="totalStudents">0</span> answered</div>
+                    <div class="label"><span id="ofLabel"></span> <span id="totalStudents">0</span> <span id="answeredLabel"></span></div>
                 </div>
-
                 <div class="student-tracker" id="studentTracker"></div>
-
-                <div class="all-answered-hint" id="allAnsweredHint">✓ All students have answered!</div>
-                <button class="btn btn-warning" onclick="showResults()">Reveal Answer</button>
+                <div class="all-answered-hint" id="allAnsweredHint"></div>
+                <button class="btn btn-warning" id="revealBtn" onclick="showResults()"></button>
             </div>
         </div>
 
-        <!-- RESULTS SCREEN -->
+        <!-- RESULTS -->
         <div class="screen" id="resultsScreen">
             <div class="card">
                 <div class="slide-counter" id="resultsSlideCounter"></div>
@@ -351,203 +193,201 @@
                     <span id="correctSummary" class="correct-indicator"></span>
                 </div>
                 <div id="miniLeaderboard" style="margin-bottom:16px;"></div>
-                <button class="btn btn-success" onclick="nextSlide()">Next Slide →</button>
+                <button class="btn btn-success" id="resultsNextBtn" onclick="nextSlide()"></button>
             </div>
         </div>
 
-        <!-- FINAL LEADERBOARD SCREEN -->
+        <!-- FINAL LEADERBOARD -->
         <div class="screen" id="leaderboardScreen">
             <div class="card">
-                <div class="final-title">🏆 Final Leaderboard</div>
+                <div class="final-title" id="finalTitle"></div>
                 <div id="leaderboardList"></div>
             </div>
         </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
+    <script src="/i18n.js"></script>
     <script>
         const socket = io();
         const colors = ["#3b82f6","#8b5cf6","#ec4899","#f59e0b","#10b981","#ef4444","#06b6d4","#f97316"];
         let selectedLessonId = null;
         let questionIndex = -1;
+        let lastStudentList = [];
+        let lastLessons = [];
 
         const address = window.location.hostname + ":" + window.location.port + "/student.html";
         document.getElementById("studentAddress").textContent = address;
 
-        function showScreen(screenId) {
+        function showScreen(id) {
             document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-            document.getElementById(screenId).classList.add("active");
+            document.getElementById(id).classList.add("active");
         }
 
-        // ====== LOAD LESSONS ======
+        function updateUI() {
+            document.getElementById("langToggle").textContent = t("langToggle");
+            document.getElementById("headerSubtitle").textContent = t("teacherDashboard");
+            document.getElementById("builderLink").textContent = t("openBuilder");
+            document.getElementById("connectLabel").textContent = t("studentsConnectTo");
+            document.getElementById("selectLessonTitle").textContent = t("selectLesson");
+            document.getElementById("lobbyTitle").textContent = t("studentLobby");
+            document.getElementById("startBtn").textContent = t("startSession");
+            document.getElementById("contentTypeLabel").textContent = t("content");
+            document.getElementById("contentNextBtn").textContent = t("nextSlide");
+            document.getElementById("questionTypeLabel").textContent = t("question");
+            document.getElementById("ofLabel").textContent = t("ofAnswered");
+            document.getElementById("answeredLabel").textContent = t("answered");
+            document.getElementById("allAnsweredHint").textContent = t("allAnswered");
+            document.getElementById("revealBtn").textContent = t("revealAnswer");
+            document.getElementById("resultsNextBtn").textContent = t("nextSlide");
+            document.getElementById("finalTitle").textContent = t("finalLeaderboard");
+
+            // Re-render dynamic content
+            renderStudentList(lastStudentList);
+            renderLessonList(lastLessons);
+        }
+
+        // ====== LESSONS ======
         async function loadLessons() {
             const res = await fetch("/api/lessons");
-            const lessons = await res.json();
-            const container = document.getElementById("lessonSelect");
+            lastLessons = await res.json();
+            renderLessonList(lastLessons);
+        }
 
+        function renderLessonList(lessons) {
+            const container = document.getElementById("lessonSelect");
             if (lessons.length === 0) {
-                container.innerHTML = `<div class="empty-state">No lessons found. <a href="/builder.html" style="color:#3b82f6;">Create one first →</a></div>`;
+                container.innerHTML = `<div class="empty-state">${t("noLessonsFound")} <a href="/builder.html" style="color:#3b82f6;">${t("createOneFirst")}</a></div>`;
                 return;
             }
-
-            container.innerHTML = lessons.map(l => `
-                <div class="lesson-select-item ${selectedLessonId === l.id ? 'selected' : ''}"
-                     onclick="selectLesson('${l.id}')">
+            container.innerHTML = lessons.map(l => {
+                const cs = l.contentCount + " " + t("contentSlides") + (l.contentCount !== 1 ? "s" : "");
+                const qs = l.questionCount + " " + t("questionsLabel") + (l.questionCount !== 1 ? "s" : "");
+                return `<div class="lesson-select-item ${selectedLessonId === l.id ? 'selected' : ''}" onclick="selectLesson('${l.id}')">
                     <h3>${l.title}</h3>
-                    <div class="lesson-select-meta">${l.contentCount} content · ${l.questionCount} questions · ${l.slideCount} slides total</div>
-                </div>
-            `).join("");
+                    <div class="lesson-select-meta">${cs} · ${qs}</div>
+                </div>`;
+            }).join("");
         }
 
-        function selectLesson(id) {
-            selectedLessonId = id;
-            updateStartButton();
-            loadLessons(); // Re-render to show selection
-        }
+        function selectLesson(id) { selectedLessonId = id; updateStartButton(); renderLessonList(lastLessons); }
 
         function updateStartButton() {
-            const btn = document.getElementById("startBtn");
-            const hasStudents = document.querySelectorAll(".student-chip").length > 0;
-            btn.disabled = !selectedLessonId || !hasStudents;
+            document.getElementById("startBtn").disabled = !selectedLessonId || lastStudentList.length === 0;
         }
 
         // ====== STUDENTS ======
         socket.on("student-list", (students) => {
+            lastStudentList = students;
+            renderStudentList(students);
+            updateStartButton();
+        });
+
+        function renderStudentList(students) {
             const list = document.getElementById("studentList");
             const count = document.getElementById("studentCount");
-
-            count.textContent = students.length + (students.length === 1 ? " student" : " students");
+            count.textContent = students.length + " " + (students.length === 1 ? t("student") : t("students"));
 
             if (students.length === 0) {
-                list.innerHTML = '<div class="empty-state">⏳ Waiting for students to connect...</div>';
+                list.innerHTML = `<div class="empty-state">${t("waitingForStudents")}</div>`;
             } else {
                 list.innerHTML = students.map((s, i) => {
                     const color = colors[i % colors.length];
                     return `<div class="student-chip"><div class="student-dot" style="background:${color}"></div>${s.name}</div>`;
                 }).join("");
             }
-
-            updateStartButton();
-        });
+        }
 
         // ====== SESSION ======
-        function startSession() {
-            if (!selectedLessonId) return;
-            socket.emit("start-session", selectedLessonId);
-        }
+        function startSession() { if (!selectedLessonId) return; socket.emit("start-session", selectedLessonId); }
+        socket.on("session-started", () => { questionIndex = -1; nextSlide(); });
+        function nextSlide() { socket.emit("next-slide"); }
 
-        socket.on("session-started", (info) => {
-            questionIndex = -1;
-            // Automatically go to first slide
-            nextSlide();
-        });
-
-        function nextSlide() {
-            socket.emit("next-slide");
-        }
-
-        // ====== TEACHER SLIDE INFO ======
         socket.on("teacher-slide-info", (data) => {
             if (data.type === "content") {
                 showScreen("contentScreen");
-                document.getElementById("contentSlideCounter").textContent = `Slide ${data.slideIndex + 1} of ${data.totalSlides}`;
+                document.getElementById("contentSlideCounter").textContent = tFormat("slideOf", data.slideIndex + 1, data.totalSlides);
                 document.getElementById("contentTitle").textContent = data.title;
                 document.getElementById("contentBody").textContent = data.body;
             } else if (data.type === "question") {
                 questionIndex = data.questionIndex;
                 showScreen("questionScreen");
-                document.getElementById("questionSlideCounter").textContent = `Slide ${data.slideIndex + 1} of ${data.totalSlides}`;
+                document.getElementById("questionSlideCounter").textContent = tFormat("slideOf", data.slideIndex + 1, data.totalSlides);
                 document.getElementById("questionText").textContent = data.question;
                 document.getElementById("allAnsweredHint").style.display = "none";
             }
         });
 
-        // ====== ANSWER TRACKING ======
         socket.on("answer-status", (status) => {
             document.getElementById("answeredCount").textContent = status.answered;
             document.getElementById("totalStudents").textContent = status.total;
-
-            if (status.answered === status.total && status.total > 0) {
-                document.getElementById("allAnsweredHint").style.display = "block";
-            } else {
-                document.getElementById("allAnsweredHint").style.display = "none";
-            }
+            document.getElementById("allAnsweredHint").style.display =
+                (status.answered === status.total && status.total > 0) ? "block" : "none";
         });
 
         socket.on("detailed-answer-status", (students) => {
-            const tracker = document.getElementById("studentTracker");
-            tracker.innerHTML = students.map(s => {
-                if (s.hasAnswered) {
-                    return `<div class="tracker-chip answered"><span>✓</span> ${s.name}</div>`;
-                } else {
-                    return `<div class="tracker-chip waiting"><span>⏳</span> ${s.name}</div>`;
-                }
-            }).join("");
+            document.getElementById("studentTracker").innerHTML = students.map(s =>
+                s.hasAnswered
+                    ? `<div class="tracker-chip answered"><span>\u2713</span> ${s.name}</div>`
+                    : `<div class="tracker-chip waiting"><span>\u23F3</span> ${s.name}</div>`
+            ).join("");
         });
 
-        function showResults() {
-            socket.emit("show-results");
-        }
+        function showResults() { socket.emit("show-results"); }
 
-        // ====== QUESTION RESULTS ======
         socket.on("question-results", (results) => {
             showScreen("resultsScreen");
             document.getElementById("resultsQuestionText").textContent = results.question;
-            document.getElementById("resultsSlideCounter").textContent = `Question ${questionIndex + 1} — Results`;
+            document.getElementById("resultsSlideCounter").textContent = t("question") + " " + (questionIndex + 1) + " \u2014 " + t("results");
 
             const maxCount = Math.max(...results.optionCounts, 1);
+            const sLabel = (n) => n === 1 ? t("student") : t("students");
 
             document.getElementById("resultsBars").innerHTML = results.options.map((opt, i) => {
                 const count = results.optionCounts[i];
                 const isCorrect = i === results.correctIndex;
                 const width = (count / maxCount) * 100;
-                const cls = isCorrect ? "correct" : "incorrect";
-                const marker = isCorrect ? " ✓" : "";
-                return `
-                    <div class="results-bar-container">
-                        <div class="results-bar-label">
-                            <span class="option-text">${opt}${marker}</span>
-                            <span class="option-count">${count} ${count === 1 ? "student" : "students"}</span>
-                        </div>
-                        <div class="results-bar"><div class="results-bar-fill ${cls}" style="width:${width}%"></div></div>
+                return `<div class="results-bar-container">
+                    <div class="results-bar-label">
+                        <span class="option-text">${opt}${isCorrect ? " \u2713" : ""}</span>
+                        <span class="option-count">${count} ${sLabel(count)}</span>
                     </div>
-                `;
+                    <div class="results-bar"><div class="results-bar-fill ${isCorrect ? "correct" : "incorrect"}" style="width:${width}%"></div></div>
+                </div>`;
             }).join("");
 
             document.getElementById("correctSummary").textContent =
-                `${results.correctCount} of ${results.totalStudents} answered correctly`;
+                `${results.correctCount} ${t("ofAnswered")} ${results.totalStudents} ${t("answeredCorrectly")}`;
 
             if (results.leaderboard.length > 0) {
                 document.getElementById("miniLeaderboard").innerHTML =
-                    "<h3 style='margin-bottom:10px;font-size:1rem;color:#94a3b8;'>Top 5</h3>" +
+                    `<h3 style="margin-bottom:10px;font-size:1rem;color:#94a3b8;">${t("top5")}</h3>` +
                     results.leaderboard.map((s, i) => `
                         <div class="leaderboard-item" style="padding:8px 12px;margin-bottom:4px;">
                             <div class="leaderboard-rank rank-${i+1}" style="font-size:1.1rem;width:28px;">${i+1}</div>
                             <div class="leaderboard-name" style="font-size:0.95rem;">${s.name}</div>
-                            <div class="leaderboard-score" style="font-size:0.95rem;">${s.score} pts</div>
+                            <div class="leaderboard-score" style="font-size:0.95rem;">${s.score} ${t("pts")}</div>
                         </div>
                     `).join("");
             }
         });
 
-        // ====== FINAL LEADERBOARD ======
         socket.on("session-ended", (leaderboard) => {
             showScreen("leaderboardScreen");
             document.getElementById("leaderboardList").innerHTML = leaderboard.map((s, i) => {
                 const rankClass = i < 3 ? `rank-${i+1}` : "";
-                const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i+1}`;
-                return `
-                    <div class="leaderboard-item">
-                        <div class="leaderboard-rank ${rankClass}">${medal}</div>
-                        <div class="leaderboard-name">${s.name}</div>
-                        <div class="leaderboard-score">${s.score} pts</div>
-                    </div>
-                `;
+                const medal = i === 0 ? "\uD83E\uDD47" : i === 1 ? "\uD83E\uDD48" : i === 2 ? "\uD83E\uDD49" : `${i+1}`;
+                return `<div class="leaderboard-item">
+                    <div class="leaderboard-rank ${rankClass}">${medal}</div>
+                    <div class="leaderboard-name">${s.name}</div>
+                    <div class="leaderboard-score">${s.score} ${t("pts")}</div>
+                </div>`;
             }).join("");
         });
 
-        // ====== INIT ======
+        // Init
         loadLessons();
+        updateUI();
     </script>
 </body>
 </html>
