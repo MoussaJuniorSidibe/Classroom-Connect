@@ -7,6 +7,7 @@ const translations = {
     codeJoinSubtitle: "Enter your student code to join",
     yourCode: "Your Code", codePlaceholder: "Enter your 4-digit code",
     joinWithCode: "Join", invalidCode: "Invalid code. Please check and try again.",
+    wrongClassCode: "This code is not for this class. Check with your teacher.",
     joinAs: "Joining as:",
     // Common
     welcome: "Welcome,", waitingForTeacher: "Connected — waiting for the teacher to start...",
@@ -20,7 +21,7 @@ const translations = {
     // Teacher
     teacherDashboard: "Teacher Dashboard", openBuilder: "→ Lesson Builder",
     openRoster: "→ Student Roster", openHistory: "→ Session History",
-    studentsConnectTo: "Students connect to:", selectLesson: "Select a Lesson",
+    studentsConnectTo: "Students connect to:", scanToJoin: "Students scan this QR code to join", selectLesson: "Select a Lesson",
     selectClass: "Select a Class (optional)",
     noClassSelected: "No class — students will type their name",
     noLessonsFound: "No lessons found.", createOneFirst: "Create one first →",
@@ -87,6 +88,7 @@ const translations = {
     codeJoinSubtitle: "Entrez votre code élève pour rejoindre",
     yourCode: "Votre Code", codePlaceholder: "Entrez votre code à 4 chiffres",
     joinWithCode: "Rejoindre", invalidCode: "Code invalide. Vérifiez et réessayez.",
+    wrongClassCode: "Ce code n'est pas pour cette classe. Vérifiez avec votre professeur.",
     joinAs: "Connexion en tant que :",
     // Common
     welcome: "Bienvenue,", waitingForTeacher: "Connecté — en attente du professeur...",
@@ -100,7 +102,7 @@ const translations = {
     // Teacher
     teacherDashboard: "Tableau de Bord — Professeur", openBuilder: "→ Créer une Leçon",
     openRoster: "→ Liste des Élèves", openHistory: "→ Historique des Sessions",
-    studentsConnectTo: "Les élèves se connectent à :", selectLesson: "Sélectionner une Leçon",
+    studentsConnectTo: "Les élèves se connectent à :", scanToJoin: "Les élèves scannent ce QR code pour rejoindre", selectLesson: "Sélectionner une Leçon",
     selectClass: "Sélectionner une Classe (optionnel)",
     noClassSelected: "Aucune classe — les élèves taperont leur nom",
     noLessonsFound: "Aucune leçon trouvée.", createOneFirst: "Créez-en une d'abord →",

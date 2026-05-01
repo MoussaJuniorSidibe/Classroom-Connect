@@ -263,9 +263,9 @@ Classroom-Connect/
 
 ## Current Status
 <!-- UPDATE THIS SECTION AFTER EACH SESSION -->
-- **Current Phase:** Phase 4 — Step 1 (Exportable Reports) COMPLETE. Step 2 (QR Code) is next.
-- **Last Session:** May 1, 2026 — Built Phase 4 Step 1: export button on session history page, CSV download with scores and question breakdown, bilingual, works offline
-- **Next Step:** Phase 4 Step 2 — QR Code for Student Joining (teacher.html + server.js)
+- **Current Phase:** Phase 4 — Step 2 (QR Code + Class Logic Fix) BUILT, needs testing. Step 3 (Question Types) is next.
+- **Last Session:** May 1, 2026 — Built Phase 4 Step 1 (CSV export) and Step 2 (QR code on teacher dashboard). Fixed class/code session logic: class selected = code-only join with class validation, no class = name-only join. Renamed Public to public for Linux compatibility. Created session transition guide document.
+- **Next Step:** Test the class/code fix, then Phase 4 Step 3 — Additional Question Types
 
 ## Priority Order Going Forward
 Follow the Phase 4 step-by-step plan above (Steps 1-7). Cloud sync with Supabase comes after Phase 4, whenever it becomes needed.
@@ -284,4 +284,4 @@ Follow the Phase 4 step-by-step plan above (Steps 1-7). Cloud sync with Supabase
 | April 30, 2026 | Phase 3 Step 3: Session history page — attendance, scores, question breakdown | Student codes |
 | April 30, 2026 | Phase 3: Student codes — 4-digit codes, roster connected to live sessions, teacher class selection | Cloud sync (new session) |
 | April 30, 2026 | Planning session: Postponed cloud sync, chose QR code for student joining, clarified packaging strategy (Android first, teacher-only app, students use browser), locked Phase 4 step-by-step plan (7 steps from exportable reports through pilot launch) | Phase 4 Step 1: Exportable Reports |
-| May 1, 2026 | Phase 4 Step 1 COMPLETE: Export button on session history, CSV download with scores + question breakdown, UTF-8 for French, works fully offline | Phase 4 Step 2: QR Code |
+| May 1, 2026 | Phase 4 Step 1 COMPLETE: CSV export on session history. Phase 4 Step 2: QR code on teacher dashboard, class/code session logic fix (class = code-only with validation, no class = name-only). Renamed Public to public. Created session transition guide. | Test class/code fix, then Step 3 |

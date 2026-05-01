@@ -17,9 +17,12 @@
         .lang-toggle:hover { background: #475569; }
         .main-layout { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
         .card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 24px; }
-        .connection-info { text-align: center; padding: 16px 24px; }
+        .connection-info { text-align: center; padding: 20px 24px; }
         .connection-info label { color: #94a3b8; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
-        .connection-info .address { font-size: 1.5rem; font-weight: 700; color: #3b82f6; margin-top: 4px; font-family: monospace; }
+        .connection-info .address { font-size: 1.3rem; font-weight: 700; color: #3b82f6; margin-top: 4px; font-family: monospace; }
+        .qr-container { margin: 16px auto 8px; display: flex; flex-direction: column; align-items: center; }
+        .qr-container img { width: 200px; height: 200px; border-radius: 12px; background: #fff; padding: 8px; }
+        .qr-label { color: #64748b; font-size: 0.8rem; margin-top: 8px; }
         .btn { padding: 14px 28px; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: 700; cursor: pointer; width: 100%; }
         .btn:hover { opacity: 0.9; } .btn:active { transform: scale(0.98); }
         .btn-primary { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; }
@@ -87,6 +90,10 @@
     <div class="main-layout">
         <div class="card connection-info">
             <label id="connectLabel"></label>
+            <div class="qr-container">
+                <img id="qrCode" alt="QR Code" style="display:none;">
+                <div class="qr-label" id="qrLabel"></div>
+            </div>
             <div class="address" id="studentAddress">Loading...</div>
         </div>
 
@@ -162,7 +169,23 @@
         const colors = ["#3b82f6","#8b5cf6","#ec4899","#f59e0b","#10b981","#ef4444","#06b6d4","#f97316"];
         let selectedLessonId = null, selectedClassId = null, questionIndex = -1, lastStudentList = [], lastLessons = [], lastClasses = [];
 
-        document.getElementById("studentAddress").textContent = window.location.hostname + ":" + window.location.port + "/student.html";
+        // Load server info and QR code
+        async function loadServerInfo() {
+            try {
+                const res = await fetch("/api/server-info");
+                const info = await res.json();
+                document.getElementById("studentAddress").textContent = info.studentUrl;
+                if (info.qrCode) {
+                    const qrImg = document.getElementById("qrCode");
+                    qrImg.src = info.qrCode;
+                    qrImg.style.display = "block";
+                    document.getElementById("qrLabel").textContent = t("scanToJoin");
+                }
+            } catch (e) {
+                document.getElementById("studentAddress").textContent = window.location.hostname + ":" + window.location.port + "/student.html";
+            }
+        }
+        loadServerInfo();
 
         function showScreen(id) { document.querySelectorAll(".screen").forEach(s => s.classList.remove("active")); document.getElementById(id).classList.add("active"); }
 
@@ -173,6 +196,7 @@
             document.getElementById("rosterLink").textContent = t("openRoster");
             document.getElementById("historyLink").textContent = t("openHistory");
             document.getElementById("connectLabel").textContent = t("studentsConnectTo");
+            document.getElementById("qrLabel").textContent = t("scanToJoin");
             document.getElementById("selectLessonTitle").textContent = t("selectLesson");
             document.getElementById("selectClassTitle").textContent = t("selectClass");
             document.getElementById("lobbyTitle").textContent = t("studentLobby");
@@ -214,7 +238,7 @@
             }
             c.innerHTML = html;
         }
-        function selectClass(id) { selectedClassId = id; renderClassList(lastClasses); }
+        function selectClass(id) { selectedClassId = id; socket.emit("select-class", id); renderClassList(lastClasses); }
 
         function updateStartButton() { document.getElementById("startBtn").disabled = !selectedLessonId || lastStudentList.length === 0; }
 

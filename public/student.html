@@ -71,7 +71,7 @@
     <button class="lang-toggle" id="langToggle" onclick="toggleLanguage()">FR</button>
     <div class="container">
         <!-- CODE JOIN SCREEN -->
-        <div class="screen active" id="codeJoinScreen">
+        <div class="screen" id="codeJoinScreen">
             <div class="title">Classroom Connect</div>
             <div class="subtitle" id="codeJoinSubtitle"></div>
             <div class="card">
@@ -81,12 +81,9 @@
                 <div class="join-as" id="joinAsDisplay"></div>
                 <button class="btn btn-primary" id="codeJoinBtn" onclick="joinWithCode()"></button>
             </div>
-            <div class="switch-link" id="switchToName">
-                <a href="#" onclick="showNameJoin(); return false;" id="switchToNameLink">Don't have a code? Join with your name</a>
-            </div>
         </div>
 
-        <!-- NAME JOIN SCREEN (fallback) -->
+        <!-- NAME JOIN SCREEN (open session — no class) -->
         <div class="screen" id="nameJoinScreen">
             <div class="title">Classroom Connect</div>
             <div class="subtitle" id="nameJoinSubtitle"></div>
@@ -94,9 +91,6 @@
                 <label id="nameLabel"></label>
                 <input type="text" id="nameInput" maxlength="30" autocomplete="off">
                 <button class="btn btn-primary" id="nameJoinBtn" onclick="joinWithName()"></button>
-            </div>
-            <div class="switch-link">
-                <a href="#" onclick="showCodeJoin(); return false;" id="switchToCodeLink">Have a code? Join with your code</a>
             </div>
         </div>
 
@@ -154,10 +148,22 @@
     <script>
         const socket = io();
         let playerName = "", timerInterval = null, lastLeaderboard = [];
+        let joinMode = "name"; // "code" or "name" — controlled by server
 
         function showScreen(id) { document.querySelectorAll(".screen").forEach(s => s.classList.remove("active")); document.getElementById(id).classList.add("active"); }
-        function showCodeJoin() { showScreen("codeJoinScreen"); }
-        function showNameJoin() { showScreen("nameJoinScreen"); }
+
+        // Server tells us which join mode to use based on teacher's class selection
+        socket.on("join-mode", (data) => {
+            joinMode = data.usesCodes ? "code" : "name";
+            // Only switch join screen if student hasn't joined yet
+            if (!playerName) {
+                if (joinMode === "code") {
+                    showScreen("codeJoinScreen");
+                } else {
+                    showScreen("nameJoinScreen");
+                }
+            }
+        });
 
         function updateUI() {
             document.getElementById("langToggle").textContent = t("langToggle");
@@ -228,6 +234,11 @@
         });
 
         socket.on("join-error", (reason) => {
+            if (reason === "wrong-class") {
+                document.getElementById("codeError").textContent = t("wrongClassCode");
+            } else {
+                document.getElementById("codeError").textContent = t("invalidCode");
+            }
             document.getElementById("codeError").style.display = "block";
             document.getElementById("codeInput").style.borderColor = "#ef4444";
         });

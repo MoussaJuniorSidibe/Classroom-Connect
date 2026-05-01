@@ -4,6 +4,7 @@ const { Server } = require("socket.io");
 const os = require("os");
 const fs = require("fs");
 const path = require("path");
+const QRCode = require("qrcode");
 const db = require("./database");
 
 const app = express();
@@ -178,11 +179,26 @@ app.get("/api/lookup-code/:code", (req, res) => {
   res.json({ name: student.name, code: student.code, className: student.class_name, classId: student.class_id });
 });
 
+// ====== SERVER INFO & QR CODE API ======
+app.get("/api/server-info", async (req, res) => {
+  const localIP = getLocalIP();
+  const studentUrl = `http://${localIP}:${PORT}/student.html`;
+  try {
+    const qrDataUrl = await QRCode.toDataURL(studentUrl, {
+      width: 280, margin: 2, color: { dark: "#1e293b", light: "#ffffff" }
+    });
+    res.json({ ip: localIP, port: PORT, studentUrl, qrCode: qrDataUrl });
+  } catch (err) {
+    res.json({ ip: localIP, port: PORT, studentUrl, qrCode: null });
+  }
+});
+
 // ====== GAME STATE ======
 const students = new Map();
 let currentQuestion = null, questionStartTime = null, questionIndex = -1, slideIndex = -1;
 let sessionActive = false, currentLesson = null, currentSlides = [], currentQuestions = [];
 let currentSessionId = null, currentClassId = null;
+let selectedClassForSession = null; // tracks teacher's class selection before/during session
 const pendingResults = new Map();
 
 function calculatePoints(isCorrect, responseTimeMs, timeLimitMs) {
@@ -194,11 +210,28 @@ function calculatePoints(isCorrect, responseTimeMs, timeLimitMs) {
 io.on("connection", (socket) => {
   console.log("New connection:", socket.id);
 
-  // Student joins with a code
+  // Send current join mode to newly connected student
+  socket.emit("join-mode", { usesCodes: !!selectedClassForSession });
+
+  // Teacher selects or deselects a class (before or during lobby)
+  socket.on("select-class", (classId) => {
+    selectedClassForSession = classId || null;
+    // Broadcast new join mode to all connected students
+    io.emit("join-mode", { usesCodes: !!selectedClassForSession });
+    console.log(`Class selection changed: ${selectedClassForSession || "none (open session)"}`);
+  });
+
+  // Student joins with a code (class session)
   socket.on("student-join-code", (code) => {
     const student = db.lookupStudentByCode(code);
     if (!student) {
       socket.emit("join-error", "invalid-code");
+      return;
+    }
+
+    // If a class is selected, only accept codes from that class
+    if (selectedClassForSession && student.class_id !== selectedClassForSession) {
+      socket.emit("join-error", "wrong-class");
       return;
     }
 
@@ -227,8 +260,14 @@ io.on("connection", (socket) => {
     }
   });
 
-  // Legacy: student joins with name (for sessions without a class)
+  // Student joins with name (open session — no class selected)
   socket.on("student-join", (name) => {
+    // Reject name join if a class is selected — students must use their code
+    if (selectedClassForSession) {
+      socket.emit("join-error", "class-required");
+      return;
+    }
+
     students.set(socket.id, {
       name, code: null, joinedAt: new Date(), score: 0, answers: [], hasAnswered: false
     });
@@ -263,7 +302,7 @@ io.on("connection", (socket) => {
     currentSlides = currentLesson.slides;
     currentQuestions = currentSlides.filter(s => s.type === "question");
     sessionActive = true; slideIndex = -1; questionIndex = -1; currentQuestion = null;
-    currentClassId = classId;
+    currentClassId = selectedClassForSession; // use the tracked class selection
 
     currentSessionId = "session_" + Date.now();
     try { db.createSession(currentSessionId, lessonId, currentLesson.title, currentSlides.length, currentQuestions.length, classId); } catch (e) { console.error(e.message); }
@@ -275,9 +314,9 @@ io.on("connection", (socket) => {
 
     io.emit("session-started", {
       title: currentLesson.title, totalSlides: currentSlides.length,
-      totalQuestions: currentQuestions.length, usesCodes: !!classId
+      totalQuestions: currentQuestions.length, usesCodes: !!currentClassId
     });
-    console.log(`Session started: ${currentLesson.title}${classId ? " (class: " + classId + ")" : ""}`);
+    console.log(`Session started: ${currentLesson.title}${currentClassId ? " (class: " + currentClassId + ")" : ""}`);
   });
 
   socket.on("next-slide", () => {
@@ -288,6 +327,8 @@ io.on("connection", (socket) => {
       }
       io.emit("session-ended", getLeaderboard());
       sessionActive = false; currentQuestion = null; currentLesson = null; currentSessionId = null; currentClassId = null;
+      selectedClassForSession = null;
+      io.emit("join-mode", { usesCodes: false });
       return;
     }
 
