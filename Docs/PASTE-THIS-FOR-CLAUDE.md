@@ -263,9 +263,9 @@ Classroom-Connect/
 
 ## Current Status
 <!-- UPDATE THIS SECTION AFTER EACH SESSION -->
-- **Current Phase:** Phase 4 — Step 1 (Exportable Reports) is next to build.
-- **Last Session:** April 30, 2026 — Planning session: locked Phase 4 step-by-step plan, postponed cloud sync, confirmed QR code for student joining, clarified packaging strategy
-- **Next Step:** Phase 4 Step 1 — Exportable Reports (history.html + server.js)
+- **Current Phase:** Phase 4 — Step 1 (Exportable Reports) COMPLETE. Step 2 (QR Code) is next.
+- **Last Session:** May 1, 2026 — Built Phase 4 Step 1: export button on session history page, CSV download with scores and question breakdown, bilingual, works offline
+- **Next Step:** Phase 4 Step 2 — QR Code for Student Joining (teacher.html + server.js)
 
 ## Priority Order Going Forward
 Follow the Phase 4 step-by-step plan above (Steps 1-7). Cloud sync with Supabase comes after Phase 4, whenever it becomes needed.
@@ -284,3 +284,4 @@ Follow the Phase 4 step-by-step plan above (Steps 1-7). Cloud sync with Supabase
 | April 30, 2026 | Phase 3 Step 3: Session history page — attendance, scores, question breakdown | Student codes |
 | April 30, 2026 | Phase 3: Student codes — 4-digit codes, roster connected to live sessions, teacher class selection | Cloud sync (new session) |
 | April 30, 2026 | Planning session: Postponed cloud sync, chose QR code for student joining, clarified packaging strategy (Android first, teacher-only app, students use browser), locked Phase 4 step-by-step plan (7 steps from exportable reports through pilot launch) | Phase 4 Step 1: Exportable Reports |
+| May 1, 2026 | Phase 4 Step 1 COMPLETE: Export button on session history, CSV download with scores + question breakdown, UTF-8 for French, works fully offline | Phase 4 Step 2: QR Code |
