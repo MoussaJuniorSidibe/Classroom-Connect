@@ -16,8 +16,8 @@ This file alone is NOT enough for Claude to build correctly. The project is a sy
 - Working on the database or data features → share `database.js`, `server.js`
 - Working on roster management → share `roster.html`, `server.js`, `database.js`
 - Working on session history → share `history.html`, `server.js`, `database.js`
-- Working on student codes (connecting roster to live sessions) → share `server.js`, `student.html`, `teacher.html`, `roster.html`, `database.js`
 - Working on cloud sync → share `database.js`, `server.js` (requires planning conversation first — see Cloud Sync section)
+- Working on Capacitor packaging → share `server.js`, `package.json`
 - Adding a new feature that touches everything → share all files
 - Fixing a bug → share the file(s) with the bug plus the error message
 
@@ -32,13 +32,13 @@ Classroom Connect is an offline-first interactive classroom learning platform. A
 
 ## Who is building this?
 - **Moussa Junior Sidibe** (designer, product owner) — Fulbright scholar from Côte d'Ivoire, MS in Instructional Design from Syracuse University. Limited programming skills. Defines features, tests code, makes design decisions.
-- **Claude** (developer) — Writes all code, explains technical decisions, debugs issues, suggests architecture.
+- **Claude** (developer) — Writes all code, explains technical decisions, debugs issues, suggests architecture. Also acts as a mentor — explains technical concepts in plain language so Moussa can make informed decisions.
 
 ## Collaboration Rules
 - When Moussa wants to discuss or learn, Claude stays in discussion mode. No building until Moussa gives a clear signal like "let's build this" or "code it."
 - When Moussa flags something as a concern, Claude explains first whether it's an actual issue or expected behavior at this stage, and they decide together before touching code.
 - Claude explains technical concepts in plain language as we build.
-- At the end of each session, Claude reminds Moussa to update this file and push to GitHub.
+- At the end of each session, Claude tells Moussa exactly what to update in this file and gives the Git commands to push to GitHub.
 - Claude always provides complete files — never asks Moussa to make manual code edits.
 
 ## Target Users
@@ -56,20 +56,38 @@ Classroom Connect is an offline-first interactive classroom learning platform. A
 - **Translations:** Shared i18n.js file loaded by all HTML pages
 - **Lesson storage:** JSON files saved in /lessons/ directory
 - **Image storage:** Uploaded images saved in /uploads/ directory
-- **Mobile packaging:** Capacitor (Phase 4)
-- **Cloud sync:** Supabase or Firebase (Phase 3 Step 4 — not yet built, requires planning)
+- **Mobile packaging:** Capacitor (Phase 4 — for teacher's device only)
+- **Cloud sync:** Supabase recommended (postponed — see Cloud Sync section)
 
-## How the Local Network Works
-1. Teacher opens the app and enables WiFi hotspot (or uses a portable router for 40+ students)
-2. App starts a local server and displays a session code/IP address
-3. Students connect to the hotspot and open the address in any browser
-4. All communication flows over this local network via Socket.IO — no internet needed
-5. Data saves locally on teacher's device (SQLite database) and syncs to cloud when internet is available (future)
+## How the App Works — The Offline Model
+
+**This is the core design principle of Classroom Connect: everything works without internet.**
+
+Every architecture choice — SQLite, Socket.IO over local WiFi, local file storage — was made specifically so the app runs fully offline. Offline is not a feature we add. It's how the app already works.
+
+### How a session runs:
+1. Teacher opens the Classroom Connect app on their device (phone, tablet, or laptop)
+2. Teacher enables WiFi hotspot (or uses a portable router for 40+ students)
+3. The app starts a local server automatically
+4. Students connect their phones to the teacher's WiFi — any phone with a browser works
+5. Students scan a **QR code** displayed on the teacher's screen (Phase 4 feature) — the student page opens in their browser
+6. Students enter their 4-digit code and they're in the session
+7. All communication flows over this local network via Socket.IO — no internet needed
+8. Data saves locally on the teacher's device (SQLite database)
+
+### Important: Students never install an app
+Students only need a browser. The teacher's device serves the student page directly over the local network. This means:
+- iPhones, Android phones, tablets, old phones, borrowed devices — all work
+- No app download, no account creation, no storage space needed on student devices
+- The only device that runs the Classroom Connect app is the teacher's device
+
+### QR Code for Student Joining (Phase 4)
+**Decided:** The teacher's screen will display a QR code that students scan to open the student page instantly. This replaces the need to type an IP address manually. This is the chosen method — more professional and easier for students.
 
 ## Key Architecture Details (for Claude)
 
 ### Socket.IO events
-student-join, start-session (sends lessonId), next-slide, submit-answer, answer-received, answer-result, show-results, question-results, content-slide, teacher-slide-info, session-started, session-ended, student-list, answer-status, detailed-answer-status
+student-join, student-join-code, join-success, join-error, start-session (sends {lessonId, classId}), next-slide, submit-answer, answer-received, answer-result, show-results, question-results, content-slide, teacher-slide-info, session-started, session-ended, student-list, answer-status, detailed-answer-status
 
 ### REST API endpoints
 **Lessons:** GET /api/lessons, GET /api/lessons/:id, POST /api/lessons, DELETE /api/lessons/:id
@@ -77,14 +95,22 @@ student-join, start-session (sends lessonId), next-slide, submit-answer, answer-
 **Sessions:** GET /api/sessions, GET /api/sessions/:id (returns session + attendance + scores + answers)
 **Classes:** GET /api/classes, POST /api/classes, PUT /api/classes/:id, DELETE /api/classes/:id
 **Students:** GET /api/classes/:id/students, POST /api/classes/:id/students, PUT /api/students/:id, DELETE /api/students/:id
+**Code lookup:** GET /api/lookup-code/:code (returns student name, code, class info)
 
 ### Database tables (SQLite — classroom-connect.db)
 - **classes** — id, name, created_at
-- **roster_students** — id, name, class_id, created_at
+- **roster_students** — id, name, class_id, code (unique 4-digit), created_at
 - **sessions** — id, lesson_id, lesson_title, class_id, total_slides, total_questions, started_at, ended_at
-- **session_attendance** — id, session_id, student_name, joined_at
-- **session_answers** — id, session_id, student_name, question_index, question_text, answer_index, is_correct, points, response_time_ms
-- **session_scores** — id, session_id, student_name, total_score, correct_count, total_answered
+- **session_attendance** — id, session_id, student_name, student_code, joined_at
+- **session_answers** — id, session_id, student_name, student_code, question_index, question_text, answer_index, is_correct, points, response_time_ms
+- **session_scores** — id, session_id, student_name, student_code, total_score, correct_count, total_answered
+
+### Student Codes System
+- Each student in the roster automatically gets a unique 4-digit code (1000-9999)
+- Codes are generated on student creation and displayed on the roster page
+- Students type their code to join a session — the system looks up their name
+- Fallback: students without a code can join by typing their name (for sessions without a class selected)
+- The student join page shows code input by default, with a link to switch to name input
 
 ### Translation system
 All UI text uses t("key") and tFormat("key", args) functions from i18n.js. New features must add translation keys to both en and fr objects in i18n.js.
@@ -99,17 +125,18 @@ Dark theme (#0f172a background, #1e293b cards, #334155 borders). Buttons use gra
 
 ### Teacher Features
 - **Lesson Builder:** Create lessons with content slides (text + images) and question slides (MCQ, True/False) — BUILT
-- **Live Session:** Select a lesson, start session, advance through slides, push questions, view live response dashboard with individual student name tracking — BUILT
+- **Live Session:** Select a lesson AND optionally a class, start session, advance through slides, push questions, view live dashboard — BUILT
 - **Teacher-controlled reveal:** Students wait after answering; teacher clicks "Reveal Answer" — BUILT
-- **Leaderboard:** End-of-lesson rankings based on correctness and speed (Kahoot-style scoring) — BUILT
+- **Leaderboard:** End-of-lesson rankings based on correctness and speed — BUILT
 - **Bilingual interface:** French/English toggle on all screens — BUILT
-- **Student Roster:** Create classes, add/edit/delete students — BUILT (not yet connected to live sessions)
+- **Student Roster:** Create classes, add/edit/delete students, each student gets unique 4-digit code — BUILT
+- **Student Codes:** Roster connected to live sessions via code-based joining — BUILT
 - **Session History:** View past sessions with attendance, scores, and question breakdown — BUILT
-- **Database:** All session data (attendance, answers, scores) saved permanently to SQLite — BUILT
+- **Database:** All session data saved permanently to SQLite, linked to student codes — BUILT
 
 ### Student Features
-- Join via browser (no app install, no account) — BUILT
-- View content slides (with images) on their device as teacher presents — BUILT
+- Join via 4-digit code (or name as fallback) in browser — BUILT
+- View content slides (with images) on their device — BUILT
 - Answer questions with timer and immediate lock — BUILT
 - Feedback after teacher reveals — BUILT
 - Final leaderboard with rankings — BUILT
@@ -128,40 +155,55 @@ Server, Socket.IO, lobby, quiz engine, scoring, leaderboard, teacher-controlled 
 ### Phase 2: Lesson Builder & Content Delivery — COMPLETE
 Lesson builder with content/question slides, lesson saving/loading/deleting, teacher selects lesson, content slide delivery to students, image support in content slides, bilingual French/English toggle
 
-### Phase 3: Data, Storage & Cloud Sync — IN PROGRESS (Steps 1-3 complete)
+### Phase 3: Data & Storage — COMPLETE (Cloud Sync Postponed)
 - **Step 1: Local database — COMPLETE.** SQLite via better-sqlite3. All session data saved permanently.
-- **Step 2: Student roster management — COMPLETE.** Create classes, add/edit/delete students. Data saved to database.
+- **Step 2: Student roster management — COMPLETE.** Create classes, add/edit/delete students with auto-generated codes.
 - **Step 3: Session history and reports — COMPLETE.** View past sessions with attendance, scores, question breakdown.
-- **Step 4: Cloud sync — NOT STARTED.** Requires planning conversation before building. See Cloud Sync section below.
-- **NEXT TO BUILD: Student codes** — Connect the roster to live sessions. Each student gets a unique 4-digit code. They type their code when joining instead of picking from a list. This links roster data to session data for tracking performance over time.
+- **Student codes — COMPLETE.** Roster connected to live sessions. Students join with 4-digit codes. Teacher optionally selects a class when starting session.
+- **Cloud sync — POSTPONED.** Not cancelled, just not needed yet. Can be added at any stage, even after the app is fully packaged and in use. See Cloud Sync section.
 
 ### Phase 4: Polish, Packaging & Launch
-- Capacitor packaging for Android and iOS
-- PWA version for browser access
+- **QR code for student joining** — teacher's screen displays QR code, students scan to connect (DECIDED)
+- **Capacitor packaging** — Android first (covers majority of target users), iOS if demand exists (requires Mac + $99/yr Apple Developer account)
 - **UI/UX overhaul and brand identity** (see UI Vision section)
 - Additional question types
 - Exportable reports
 - Performance optimization for low-end devices
 - User testing with real teachers
 
-## Student Codes Feature (Next to Build)
-Each student in the roster gets a unique short code (4-digit number). The teacher can print or share these codes. When joining a live session, students type their code instead of their name. The system looks up who they are from the roster. This ensures:
-- Consistent tracking across sessions (same student identity every time)
-- No typos or duplicate names
-- No risk of accidentally selecting someone else's name
-- Simple and fast for students on any device
+## Packaging & Platform Strategy (Phase 4)
 
-## Cloud Sync — REQUIRES PLANNING BEFORE BUILDING
-**DO NOT start building cloud sync without a planning conversation with Moussa first.**
+**Capacitor packaging is only for the teacher's device.** It wraps the entire app (server, database, everything) into an installable app. Teacher taps an icon, the server starts automatically, students connect. No terminal, no `node server.js` required.
 
-Cloud sync is the most technically complex feature. It requires:
-- Choosing between Supabase and Firebase (discussion needed on pros/cons for this use case)
-- Setting up an external account and configuring the service
-- Designing the sync logic (what syncs, when, conflict resolution)
-- Handling authentication (teacher accounts)
-- Testing connectivity detection and sync-when-available behavior
+**Students never install an app.** They use their phone's browser. Any device with a browser works — iPhone, Android, tablet, old phone, anything.
 
-This should be a dedicated session with a planning conversation before any code is written.
+**Platform rollout order:**
+1. **Android first** — covers the vast majority of target users in Côte d'Ivoire and West Africa. Capacitor builds Android apps.
+2. **iOS if needed** — Capacitor supports iOS, but building requires a Mac computer and an Apple Developer account ($99/year). Add when there's demand.
+3. **Desktop packaging (optional, future)** — if a "double-click to launch" experience is ever needed on Windows/Mac, a different tool (Electron) would be used. Not a priority since teachers can use the Android app on a phone or tablet.
+
+## Cloud Sync — POSTPONED (Build When Ready)
+
+**Status: Postponed by decision.** The app works fully without cloud sync. It can be added at any stage — even after the app is packaged, polished, and in use by real teachers — without restructuring any existing code.
+
+**Why it's safe to add later:** The local database is well-structured with clean tables, unique IDs, and clear relationships. Cloud sync is an additional module that copies data between local SQLite and cloud when internet is available. It sits alongside the existing code, doesn't replace anything.
+
+**Recommended service: Supabase** — open-source, uses PostgreSQL (matches our SQL-based local database), generous free tier (500MB storage, 50K monthly users — more than enough). Free for our use case.
+
+**When Moussa is ready to build it:**
+1. Go to supabase.com and create a free account
+2. Create a new project (pick any name and a strong password)
+3. Copy the project URL and the anon/public API key from project settings
+4. Start a Claude session with this file + database.js + server.js
+5. Tell Claude: "I want to add cloud sync using Supabase. Here is my project URL and API key."
+
+**What Claude will build:**
+- Supabase client integration in the server
+- Cloud database tables mirroring the local SQLite schema
+- Sync logic: detect connectivity, push new local data to cloud, pull updates
+- Manual sync button on teacher dashboard + sync status indicator
+- Teacher account/authentication for cloud access
+- Conflict resolution (last-edit-wins for v1)
 
 ## UI & Branding Vision
 
@@ -177,6 +219,7 @@ The current UI is functional scaffolding — not the final product. By Phase 4, 
 - Claude fixes bugs based on error messages and described circumstances
 - We iterate: build, test, report, fix, repeat
 - Claude always provides complete files, never asks Moussa to make manual edits
+- At the end of each session, Claude tells Moussa what to update in this file and gives Git push commands
 - This process can yield a fully functional app without hiring programmers
 - For production deployment with many users, a code review by a developer is recommended
 
@@ -197,7 +240,7 @@ lessons/
 ```
 Classroom-Connect/
   server.js             — Node.js server (Express + Socket.IO + all API endpoints)
-  database.js           — SQLite database module (tables, queries, data access)
+  database.js           — SQLite database module (tables, queries, student codes, data access)
   package.json          — Dependencies (express, socket.io, better-sqlite3)
   .gitignore            — Excludes node_modules, database, uploads, lessons from GitHub
   classroom-connect.db  — SQLite database file (local only, not on GitHub)
@@ -206,22 +249,30 @@ Classroom-Connect/
   uploads/              — Uploaded images (local only, not on GitHub)
   Docs/                 — Project documentation
     PASTE-THIS-FOR-CLAUDE.md  — This file (context for Claude sessions)
-    Classroom-Connect-Project-Documentation.docx  — Full project doc (v1)
+    Classroom-Connect-Project-Documentation.docx — Full project doc (v1)
     Classroom-Connect-Project-Documentation v2.docx — Full project doc (v2)
+    Classroom-Connect-Project-Documentation-v3.docx — Full project doc (v3)
   public/               — Files served to browsers (all bilingual FR/EN)
     i18n.js             — Shared translations (English + French)
-    teacher.html        — Teacher dashboard (lobby, lesson select, live session, results)
-    student.html        — Student interface (join, view slides, answer, leaderboard)
-    builder.html        — Lesson builder (create/edit lessons with content + question slides + images)
-    roster.html         — Student roster (create classes, manage student lists)
-    history.html        — Session history (view past sessions, attendance, scores, question breakdown)
+    teacher.html        — Teacher dashboard (lobby, lesson + class select, live session, results)
+    student.html        — Student interface (code join, name fallback, slides, answers, leaderboard)
+    builder.html        — Lesson builder (content + question slides + images)
+    roster.html         — Student roster (classes, students with 4-digit codes)
+    history.html        — Session history (attendance, scores, question breakdown)
 ```
 
 ## Current Status
 <!-- UPDATE THIS SECTION AFTER EACH SESSION -->
-- **Current Phase:** Phase 3 — Steps 1-3 complete. Step 4 (cloud sync) saved for separate session.
-- **Last Session:** April 30, 2026 — Built database, roster management, session history, cleaned up .gitignore
-- **Next Step:** Build student codes feature (connect roster to live sessions), then plan cloud sync
+- **Current Phase:** Phase 3 COMPLETE. Cloud sync postponed by choice.
+- **Last Session:** April 30, 2026 — Planning session: discussed project direction, decided to postpone cloud sync, confirmed QR code for student joining, clarified packaging strategy (Android first, students never install an app)
+- **Next Step:** Polish existing features, test with real users, then Phase 4 (QR code, Capacitor packaging, UI overhaul)
+
+## Priority Order Going Forward
+1. **Polish existing features** — UI improvements, new question types, export features
+2. **Test with real users** — even a small group to discover what needs fixing
+3. **Phase 4: QR code + Capacitor packaging** — turn it into an installable Android app with professional student onboarding
+4. **Phase 4: UI/UX overhaul** — brand identity, visual polish
+5. **Cloud sync with Supabase** — add whenever it becomes needed
 
 ## Session Log
 <!-- ADD NEW ENTRIES AFTER EACH SESSION -->
@@ -234,5 +285,6 @@ Classroom-Connect/
 | April 30, 2026 | Phase 2 COMPLETE: Image support in content slides, emoji fix | Begin Phase 3 |
 | April 30, 2026 | Phase 3 Step 1: SQLite database — sessions, attendance, answers, scores saved permanently | Step 2: Roster |
 | April 30, 2026 | Phase 3 Step 2: Student roster management — classes and student lists with database storage | Step 3: History |
-| April 30, 2026 | Phase 3 Step 3: Session history page — view past sessions with attendance, scores, question breakdown | Build student codes, plan cloud sync |
-| April 30, 2026 | Cleaned .gitignore — removed uploads, lessons, database from GitHub tracking | Update documentation |
+| April 30, 2026 | Phase 3 Step 3: Session history page — attendance, scores, question breakdown | Student codes |
+| April 30, 2026 | Phase 3: Student codes — 4-digit codes, roster connected to live sessions, teacher class selection | Cloud sync (new session) |
+| April 30, 2026 | Planning session: Postponed cloud sync, chose QR code for student joining, clarified packaging strategy (Android first, teacher-only app, students use browser), established priority order for remaining work | Polish features + real user testing |
