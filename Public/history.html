@@ -95,6 +95,8 @@
         }
         .stat-number { font-size: 1.5rem; font-weight: 800; color: #3b82f6; }
         .stat-label { color: #94a3b8; font-size: 0.8rem; margin-top: 2px; }
+        .btn-export { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+        .top-bar-actions { display: flex; gap: 8px; }
     </style>
 </head>
 <body>
@@ -115,7 +117,10 @@
         <div class="screen" id="detailScreen">
             <div class="top-bar">
                 <h2 id="detailTitle"></h2>
-                <button class="btn btn-secondary btn-sm" onclick="backToList()" id="backBtn"></button>
+                <div class="top-bar-actions">
+                    <button class="btn btn-export btn-sm" onclick="exportSession()" id="exportBtn"></button>
+                    <button class="btn btn-secondary btn-sm" onclick="backToList()" id="backBtn"></button>
+                </div>
             </div>
 
             <div class="stats-row" id="statsRow"></div>
@@ -134,6 +139,8 @@
 
     <script src="/i18n.js"></script>
     <script>
+        let currentSessionId = null;
+
         function showScreen(id) {
             document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
             document.getElementById(id).classList.add("active");
@@ -145,6 +152,7 @@
             document.getElementById("historySubtitle").textContent = t("historySubtitle");
             document.getElementById("backLink").textContent = t("backToDashboard");
             document.getElementById("backBtn").textContent = t("back");
+            document.getElementById("exportBtn").textContent = t("exportResults");
             document.getElementById("tabAttendance").textContent = t("attendance");
             document.getElementById("tabScores").textContent = t("leaderboardLabel");
             document.getElementById("tabQuestions").textContent = t("questionBreakdown");
@@ -197,12 +205,19 @@
         }
 
         function backToList() {
+            currentSessionId = null;
             showScreen("listScreen");
             loadSessions();
         }
 
+        function exportSession() {
+            if (!currentSessionId) return;
+            window.location.href = `/api/sessions/${currentSessionId}/export`;
+        }
+
         // ====== SESSION DETAIL ======
         async function openSession(sessionId) {
+            currentSessionId = sessionId;
             const res = await fetch(`/api/sessions/${sessionId}`);
             const data = await res.json();
 

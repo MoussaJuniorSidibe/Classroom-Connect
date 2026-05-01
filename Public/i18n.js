@@ -76,6 +76,7 @@ const translations = {
     score: "Score", correctCount: "{0}/{1} correct",
     noAnswersRecorded: "No answers recorded.", answersFor: "Answers for",
     gotItRight: "{0} got it right", sessionOn: "Session on",
+    exportResults: "Export ↓",
   },
 
   fr: {
@@ -155,6 +156,7 @@ const translations = {
     score: "Score", correctCount: "{0}/{1} correct(s)",
     noAnswersRecorded: "Aucune réponse enregistrée.", answersFor: "Réponses pour",
     gotItRight: "{0} ont bien répondu", sessionOn: "Session du",
+    exportResults: "Exporter ↓",
   }
 };
 

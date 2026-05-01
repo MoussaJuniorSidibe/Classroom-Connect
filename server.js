@@ -77,6 +77,61 @@ app.get("/api/sessions/:id", (req, res) => {
   });
 });
 
+// ====== SESSION EXPORT API ======
+app.get("/api/sessions/:id/export", (req, res) => {
+  const session = db.getSession(req.params.id);
+  if (!session) return res.status(404).json({ error: "Not found" });
+
+  const scores = db.getSessionScores(req.params.id);
+  const answers = db.getSessionAnswers(req.params.id);
+  const attendance = db.getSessionAttendance(req.params.id);
+
+  // Build CSV content
+  const lines = [];
+
+  // Session info header
+  lines.push(`Session Report`);
+  lines.push(`Lesson,"${csvEscape(session.lesson_title || "Untitled")}"`);
+  lines.push(`Date,"${session.started_at}"`);
+  lines.push(`Students,${attendance.length}`);
+  lines.push(`Questions,${session.total_questions}`);
+  lines.push(``);
+
+  // Scores table
+  lines.push(`Rank,Student Name,Student Code,Total Score,Correct Answers,Total Questions,Accuracy %`);
+  scores.forEach((s, i) => {
+    const accuracy = s.total_answered > 0 ? Math.round((s.correct_count / s.total_answered) * 100) : 0;
+    lines.push(`${i + 1},"${csvEscape(s.student_name)}",${s.student_code || "N/A"},${s.total_score},${s.correct_count},${s.total_answered},${accuracy}%`);
+  });
+
+  // Add question breakdown section
+  if (answers.length > 0) {
+    lines.push(``);
+    lines.push(`Question Breakdown`);
+    lines.push(`Question,Student,Answer Correct,Points,Response Time (s)`);
+
+    const sortedAnswers = [...answers].sort((a, b) => a.question_index - b.question_index || a.student_name.localeCompare(b.student_name));
+    sortedAnswers.forEach(a => {
+      const timeSeconds = a.response_time_ms ? (a.response_time_ms / 1000).toFixed(1) : "N/A";
+      lines.push(`"${csvEscape(a.question_text || "Question " + (a.question_index + 1))}","${csvEscape(a.student_name)}",${a.is_correct ? "Yes" : "No"},${a.points},${timeSeconds}`);
+    });
+  }
+
+  const csv = lines.join("\n");
+  const safeTitle = (session.lesson_title || "session").replace(/[^a-zA-Z0-9-_ ]/g, "").substring(0, 50);
+  const filename = `ClassroomConnect_${safeTitle}_${session.started_at.split("T")[0] || "report"}.csv`;
+
+  res.setHeader("Content-Type", "text/csv; charset=utf-8");
+  res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+  // Add BOM for Excel to detect UTF-8 correctly (important for French characters)
+  res.send("\uFEFF" + csv);
+});
+
+function csvEscape(str) {
+  if (!str) return "";
+  return str.replace(/"/g, '""');
+}
+
 // ====== CLASS & ROSTER API ======
 app.get("/api/classes", (req, res) => { res.json(db.getAllClasses()); });
 
