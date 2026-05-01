@@ -6,25 +6,14 @@
     <title>Classroom Connect — Teacher</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: #0f172a; color: #f1f5f9; min-height: 100vh; padding: 30px 20px;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f1f5f9; min-height: 100vh; padding: 30px 20px; }
         .header { text-align: center; margin-bottom: 30px; }
-        .header h1 {
-            font-size: 2.2rem; font-weight: 800;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px;
-        }
+        .header h1 { font-size: 2.2rem; font-weight: 800; background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px; }
         .header p { color: #94a3b8; font-size: 1rem; }
         .nav-links { margin-top: 10px; display: flex; justify-content: center; gap: 20px; }
         .nav-link { color: #3b82f6; text-decoration: none; font-size: 0.9rem; }
         .nav-link:hover { text-decoration: underline; }
-        .lang-toggle {
-            position: fixed; top: 16px; right: 16px; background: #334155; color: #e2e8f0;
-            border: 1px solid #475569; padding: 6px 14px; border-radius: 8px; font-size: 0.85rem;
-            font-weight: 700; cursor: pointer; z-index: 100;
-        }
+        .lang-toggle { position: fixed; top: 16px; right: 16px; background: #334155; color: #e2e8f0; border: 1px solid #475569; padding: 6px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; cursor: pointer; z-index: 100; }
         .lang-toggle:hover { background: #475569; }
         .main-layout { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
         .card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 24px; }
@@ -40,19 +29,21 @@
         .badge { background: #3b82f6; color: white; padding: 4px 14px; border-radius: 20px; font-weight: 700; font-size: 0.9rem; }
         .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .section-header h2 { font-size: 1.2rem; }
-        .lesson-select-item { background: #0f172a; border: 2px solid #334155; border-radius: 12px; padding: 16px; margin-bottom: 10px; cursor: pointer; }
-        .lesson-select-item:hover { border-color: #3b82f6; }
-        .lesson-select-item.selected { border-color: #3b82f6; background: #1e3a5f; }
-        .lesson-select-item h3 { font-size: 1.05rem; margin-bottom: 4px; }
-        .lesson-select-meta { color: #64748b; font-size: 0.85rem; }
+        .select-item { background: #0f172a; border: 2px solid #334155; border-radius: 12px; padding: 16px; margin-bottom: 10px; cursor: pointer; }
+        .select-item:hover { border-color: #3b82f6; }
+        .select-item.selected { border-color: #3b82f6; background: #1e3a5f; }
+        .select-item h3 { font-size: 1.05rem; margin-bottom: 4px; }
+        .select-meta { color: #64748b; font-size: 0.85rem; }
+        .no-class-option { background: #0f172a; border: 2px dashed #334155; border-radius: 12px; padding: 14px; margin-bottom: 10px; cursor: pointer; text-align: center; color: #64748b; font-size: 0.9rem; }
+        .no-class-option:hover { border-color: #475569; }
+        .no-class-option.selected { border-color: #3b82f6; color: #3b82f6; }
         .student-grid { display: flex; flex-wrap: wrap; gap: 8px; }
         .student-chip { display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: #0f172a; border-radius: 8px; font-size: 0.95rem; }
         .student-dot { width: 10px; height: 10px; border-radius: 50%; }
         .empty-state { text-align: center; padding: 20px; color: #64748b; }
         .slide-counter { text-align: center; color: #94a3b8; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
         .slide-type-indicator { display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 12px; }
-        .type-content { background: #1e3a5f; color: #60a5fa; }
-        .type-question { background: #3b1f63; color: #c084fc; }
+        .type-content { background: #1e3a5f; color: #60a5fa; } .type-question { background: #3b1f63; color: #c084fc; }
         .content-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 12px; line-height: 1.4; }
         .content-body { color: #cbd5e1; font-size: 1.05rem; line-height: 1.7; white-space: pre-wrap; }
         .content-image { width: 100%; max-height: 400px; object-fit: contain; border-radius: 10px; margin-top: 16px; background: #0f172a; }
@@ -105,6 +96,10 @@
                 <div id="lessonSelect"><div class="empty-state">Loading...</div></div>
             </div>
             <div class="card" style="margin-top:16px;">
+                <div class="section-header"><h2 id="selectClassTitle"></h2></div>
+                <div id="classSelect"></div>
+            </div>
+            <div class="card" style="margin-top:16px;">
                 <div class="section-header">
                     <h2 id="lobbyTitle"></h2>
                     <span class="badge" id="studentCount">0</span>
@@ -122,8 +117,7 @@
                 <div class="content-title" id="contentTitle"></div>
                 <div class="content-body" id="contentBody"></div>
                 <img class="content-image" id="contentImage" style="display:none;">
-            </div>
-            <br>
+            </div><br>
             <button class="btn btn-success" id="contentNextBtn" onclick="nextSlide()"></button>
         </div>
 
@@ -166,10 +160,9 @@
     <script>
         const socket = io();
         const colors = ["#3b82f6","#8b5cf6","#ec4899","#f59e0b","#10b981","#ef4444","#06b6d4","#f97316"];
-        let selectedLessonId = null, questionIndex = -1, lastStudentList = [], lastLessons = [];
+        let selectedLessonId = null, selectedClassId = null, questionIndex = -1, lastStudentList = [], lastLessons = [], lastClasses = [];
 
-        const address = window.location.hostname + ":" + window.location.port + "/student.html";
-        document.getElementById("studentAddress").textContent = address;
+        document.getElementById("studentAddress").textContent = window.location.hostname + ":" + window.location.port + "/student.html";
 
         function showScreen(id) { document.querySelectorAll(".screen").forEach(s => s.classList.remove("active")); document.getElementById(id).classList.add("active"); }
 
@@ -181,6 +174,7 @@
             document.getElementById("historyLink").textContent = t("openHistory");
             document.getElementById("connectLabel").textContent = t("studentsConnectTo");
             document.getElementById("selectLessonTitle").textContent = t("selectLesson");
+            document.getElementById("selectClassTitle").textContent = t("selectClass");
             document.getElementById("lobbyTitle").textContent = t("studentLobby");
             document.getElementById("startBtn").textContent = t("startSession");
             document.getElementById("contentTypeLabel").textContent = t("content");
@@ -192,31 +186,40 @@
             document.getElementById("revealBtn").textContent = t("revealAnswer");
             document.getElementById("resultsNextBtn").textContent = t("nextSlide");
             document.getElementById("finalTitle").textContent = t("finalLeaderboard");
-            renderStudentList(lastStudentList);
-            renderLessonList(lastLessons);
+            renderStudentList(lastStudentList); renderLessonList(lastLessons); renderClassList(lastClasses);
         }
 
+        // ====== LESSONS ======
         async function loadLessons() { const res = await fetch("/api/lessons"); lastLessons = await res.json(); renderLessonList(lastLessons); }
-
         function renderLessonList(lessons) {
-            const container = document.getElementById("lessonSelect");
-            if (lessons.length === 0) {
-                container.innerHTML = `<div class="empty-state">${t("noLessonsFound")} <a href="/builder.html" style="color:#3b82f6;">${t("createOneFirst")}</a></div>`;
-                return;
-            }
-            container.innerHTML = lessons.map(l => {
+            const c = document.getElementById("lessonSelect");
+            if (lessons.length === 0) { c.innerHTML = `<div class="empty-state">${t("noLessonsFound")} <a href="/builder.html" style="color:#3b82f6;">${t("createOneFirst")}</a></div>`; return; }
+            c.innerHTML = lessons.map(l => {
                 const cs = l.contentCount + " " + t("contentSlides") + (l.contentCount !== 1 ? "s" : "");
                 const qs = l.questionCount + " " + t("questionsLabel") + (l.questionCount !== 1 ? "s" : "");
-                return `<div class="lesson-select-item ${selectedLessonId === l.id ? 'selected' : ''}" onclick="selectLesson('${l.id}')">
-                    <h3>${l.title}</h3><div class="lesson-select-meta">${cs} · ${qs}</div></div>`;
+                return `<div class="select-item ${selectedLessonId === l.id ? 'selected' : ''}" onclick="selectLesson('${l.id}')"><h3>${l.title}</h3><div class="select-meta">${cs} · ${qs}</div></div>`;
             }).join("");
         }
-
         function selectLesson(id) { selectedLessonId = id; updateStartButton(); renderLessonList(lastLessons); }
+
+        // ====== CLASSES ======
+        async function loadClasses() { const res = await fetch("/api/classes"); lastClasses = await res.json(); renderClassList(lastClasses); }
+        function renderClassList(classes) {
+            const c = document.getElementById("classSelect");
+            let html = `<div class="no-class-option ${selectedClassId === null ? 'selected' : ''}" onclick="selectClass(null)">${t("noClassSelected")}</div>`;
+            if (classes.length > 0) {
+                html += classes.map(cl =>
+                    `<div class="select-item ${selectedClassId === cl.id ? 'selected' : ''}" onclick="selectClass('${cl.id}')"><h3>${cl.name}</h3><div class="select-meta">${tFormat("studentsCount", cl.student_count)}</div></div>`
+                ).join("");
+            }
+            c.innerHTML = html;
+        }
+        function selectClass(id) { selectedClassId = id; renderClassList(lastClasses); }
+
         function updateStartButton() { document.getElementById("startBtn").disabled = !selectedLessonId || lastStudentList.length === 0; }
 
+        // ====== STUDENTS ======
         socket.on("student-list", (students) => { lastStudentList = students; renderStudentList(students); updateStartButton(); });
-
         function renderStudentList(students) {
             const list = document.getElementById("studentList"), count = document.getElementById("studentCount");
             count.textContent = students.length + " " + (students.length === 1 ? t("student") : t("students"));
@@ -224,7 +227,11 @@
             else { list.innerHTML = students.map((s, i) => `<div class="student-chip"><div class="student-dot" style="background:${colors[i%colors.length]}"></div>${s.name}</div>`).join(""); }
         }
 
-        function startSession() { if (!selectedLessonId) return; socket.emit("start-session", selectedLessonId); }
+        // ====== SESSION ======
+        function startSession() {
+            if (!selectedLessonId) return;
+            socket.emit("start-session", { lessonId: selectedLessonId, classId: selectedClassId });
+        }
         socket.on("session-started", () => { questionIndex = -1; nextSlide(); });
         function nextSlide() { socket.emit("next-slide"); }
 
@@ -237,8 +244,7 @@
                 const img = document.getElementById("contentImage");
                 if (data.image) { img.src = data.image; img.style.display = "block"; } else { img.style.display = "none"; }
             } else if (data.type === "question") {
-                questionIndex = data.questionIndex;
-                showScreen("questionScreen");
+                questionIndex = data.questionIndex; showScreen("questionScreen");
                 document.getElementById("questionSlideCounter").textContent = tFormat("slideOf", data.slideIndex + 1, data.totalSlides);
                 document.getElementById("questionText").textContent = data.question;
                 document.getElementById("allAnsweredHint").style.display = "none";
@@ -263,11 +269,10 @@
             showScreen("resultsScreen");
             document.getElementById("resultsQuestionText").textContent = results.question;
             document.getElementById("resultsSlideCounter").textContent = t("question") + " " + (questionIndex + 1) + " — " + t("results");
-            const maxCount = Math.max(...results.optionCounts, 1);
-            const sLabel = (n) => n === 1 ? t("student") : t("students");
+            const mx = Math.max(...results.optionCounts, 1), sl = (n) => n === 1 ? t("student") : t("students");
             document.getElementById("resultsBars").innerHTML = results.options.map((opt, i) => {
-                const count = results.optionCounts[i], isCorrect = i === results.correctIndex, width = (count / maxCount) * 100;
-                return `<div class="results-bar-container"><div class="results-bar-label"><span class="option-text">${opt}${isCorrect?" ✓":""}</span><span class="option-count">${count} ${sLabel(count)}</span></div><div class="results-bar"><div class="results-bar-fill ${isCorrect?"correct":"incorrect"}" style="width:${width}%"></div></div></div>`;
+                const cnt = results.optionCounts[i], ic = i === results.correctIndex, w = (cnt / mx) * 100;
+                return `<div class="results-bar-container"><div class="results-bar-label"><span class="option-text">${opt}${ic?" ✓":""}</span><span class="option-count">${cnt} ${sl(cnt)}</span></div><div class="results-bar"><div class="results-bar-fill ${ic?"correct":"incorrect"}" style="width:${w}%"></div></div></div>`;
             }).join("");
             document.getElementById("correctSummary").textContent = `${results.correctCount} ${t("ofAnswered")} ${results.totalStudents} ${t("answeredCorrectly")}`;
             if (results.leaderboard.length > 0) {
@@ -279,13 +284,12 @@
         socket.on("session-ended", (leaderboard) => {
             showScreen("leaderboardScreen");
             document.getElementById("leaderboardList").innerHTML = leaderboard.map((s, i) => {
-                const rankClass = i < 3 ? `rank-${i+1}` : "";
-                const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i+1}`;
-                return `<div class="leaderboard-item"><div class="leaderboard-rank ${rankClass}">${medal}</div><div class="leaderboard-name">${s.name}</div><div class="leaderboard-score">${s.score} ${t("pts")}</div></div>`;
+                const rc = i < 3 ? `rank-${i+1}` : "", m = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i+1}`;
+                return `<div class="leaderboard-item"><div class="leaderboard-rank ${rc}">${m}</div><div class="leaderboard-name">${s.name}</div><div class="leaderboard-score">${s.score} ${t("pts")}</div></div>`;
             }).join("");
         });
 
-        loadLessons(); updateUI();
+        loadLessons(); loadClasses(); updateUI();
     </script>
 </body>
 </html>

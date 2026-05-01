@@ -6,35 +6,19 @@
     <title>Classroom Connect — Student Roster</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: #0f172a; color: #f1f5f9; min-height: 100vh; padding: 30px 20px;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f1f5f9; min-height: 100vh; padding: 30px 20px; }
         .header { text-align: center; margin-bottom: 30px; }
-        .header h1 {
-            font-size: 2.2rem; font-weight: 800;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px;
-        }
+        .header h1 { font-size: 2.2rem; font-weight: 800; background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px; }
         .header p { color: #94a3b8; font-size: 1rem; }
         .nav-link { display: inline-block; color: #3b82f6; text-decoration: none; margin-top: 8px; font-size: 0.9rem; }
         .nav-link:hover { text-decoration: underline; }
-        .lang-toggle {
-            position: fixed; top: 16px; right: 16px; background: #334155; color: #e2e8f0;
-            border: 1px solid #475569; padding: 6px 14px; border-radius: 8px; font-size: 0.85rem;
-            font-weight: 700; cursor: pointer; z-index: 100;
-        }
+        .lang-toggle { position: fixed; top: 16px; right: 16px; background: #334155; color: #e2e8f0; border: 1px solid #475569; padding: 6px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; cursor: pointer; z-index: 100; }
         .lang-toggle:hover { background: #475569; }
         .main-layout { max-width: 700px; margin: 0 auto; }
         .card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 24px; margin-bottom: 16px; }
-
         label { display: block; color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
-        input[type="text"] {
-            width: 100%; padding: 12px 16px; background: #0f172a; border: 2px solid #334155;
-            border-radius: 10px; color: #f1f5f9; font-size: 1rem; font-family: inherit; outline: none; transition: border-color 0.2s;
-        }
+        input[type="text"] { width: 100%; padding: 12px 16px; background: #0f172a; border: 2px solid #334155; border-radius: 10px; color: #f1f5f9; font-size: 1rem; font-family: inherit; outline: none; }
         input:focus { border-color: #3b82f6; }
-
         .btn { padding: 12px 24px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; }
         .btn:hover { opacity: 0.9; } .btn:active { transform: scale(0.98); }
         .btn-primary { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; }
@@ -42,57 +26,30 @@
         .btn-secondary { background: #334155; color: #e2e8f0; }
         .btn-sm { padding: 8px 16px; font-size: 0.85rem; }
         .btn-group { display: flex; gap: 8px; }
-
         .screen { display: none; } .screen.active { display: block; }
         .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .top-bar h2 { font-size: 1.3rem; }
-
-        /* Class list */
-        .class-item {
-            background: #0f172a; border: 2px solid #334155; border-radius: 12px;
-            padding: 16px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
-            cursor: pointer; transition: border-color 0.2s;
-        }
+        .class-item { background: #0f172a; border: 2px solid #334155; border-radius: 12px; padding: 16px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .class-item:hover { border-color: #3b82f6; }
         .class-info h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 2px; }
         .class-meta { color: #64748b; font-size: 0.85rem; }
-        .class-actions { display: flex; gap: 6px; }
-
-        .icon-btn {
-            background: none; border: 1px solid #334155; color: #94a3b8; width: 32px; height: 32px;
-            border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.85rem;
-        }
+        .icon-btn { background: none; border: 1px solid #334155; color: #94a3b8; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; }
         .icon-btn:hover { background: #334155; color: #f1f5f9; }
         .icon-btn.delete:hover { background: #450a0a; color: #ef4444; border-color: #ef4444; }
-
         .empty-state { text-align: center; padding: 40px; color: #64748b; }
         .empty-state .icon { font-size: 2.5rem; margin-bottom: 8px; }
-
-        /* New class form */
         .inline-form { display: none; margin-bottom: 16px; }
         .inline-form.active { display: block; }
         .form-row { display: flex; gap: 10px; align-items: end; }
         .form-row .input-group { flex: 1; }
-        .form-row .input-group input { margin-bottom: 0; }
-
-        /* Student list */
-        .student-item {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 12px 16px; background: #0f172a; border-radius: 10px; margin-bottom: 6px;
-        }
-        .student-item .student-name { font-size: 1rem; font-weight: 500; }
-        .student-number {
-            color: #64748b; font-size: 0.85rem; font-weight: 700; width: 28px; text-align: center; margin-right: 12px;
-        }
-        .student-left { display: flex; align-items: center; }
-
-        /* Add student form */
-        .add-student-row {
-            display: flex; gap: 10px; margin-bottom: 16px;
-        }
-        .add-student-row input { flex: 1; margin-bottom: 0; }
-
-        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .student-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #0f172a; border-radius: 10px; margin-bottom: 6px; }
+        .student-left { display: flex; align-items: center; gap: 12px; }
+        .student-number { color: #64748b; font-size: 0.85rem; font-weight: 700; width: 28px; text-align: center; }
+        .student-name { font-size: 1rem; font-weight: 500; }
+        .student-code { background: #334155; color: #3b82f6; padding: 3px 10px; border-radius: 6px; font-family: monospace; font-size: 0.9rem; font-weight: 700; letter-spacing: 2px; }
+        .student-right { display: flex; align-items: center; gap: 8px; }
+        .add-student-row { display: flex; gap: 10px; margin-bottom: 16px; }
+        .add-student-row input { flex: 1; }
     </style>
 </head>
 <body>
@@ -103,37 +60,29 @@
         <a href="/teacher.html" class="nav-link" id="backLink"></a>
     </div>
     <div class="main-layout">
-
-        <!-- CLASS LIST SCREEN -->
         <div class="screen active" id="classListScreen">
             <div class="top-bar">
                 <h2 id="myClassesTitle"></h2>
                 <button class="btn btn-primary btn-sm" onclick="showNewClassForm()" id="newClassBtn"></button>
             </div>
-
             <div class="inline-form" id="newClassForm">
                 <div class="card">
                     <label id="classNameLabel"></label>
                     <div class="form-row">
-                        <div class="input-group">
-                            <input type="text" id="newClassInput" maxlength="50">
-                        </div>
+                        <div class="input-group"><input type="text" id="newClassInput" maxlength="50"></div>
                         <button class="btn btn-success btn-sm" onclick="createClass()" id="createClassBtn"></button>
                         <button class="btn btn-secondary btn-sm" onclick="hideNewClassForm()" id="cancelClassBtn"></button>
                     </div>
                 </div>
             </div>
-
             <div id="classList"></div>
         </div>
 
-        <!-- CLASS DETAIL SCREEN -->
         <div class="screen" id="classDetailScreen">
             <div class="top-bar">
                 <h2 id="classDetailTitle"></h2>
                 <button class="btn btn-secondary btn-sm" onclick="backToClassList()" id="backToClassesBtn"></button>
             </div>
-
             <div class="card" style="margin-bottom: 16px;">
                 <label id="addStudentLabel"></label>
                 <div class="add-student-row">
@@ -141,20 +90,15 @@
                     <button class="btn btn-success btn-sm" onclick="addStudent()" id="addStudentBtn"></button>
                 </div>
             </div>
-
             <div id="studentList"></div>
         </div>
     </div>
 
     <script src="/i18n.js"></script>
     <script>
-        let currentClassId = null;
-        let currentClassName = "";
+        let currentClassId = null, currentClassName = "";
 
-        function showScreen(id) {
-            document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-            document.getElementById(id).classList.add("active");
-        }
+        function showScreen(id) { document.querySelectorAll(".screen").forEach(s => s.classList.remove("active")); document.getElementById(id).classList.add("active"); }
 
         function updateUI() {
             document.getElementById("langToggle").textContent = t("langToggle");
@@ -171,7 +115,6 @@
             document.getElementById("addStudentLabel").textContent = t("studentName");
             document.getElementById("newStudentInput").placeholder = t("studentNamePlaceholder");
             document.getElementById("addStudentBtn").textContent = t("addStudentBtn");
-
             if (currentClassId) {
                 document.getElementById("classDetailTitle").textContent = t("studentsInClass") + " " + currentClassName;
                 loadStudents(currentClassId);
@@ -179,168 +122,86 @@
             loadClasses();
         }
 
-        // ====== CLASSES ======
         async function loadClasses() {
-            const res = await fetch("/api/classes");
-            const classes = await res.json();
+            const res = await fetch("/api/classes"); const classes = await res.json();
             const container = document.getElementById("classList");
-
-            if (classes.length === 0) {
-                container.innerHTML = `<div class="empty-state"><div class="icon">🏫</div><div>${t("noClassesYet")}</div></div>`;
-                return;
-            }
-
+            if (classes.length === 0) { container.innerHTML = `<div class="empty-state"><div class="icon">🏫</div><div>${t("noClassesYet")}</div></div>`; return; }
             container.innerHTML = classes.map(c => `
                 <div class="class-item" onclick="openClass('${c.id}', '${escapeAttr(c.name)}')">
-                    <div class="class-info">
-                        <h3>${escapeHtml(c.name)}</h3>
-                        <div class="class-meta">${tFormat("studentsCount", c.student_count)}</div>
-                    </div>
-                    <div class="class-actions" onclick="event.stopPropagation()">
-                        <button class="icon-btn" onclick="renameClass('${c.id}', '${escapeAttr(c.name)}')" title="${t("editName")}">✏️</button>
+                    <div class="class-info"><h3>${escapeHtml(c.name)}</h3><div class="class-meta">${tFormat("studentsCount", c.student_count)}</div></div>
+                    <div class="class-actions" onclick="event.stopPropagation()" style="display:flex;gap:6px;">
+                        <button class="icon-btn" onclick="renameClass('${c.id}', '${escapeAttr(c.name)}')">✏️</button>
                         <button class="icon-btn delete" onclick="deleteClass('${c.id}')">✕</button>
                     </div>
-                </div>
-            `).join("");
+                </div>`).join("");
         }
 
-        function showNewClassForm() {
-            document.getElementById("newClassForm").classList.add("active");
-            document.getElementById("newClassInput").focus();
-        }
-
-        function hideNewClassForm() {
-            document.getElementById("newClassForm").classList.remove("active");
-            document.getElementById("newClassInput").value = "";
-        }
+        function showNewClassForm() { document.getElementById("newClassForm").classList.add("active"); document.getElementById("newClassInput").focus(); }
+        function hideNewClassForm() { document.getElementById("newClassForm").classList.remove("active"); document.getElementById("newClassInput").value = ""; }
 
         async function createClass() {
             const name = document.getElementById("newClassInput").value.trim();
             if (!name) { document.getElementById("newClassInput").style.borderColor = "#ef4444"; return; }
-
-            await fetch("/api/classes", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name })
-            });
-
-            hideNewClassForm();
-            loadClasses();
+            await fetch("/api/classes", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name }) });
+            hideNewClassForm(); loadClasses();
         }
 
-        async function deleteClass(id) {
-            if (!confirm(t("deleteClassConfirm"))) return;
-            await fetch(`/api/classes/${id}`, { method: "DELETE" });
-            loadClasses();
+        async function deleteClass(id) { if (!confirm(t("deleteClassConfirm"))) return; await fetch(`/api/classes/${id}`, { method: "DELETE" }); loadClasses(); }
+
+        async function renameClass(id, name) {
+            const n = prompt(t("enterNewName"), name); if (!n || !n.trim() || n.trim() === name) return;
+            await fetch(`/api/classes/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: n.trim() }) }); loadClasses();
         }
 
-        async function renameClass(id, currentName) {
-            const newName = prompt(t("enterNewName"), currentName);
-            if (!newName || newName.trim() === "" || newName.trim() === currentName) return;
-            await fetch(`/api/classes/${id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name: newName.trim() })
-            });
-            loadClasses();
-        }
+        document.getElementById("newClassInput").addEventListener("keypress", (e) => { if (e.key === "Enter") createClass(); });
 
-        // Allow Enter key to create class
-        document.getElementById("newClassInput").addEventListener("keypress", (e) => {
-            if (e.key === "Enter") createClass();
-        });
-
-        // ====== STUDENTS ======
         function openClass(classId, className) {
-            currentClassId = classId;
-            currentClassName = className;
+            currentClassId = classId; currentClassName = className;
             document.getElementById("classDetailTitle").textContent = t("studentsInClass") + " " + className;
-            showScreen("classDetailScreen");
-            loadStudents(classId);
+            showScreen("classDetailScreen"); loadStudents(classId);
         }
 
-        function backToClassList() {
-            currentClassId = null;
-            currentClassName = "";
-            showScreen("classListScreen");
-            loadClasses();
-        }
+        function backToClassList() { currentClassId = null; currentClassName = ""; showScreen("classListScreen"); loadClasses(); }
 
         async function loadStudents(classId) {
-            const res = await fetch(`/api/classes/${classId}/students`);
-            const students = await res.json();
+            const res = await fetch(`/api/classes/${classId}/students`); const students = await res.json();
             const container = document.getElementById("studentList");
-
-            if (students.length === 0) {
-                container.innerHTML = `<div class="empty-state"><div class="icon">👥</div><div>${t("noStudentsYet")}</div></div>`;
-                return;
-            }
-
+            if (students.length === 0) { container.innerHTML = `<div class="empty-state"><div class="icon">👥</div><div>${t("noStudentsYet")}</div></div>`; return; }
             container.innerHTML = students.map((s, i) => `
-                <div class="student-item" style="animation: slideIn ${0.1 + i * 0.05}s ease">
+                <div class="student-item">
                     <div class="student-left">
                         <span class="student-number">${i + 1}</span>
                         <span class="student-name">${escapeHtml(s.name)}</span>
                     </div>
-                    <div class="class-actions">
-                        <button class="icon-btn" onclick="renameStudent('${s.id}', '${escapeAttr(s.name)}')" title="${t("editName")}">✏️</button>
+                    <div class="student-right">
+                        <span class="student-code">${s.code || "—"}</span>
+                        <button class="icon-btn" onclick="renameStudent('${s.id}', '${escapeAttr(s.name)}')">✏️</button>
                         <button class="icon-btn delete" onclick="deleteStudent('${s.id}')">✕</button>
                     </div>
-                </div>
-            `).join("");
+                </div>`).join("");
         }
 
         async function addStudent() {
             const name = document.getElementById("newStudentInput").value.trim();
             if (!name) { document.getElementById("newStudentInput").style.borderColor = "#ef4444"; return; }
-
-            await fetch(`/api/classes/${currentClassId}/students`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name })
-            });
-
-            document.getElementById("newStudentInput").value = "";
-            document.getElementById("newStudentInput").style.borderColor = "#334155";
+            await fetch(`/api/classes/${currentClassId}/students`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name }) });
+            document.getElementById("newStudentInput").value = ""; document.getElementById("newStudentInput").style.borderColor = "#334155";
             loadStudents(currentClassId);
         }
 
-        async function deleteStudent(id) {
-            if (!confirm(t("deleteStudentConfirm"))) return;
-            await fetch(`/api/students/${id}`, { method: "DELETE" });
-            loadStudents(currentClassId);
+        async function deleteStudent(id) { if (!confirm(t("deleteStudentConfirm"))) return; await fetch(`/api/students/${id}`, { method: "DELETE" }); loadStudents(currentClassId); }
+
+        async function renameStudent(id, name) {
+            const n = prompt(t("enterNewName"), name); if (!n || !n.trim() || n.trim() === name) return;
+            await fetch(`/api/students/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: n.trim() }) }); loadStudents(currentClassId);
         }
 
-        async function renameStudent(id, currentName) {
-            const newName = prompt(t("enterNewName"), currentName);
-            if (!newName || newName.trim() === "" || newName.trim() === currentName) return;
-            await fetch(`/api/students/${id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name: newName.trim() })
-            });
-            loadStudents(currentClassId);
-        }
+        document.getElementById("newStudentInput").addEventListener("keypress", (e) => { if (e.key === "Enter") addStudent(); });
 
-        // Allow Enter key to add student
-        document.getElementById("newStudentInput").addEventListener("keypress", (e) => {
-            if (e.key === "Enter") addStudent();
-        });
+        function escapeHtml(str) { return str ? str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;") : ""; }
+        function escapeAttr(str) { return str ? str.replace(/'/g, "\\'").replace(/"/g, "&quot;") : ""; }
 
-        // ====== UTILITIES ======
-        function escapeHtml(str) {
-            if (!str) return "";
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-        }
-
-        function escapeAttr(str) {
-            if (!str) return "";
-            return str.replace(/'/g, "\\'").replace(/"/g, "&quot;");
-        }
-
-        // Init
-        loadClasses();
-        updateUI();
+        loadClasses(); updateUI();
     </script>
 </body>
 </html>

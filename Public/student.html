@@ -6,34 +6,26 @@
     <title>Classroom Connect</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: #0f172a; color: #f1f5f9;
-            min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f1f5f9; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .container { max-width: 420px; width: 100%; }
         .screen { display: none; } .screen.active { display: block; }
-        .lang-toggle {
-            position: fixed; top: 16px; right: 16px; background: #334155; color: #e2e8f0;
-            border: 1px solid #475569; padding: 6px 14px; border-radius: 8px; font-size: 0.85rem;
-            font-weight: 700; cursor: pointer; z-index: 100;
-        }
+        .lang-toggle { position: fixed; top: 16px; right: 16px; background: #334155; color: #e2e8f0; border: 1px solid #475569; padding: 6px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; cursor: pointer; z-index: 100; }
         .lang-toggle:hover { background: #475569; }
-        .title {
-            font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; text-align: center;
-        }
+        .title { font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; text-align: center; }
         .subtitle { color: #94a3b8; margin-bottom: 32px; text-align: center; }
         .card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 28px; }
         .card label { display: block; color: #94a3b8; font-size: 0.85rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-        .card input {
-            width: 100%; padding: 14px 18px; background: #0f172a; border: 2px solid #334155;
-            border-radius: 10px; color: #f1f5f9; font-size: 1.1rem; outline: none; margin-bottom: 20px;
-        }
+        .card input { width: 100%; padding: 14px 18px; background: #0f172a; border: 2px solid #334155; border-radius: 10px; color: #f1f5f9; font-size: 1.1rem; outline: none; margin-bottom: 16px; }
         .card input:focus { border-color: #3b82f6; }
+        .code-input { font-size: 2rem !important; text-align: center; letter-spacing: 12px; font-weight: 700; }
         .btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: 700; cursor: pointer; }
         .btn:hover { opacity: 0.9; } .btn:active { transform: scale(0.98); }
         .btn-primary { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; }
+        .switch-link { text-align: center; margin-top: 16px; }
+        .switch-link a { color: #3b82f6; text-decoration: none; font-size: 0.9rem; }
+        .switch-link a:hover { text-decoration: underline; }
+        .error-msg { color: #ef4444; text-align: center; font-size: 0.9rem; margin-bottom: 12px; display: none; }
+        .join-as { text-align: center; color: #10b981; font-weight: 600; font-size: 1.05rem; margin-bottom: 16px; display: none; }
         .welcome-name { font-size: 1.2rem; color: #8b5cf6; font-weight: 700; margin-bottom: 8px; text-align: center; }
         .waiting-message { color: #94a3b8; font-size: 1rem; margin-bottom: 24px; text-align: center; }
         .pulse { display: inline-block; width: 10px; height: 10px; background: #10b981; border-radius: 50%; margin-right: 8px; animation: pulse 2s infinite; }
@@ -41,43 +33,31 @@
         .count-box { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 24px; text-align: center; }
         .count-box .number { font-size: 2.5rem; font-weight: 800; color: #3b82f6; }
         .count-box .label { color: #94a3b8; font-size: 0.9rem; margin-top: 4px; }
-
-        /* Content slide — larger display */
-        .content-card {
-            background: #1e293b; border: 1px solid #334155; border-radius: 16px;
-            padding: 32px 28px; min-height: 50vh; display: flex; flex-direction: column; justify-content: center;
-        }
+        .content-card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 32px 28px; min-height: 50vh; display: flex; flex-direction: column; justify-content: center; }
         .slide-counter { text-align: center; color: #94a3b8; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
         .slide-type-indicator { display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 16px; }
         .type-content { background: #1e3a5f; color: #60a5fa; }
         .content-slide-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 16px; line-height: 1.4; }
         .content-slide-body { color: #cbd5e1; font-size: 1.1rem; line-height: 1.8; white-space: pre-wrap; }
         .content-slide-image { width: 100%; max-height: 300px; object-fit: contain; border-radius: 10px; margin-top: 20px; background: #0f172a; }
-
         .question-meta { color: #94a3b8; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; text-align: center; }
         .question-text { font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; line-height: 1.4; text-align: center; }
         .timer { font-size: 1.1rem; color: #f59e0b; font-weight: 700; margin-bottom: 20px; text-align: center; }
         .timer.urgent { color: #ef4444; animation: pulse 0.5s infinite; }
         .options { display: flex; flex-direction: column; gap: 10px; }
-        .option-btn {
-            padding: 16px; background: #0f172a; border: 2px solid #334155; border-radius: 12px;
-            color: #f1f5f9; font-size: 1.05rem; font-weight: 600; cursor: pointer; text-align: left;
-        }
+        .option-btn { padding: 16px; background: #0f172a; border: 2px solid #334155; border-radius: 12px; color: #f1f5f9; font-size: 1.05rem; font-weight: 600; cursor: pointer; text-align: left; }
         .option-btn:hover { border-color: #3b82f6; background: #1a2744; }
         .option-btn:active { transform: scale(0.98); }
         .option-btn.selected { border-color: #3b82f6; background: #1e3a5f; }
         .option-btn.disabled { pointer-events: none; opacity: 0.7; }
         .option-letter { display: inline-block; width: 28px; height: 28px; line-height: 28px; text-align: center; background: #334155; border-radius: 6px; margin-right: 10px; font-size: 0.85rem; font-weight: 700; }
-
         .locked-icon { font-size: 3.5rem; margin-bottom: 12px; text-align: center; }
         .locked-text { font-size: 1.3rem; font-weight: 700; color: #3b82f6; margin-bottom: 8px; text-align: center; }
-
         .feedback-icon { font-size: 4rem; margin-bottom: 12px; text-align: center; }
         .feedback-text { font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; text-align: center; }
         .feedback-correct { color: #10b981; } .feedback-incorrect { color: #ef4444; }
         .feedback-points { font-size: 1.2rem; color: #3b82f6; font-weight: 700; margin-bottom: 8px; text-align: center; }
         .feedback-total { color: #94a3b8; font-size: 1rem; text-align: center; }
-
         .final-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 20px; text-align: center; background: linear-gradient(135deg, #fbbf24, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .leaderboard-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: #1e293b; border: 1px solid #334155; border-radius: 10px; margin-bottom: 8px; }
         .leaderboard-item.me { border-color: #3b82f6; background: #1e3a5f; }
@@ -90,16 +70,37 @@
 <body>
     <button class="lang-toggle" id="langToggle" onclick="toggleLanguage()">FR</button>
     <div class="container">
-        <div class="screen active" id="joinScreen">
+        <!-- CODE JOIN SCREEN -->
+        <div class="screen active" id="codeJoinScreen">
             <div class="title">Classroom Connect</div>
-            <div class="subtitle" id="joinSubtitle"></div>
+            <div class="subtitle" id="codeJoinSubtitle"></div>
             <div class="card">
-                <label id="nameLabel"></label>
-                <input type="text" id="nameInput" maxlength="30" autocomplete="off">
-                <button class="btn btn-primary" id="joinBtn" onclick="joinSession()"></button>
+                <label id="codeLabel"></label>
+                <input type="text" id="codeInput" class="code-input" maxlength="4" autocomplete="off" inputmode="numeric" pattern="[0-9]*">
+                <div class="error-msg" id="codeError"></div>
+                <div class="join-as" id="joinAsDisplay"></div>
+                <button class="btn btn-primary" id="codeJoinBtn" onclick="joinWithCode()"></button>
+            </div>
+            <div class="switch-link" id="switchToName">
+                <a href="#" onclick="showNameJoin(); return false;" id="switchToNameLink">Don't have a code? Join with your name</a>
             </div>
         </div>
 
+        <!-- NAME JOIN SCREEN (fallback) -->
+        <div class="screen" id="nameJoinScreen">
+            <div class="title">Classroom Connect</div>
+            <div class="subtitle" id="nameJoinSubtitle"></div>
+            <div class="card">
+                <label id="nameLabel"></label>
+                <input type="text" id="nameInput" maxlength="30" autocomplete="off">
+                <button class="btn btn-primary" id="nameJoinBtn" onclick="joinWithName()"></button>
+            </div>
+            <div class="switch-link">
+                <a href="#" onclick="showCodeJoin(); return false;" id="switchToCodeLink">Have a code? Join with your code</a>
+            </div>
+        </div>
+
+        <!-- WAITING SCREEN -->
         <div class="screen" id="waitingScreen">
             <div class="title">Classroom Connect</div>
             <div class="welcome-name" id="welcomeName"></div>
@@ -128,7 +129,7 @@
         </div>
 
         <div class="screen" id="lockedScreen">
-            <div class="locked-icon" id="lockedIcon">🔒</div>
+            <div class="locked-icon">🔒</div>
             <div class="locked-text" id="lockedText"></div>
             <div class="waiting-message"><span class="pulse"></span><span id="lockedWaitText"></span></div>
         </div>
@@ -155,13 +156,20 @@
         let playerName = "", timerInterval = null, lastLeaderboard = [];
 
         function showScreen(id) { document.querySelectorAll(".screen").forEach(s => s.classList.remove("active")); document.getElementById(id).classList.add("active"); }
+        function showCodeJoin() { showScreen("codeJoinScreen"); }
+        function showNameJoin() { showScreen("nameJoinScreen"); }
 
         function updateUI() {
             document.getElementById("langToggle").textContent = t("langToggle");
-            document.getElementById("joinSubtitle").textContent = t("joinSubtitle");
+            document.getElementById("codeJoinSubtitle").textContent = t("codeJoinSubtitle");
+            document.getElementById("codeLabel").textContent = t("yourCode");
+            document.getElementById("codeInput").placeholder = t("codePlaceholder");
+            document.getElementById("codeJoinBtn").textContent = t("joinWithCode");
+            document.getElementById("codeError").textContent = t("invalidCode");
+            document.getElementById("nameJoinSubtitle").textContent = t("joinSubtitle");
             document.getElementById("nameLabel").textContent = t("yourName");
             document.getElementById("nameInput").placeholder = t("namePlaceholder");
-            document.getElementById("joinBtn").textContent = t("joinButton");
+            document.getElementById("nameJoinBtn").textContent = t("joinButton");
             document.getElementById("waitingText").textContent = t("waitingForTeacher");
             document.getElementById("connectedLabel").textContent = t("studentsConnected");
             document.getElementById("contentTypeLabel").textContent = t("lessonLabel");
@@ -173,9 +181,58 @@
             if (lastLeaderboard.length > 0 && document.getElementById("leaderboardScreen").classList.contains("active")) renderLeaderboard(lastLeaderboard);
         }
 
-        document.getElementById("nameInput").addEventListener("keypress", (e) => { if (e.key === "Enter") joinSession(); });
+        // Code input: auto-lookup as they type
+        document.getElementById("codeInput").addEventListener("input", async (e) => {
+            const code = e.target.value.replace(/\D/g, "").substring(0, 4);
+            e.target.value = code;
+            document.getElementById("codeError").style.display = "none";
+            document.getElementById("joinAsDisplay").style.display = "none";
 
-        function joinSession() {
+            if (code.length === 4) {
+                try {
+                    const res = await fetch(`/api/lookup-code/${code}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        document.getElementById("joinAsDisplay").textContent = t("joinAs") + " " + data.name;
+                        document.getElementById("joinAsDisplay").style.display = "block";
+                    }
+                } catch (e) {}
+            }
+        });
+
+        document.getElementById("codeInput").addEventListener("keypress", (e) => { if (e.key === "Enter") joinWithCode(); });
+        document.getElementById("nameInput").addEventListener("keypress", (e) => { if (e.key === "Enter") joinWithName(); });
+
+        async function joinWithCode() {
+            const code = document.getElementById("codeInput").value.trim();
+            if (code.length !== 4) { document.getElementById("codeInput").style.borderColor = "#ef4444"; return; }
+
+            try {
+                const res = await fetch(`/api/lookup-code/${code}`);
+                if (!res.ok) {
+                    document.getElementById("codeError").style.display = "block";
+                    document.getElementById("codeInput").style.borderColor = "#ef4444";
+                    return;
+                }
+                const data = await res.json();
+                playerName = data.name;
+                socket.emit("student-join-code", code);
+            } catch (e) {
+                document.getElementById("codeError").style.display = "block";
+            }
+        }
+
+        socket.on("join-success", (data) => {
+            showScreen("waitingScreen");
+            document.getElementById("welcomeName").textContent = t("welcome") + " " + data.name + "!";
+        });
+
+        socket.on("join-error", (reason) => {
+            document.getElementById("codeError").style.display = "block";
+            document.getElementById("codeInput").style.borderColor = "#ef4444";
+        });
+
+        function joinWithName() {
             const name = document.getElementById("nameInput").value.trim();
             if (!name) { document.getElementById("nameInput").style.borderColor = "#ef4444"; return; }
             playerName = name;
@@ -193,8 +250,7 @@
             document.getElementById("studentContentTitle").textContent = data.title;
             document.getElementById("studentContentBody").textContent = data.body;
             const img = document.getElementById("studentContentImage");
-            if (data.image) { img.src = data.image; img.style.display = "block"; }
-            else { img.style.display = "none"; }
+            if (data.image) { img.src = data.image; img.style.display = "block"; } else { img.style.display = "none"; }
         });
 
         socket.on("question", (data) => {
@@ -209,13 +265,11 @@
         });
 
         function startTimer(seconds) {
-            clearInterval(timerInterval);
-            let remaining = seconds;
+            clearInterval(timerInterval); let remaining = seconds;
             const el = document.getElementById("timer");
             el.textContent = "⏱ " + remaining + "s"; el.className = "timer";
             timerInterval = setInterval(() => {
-                remaining--;
-                el.textContent = "⏱ " + remaining + "s";
+                remaining--; el.textContent = "⏱ " + remaining + "s";
                 if (remaining <= 5) el.className = "timer urgent";
                 if (remaining <= 0) { clearInterval(timerInterval); el.textContent = "⏱ " + t("timeUp"); document.querySelectorAll(".option-btn").forEach(b => b.classList.add("disabled")); }
             }, 1000);
@@ -260,7 +314,6 @@
         }
 
         socket.on("session-ended", (leaderboard) => { lastLeaderboard = leaderboard; showScreen("leaderboardScreen"); renderLeaderboard(leaderboard); });
-
         updateUI();
     </script>
 </body>

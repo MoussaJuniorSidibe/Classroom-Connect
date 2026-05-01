@@ -13,34 +13,30 @@ const io = new Server(server);
 app.use(express.static("public"));
 app.use(express.json({ limit: "20mb" }));
 
-// Serve uploaded images
 const UPLOADS_DIR = path.join(__dirname, "uploads");
 if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR);
 app.use("/uploads", express.static(UPLOADS_DIR));
 
-// ====== LESSON STORAGE (JSON files) ======
 const LESSONS_DIR = path.join(__dirname, "lessons");
 if (!fs.existsSync(LESSONS_DIR)) fs.mkdirSync(LESSONS_DIR);
 
+// ====== LESSON API ======
 app.get("/api/lessons", (req, res) => {
   const files = fs.readdirSync(LESSONS_DIR).filter(f => f.endsWith(".json"));
   const lessons = files.map(f => {
     const data = JSON.parse(fs.readFileSync(path.join(LESSONS_DIR, f), "utf-8"));
-    return {
-      id: data.id, title: data.title,
-      slideCount: data.slides.length,
+    return { id: data.id, title: data.title, slideCount: data.slides.length,
       questionCount: data.slides.filter(s => s.type === "question").length,
       contentCount: data.slides.filter(s => s.type === "content").length,
-      createdAt: data.createdAt, updatedAt: data.updatedAt
-    };
+      createdAt: data.createdAt, updatedAt: data.updatedAt };
   });
   res.json(lessons);
 });
 
 app.get("/api/lessons/:id", (req, res) => {
-  const filePath = path.join(LESSONS_DIR, `${req.params.id}.json`);
-  if (!fs.existsSync(filePath)) return res.status(404).json({ error: "Lesson not found" });
-  res.json(JSON.parse(fs.readFileSync(filePath, "utf-8")));
+  const fp = path.join(LESSONS_DIR, `${req.params.id}.json`);
+  if (!fs.existsSync(fp)) return res.status(404).json({ error: "Not found" });
+  res.json(JSON.parse(fs.readFileSync(fp, "utf-8")));
 });
 
 app.post("/api/lessons", (req, res) => {
@@ -52,42 +48,37 @@ app.post("/api/lessons", (req, res) => {
 });
 
 app.delete("/api/lessons/:id", (req, res) => {
-  const filePath = path.join(LESSONS_DIR, `${req.params.id}.json`);
-  if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+  const fp = path.join(LESSONS_DIR, `${req.params.id}.json`);
+  if (fs.existsSync(fp)) fs.unlinkSync(fp);
   res.json({ success: true });
 });
 
-// ====== IMAGE UPLOAD ======
+// ====== IMAGE API ======
 app.post("/api/upload-image", (req, res) => {
   const { filename, data } = req.body;
-  if (!filename || !data) return res.status(400).json({ error: "Missing filename or data" });
+  if (!filename || !data) return res.status(400).json({ error: "Missing data" });
   const base64Data = data.replace(/^data:image\/\w+;base64,/, "");
   const buffer = Buffer.from(base64Data, "base64");
   const ext = path.extname(filename).toLowerCase() || ".jpg";
   const safeName = "img_" + Date.now() + "_" + Math.random().toString(36).substring(2, 8) + ext;
   fs.writeFileSync(path.join(UPLOADS_DIR, safeName), buffer);
-  console.log(`Image uploaded: ${safeName} (${(buffer.length / 1024).toFixed(1)} KB)`);
   res.json({ success: true, url: "/uploads/" + safeName });
 });
 
 // ====== SESSION HISTORY API ======
-app.get("/api/sessions", (req, res) => {
-  res.json(db.getAllSessions());
-});
+app.get("/api/sessions", (req, res) => { res.json(db.getAllSessions()); });
 
 app.get("/api/sessions/:id", (req, res) => {
   const session = db.getSession(req.params.id);
-  if (!session) return res.status(404).json({ error: "Session not found" });
-  const attendance = db.getSessionAttendance(req.params.id);
-  const scores = db.getSessionScores(req.params.id);
-  const answers = db.getSessionAnswers(req.params.id);
-  res.json({ session, attendance, scores, answers });
+  if (!session) return res.status(404).json({ error: "Not found" });
+  res.json({
+    session, attendance: db.getSessionAttendance(req.params.id),
+    scores: db.getSessionScores(req.params.id), answers: db.getSessionAnswers(req.params.id)
+  });
 });
 
 // ====== CLASS & ROSTER API ======
-app.get("/api/classes", (req, res) => {
-  res.json(db.getAllClasses());
-});
+app.get("/api/classes", (req, res) => { res.json(db.getAllClasses()); });
 
 app.post("/api/classes", (req, res) => {
   const { name } = req.body;
@@ -97,10 +88,7 @@ app.post("/api/classes", (req, res) => {
   res.json({ success: true, id });
 });
 
-app.delete("/api/classes/:id", (req, res) => {
-  db.deleteClass(req.params.id);
-  res.json({ success: true });
-});
+app.delete("/api/classes/:id", (req, res) => { db.deleteClass(req.params.id); res.json({ success: true }); });
 
 app.put("/api/classes/:id", (req, res) => {
   const { name } = req.body;
@@ -109,22 +97,17 @@ app.put("/api/classes/:id", (req, res) => {
   res.json({ success: true });
 });
 
-app.get("/api/classes/:id/students", (req, res) => {
-  res.json(db.getClassStudents(req.params.id));
-});
+app.get("/api/classes/:id/students", (req, res) => { res.json(db.getClassStudents(req.params.id)); });
 
 app.post("/api/classes/:id/students", (req, res) => {
   const { name } = req.body;
   if (!name) return res.status(400).json({ error: "Name required" });
   const studentId = "student_" + Date.now() + "_" + Math.random().toString(36).substring(2, 6);
-  db.addStudentToClass(studentId, name, req.params.id);
-  res.json({ success: true, id: studentId });
+  const code = db.addStudentToClass(studentId, name, req.params.id);
+  res.json({ success: true, id: studentId, code });
 });
 
-app.delete("/api/students/:id", (req, res) => {
-  db.removeStudentFromClass(req.params.id);
-  res.json({ success: true });
-});
+app.delete("/api/students/:id", (req, res) => { db.removeStudentFromClass(req.params.id); res.json({ success: true }); });
 
 app.put("/api/students/:id", (req, res) => {
   const { name } = req.body;
@@ -133,44 +116,48 @@ app.put("/api/students/:id", (req, res) => {
   res.json({ success: true });
 });
 
+// ====== STUDENT CODE LOOKUP API ======
+app.get("/api/lookup-code/:code", (req, res) => {
+  const student = db.lookupStudentByCode(req.params.code);
+  if (!student) return res.status(404).json({ error: "Code not found" });
+  res.json({ name: student.name, code: student.code, className: student.class_name, classId: student.class_id });
+});
+
 // ====== GAME STATE ======
 const students = new Map();
-let currentQuestion = null;
-let questionStartTime = null;
-let questionIndex = -1;
-let slideIndex = -1;
-let sessionActive = false;
-let currentLesson = null;
-let currentSlides = [];
-let currentQuestions = [];
-let currentSessionId = null;
+let currentQuestion = null, questionStartTime = null, questionIndex = -1, slideIndex = -1;
+let sessionActive = false, currentLesson = null, currentSlides = [], currentQuestions = [];
+let currentSessionId = null, currentClassId = null;
 const pendingResults = new Map();
 
-// ====== SCORING ======
 function calculatePoints(isCorrect, responseTimeMs, timeLimitMs) {
   if (!isCorrect) return 0;
-  const basePoints = 1000;
-  const maxSpeedBonus = 500;
-  const timeRatio = Math.max(0, 1 - (responseTimeMs / timeLimitMs));
-  return basePoints + Math.round(maxSpeedBonus * timeRatio);
+  return 1000 + Math.round(500 * Math.max(0, 1 - (responseTimeMs / timeLimitMs)));
 }
 
 // ====== SOCKET CONNECTIONS ======
 io.on("connection", (socket) => {
   console.log("New connection:", socket.id);
 
-  socket.on("student-join", (name) => {
-    students.set(socket.id, {
-      name, joinedAt: new Date(), score: 0, answers: [], hasAnswered: false
-    });
-    console.log(`Student joined: ${name}`);
-
-    // Record attendance in database if session is active
-    if (currentSessionId) {
-      try { db.recordAttendance(currentSessionId, name); }
-      catch (e) { console.error("Failed to record attendance:", e.message); }
+  // Student joins with a code
+  socket.on("student-join-code", (code) => {
+    const student = db.lookupStudentByCode(code);
+    if (!student) {
+      socket.emit("join-error", "invalid-code");
+      return;
     }
 
+    students.set(socket.id, {
+      name: student.name, code: student.code, joinedAt: new Date(),
+      score: 0, answers: [], hasAnswered: false
+    });
+    console.log(`Student joined via code ${code}: ${student.name}`);
+
+    if (currentSessionId) {
+      try { db.recordAttendance(currentSessionId, student.name, student.code); } catch (e) {}
+    }
+
+    socket.emit("join-success", { name: student.name });
     io.emit("student-list", getStudentList());
     io.emit("answer-status", getAnswerStatus());
     io.emit("detailed-answer-status", getDetailedAnswerStatus());
@@ -178,138 +165,107 @@ io.on("connection", (socket) => {
     if (sessionActive && slideIndex >= 0 && slideIndex < currentSlides.length) {
       const slide = currentSlides[slideIndex];
       if (slide.type === "content") {
-        socket.emit("content-slide", {
-          index: slideIndex, total: currentSlides.length,
-          title: slide.title || "", body: slide.body || "", image: slide.image || null
-        });
+        socket.emit("content-slide", { index: slideIndex, total: currentSlides.length, title: slide.title || "", body: slide.body || "", image: slide.image || null });
       } else if (slide.type === "question") {
-        const qIdx = currentQuestions.indexOf(slide);
-        socket.emit("question", {
-          index: qIdx, total: currentQuestions.length,
-          question: slide.question, options: slide.options,
-          type: slide.questionType || "mcq", timeLimit: slide.timeLimit || 20
-        });
+        socket.emit("question", { index: currentQuestions.indexOf(slide), total: currentQuestions.length, question: slide.question, options: slide.options, type: slide.questionType || "mcq", timeLimit: slide.timeLimit || 20 });
       }
     }
   });
 
-  socket.on("start-session", (lessonId) => {
-    const filePath = path.join(LESSONS_DIR, `${lessonId}.json`);
-    if (!fs.existsSync(filePath)) { socket.emit("error", "Lesson not found"); return; }
+  // Legacy: student joins with name (for sessions without a class)
+  socket.on("student-join", (name) => {
+    students.set(socket.id, {
+      name, code: null, joinedAt: new Date(), score: 0, answers: [], hasAnswered: false
+    });
+    console.log(`Student joined: ${name}`);
+    if (currentSessionId) {
+      try { db.recordAttendance(currentSessionId, name, null); } catch (e) {}
+    }
+    io.emit("student-list", getStudentList());
+    io.emit("answer-status", getAnswerStatus());
+    io.emit("detailed-answer-status", getDetailedAnswerStatus());
 
-    currentLesson = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+    if (sessionActive && slideIndex >= 0 && slideIndex < currentSlides.length) {
+      const slide = currentSlides[slideIndex];
+      if (slide.type === "content") {
+        socket.emit("content-slide", { index: slideIndex, total: currentSlides.length, title: slide.title || "", body: slide.body || "", image: slide.image || null });
+      } else if (slide.type === "question") {
+        socket.emit("question", { index: currentQuestions.indexOf(slide), total: currentQuestions.length, question: slide.question, options: slide.options, type: slide.questionType || "mcq", timeLimit: slide.timeLimit || 20 });
+      }
+    }
+  });
+
+  socket.on("start-session", (data) => {
+    // data can be a string (lessonId) for backward compat, or an object { lessonId, classId }
+    let lessonId, classId;
+    if (typeof data === "string") { lessonId = data; classId = null; }
+    else { lessonId = data.lessonId; classId = data.classId || null; }
+
+    const fp = path.join(LESSONS_DIR, `${lessonId}.json`);
+    if (!fs.existsSync(fp)) { socket.emit("error", "Lesson not found"); return; }
+
+    currentLesson = JSON.parse(fs.readFileSync(fp, "utf-8"));
     currentSlides = currentLesson.slides;
     currentQuestions = currentSlides.filter(s => s.type === "question");
     sessionActive = true; slideIndex = -1; questionIndex = -1; currentQuestion = null;
+    currentClassId = classId;
 
-    // Create session in database
     currentSessionId = "session_" + Date.now();
-    try {
-      db.createSession(currentSessionId, lessonId, currentLesson.title, currentSlides.length, currentQuestions.length);
-      console.log(`Session saved to database: ${currentSessionId}`);
-    } catch (e) {
-      console.error("Failed to create session in DB:", e.message);
-    }
+    try { db.createSession(currentSessionId, lessonId, currentLesson.title, currentSlides.length, currentQuestions.length, classId); } catch (e) { console.error(e.message); }
 
-    // Record attendance for students already connected
     students.forEach(s => {
-      try { db.recordAttendance(currentSessionId, s.name); }
-      catch (e) { console.error("Failed to record attendance:", e.message); }
+      s.score = 0; s.answers = []; s.hasAnswered = false;
+      try { db.recordAttendance(currentSessionId, s.name, s.code || null); } catch (e) {}
     });
-
-    students.forEach(s => { s.score = 0; s.answers = []; s.hasAnswered = false; });
 
     io.emit("session-started", {
-      title: currentLesson.title,
-      totalSlides: currentSlides.length,
-      totalQuestions: currentQuestions.length
+      title: currentLesson.title, totalSlides: currentSlides.length,
+      totalQuestions: currentQuestions.length, usesCodes: !!classId
     });
-    console.log(`Session started with lesson: ${currentLesson.title}`);
+    console.log(`Session started: ${currentLesson.title}${classId ? " (class: " + classId + ")" : ""}`);
   });
 
   socket.on("next-slide", () => {
-    slideIndex++;
-    pendingResults.clear();
-
+    slideIndex++; pendingResults.clear();
     if (slideIndex >= currentSlides.length) {
-      // Save final scores to database
       if (currentSessionId) {
-        try {
-          db.recordFinalScores(currentSessionId, students);
-          db.endSession(currentSessionId);
-          console.log(`Session ${currentSessionId} scores saved and session ended.`);
-        } catch (e) {
-          console.error("Failed to save final scores:", e.message);
-        }
+        try { db.recordFinalScores(currentSessionId, students); db.endSession(currentSessionId); } catch (e) { console.error(e.message); }
       }
-
       io.emit("session-ended", getLeaderboard());
-      sessionActive = false; currentQuestion = null; currentLesson = null; currentSessionId = null;
-      console.log("Session ended!");
+      sessionActive = false; currentQuestion = null; currentLesson = null; currentSessionId = null; currentClassId = null;
       return;
     }
 
     const slide = currentSlides[slideIndex];
-
     if (slide.type === "content") {
-      io.emit("content-slide", {
-        index: slideIndex, total: currentSlides.length,
-        title: slide.title || "", body: slide.body || "", image: slide.image || null
-      });
-      io.emit("teacher-slide-info", {
-        slideIndex, totalSlides: currentSlides.length, type: "content",
-        title: slide.title || "", body: slide.body || "", image: slide.image || null
-      });
-      console.log(`Content slide ${slideIndex + 1}/${currentSlides.length}: ${slide.title}`);
-
+      io.emit("content-slide", { index: slideIndex, total: currentSlides.length, title: slide.title || "", body: slide.body || "", image: slide.image || null });
+      io.emit("teacher-slide-info", { slideIndex, totalSlides: currentSlides.length, type: "content", title: slide.title || "", body: slide.body || "", image: slide.image || null });
     } else if (slide.type === "question") {
-      questionIndex++;
-      currentQuestion = slide;
-      questionStartTime = Date.now();
+      questionIndex++; currentQuestion = slide; questionStartTime = Date.now();
       students.forEach(s => { s.hasAnswered = false; });
-
-      io.emit("question", {
-        index: questionIndex, total: currentQuestions.length,
-        question: slide.question, options: slide.options,
-        type: slide.questionType || "mcq", timeLimit: slide.timeLimit || 20
-      });
-      io.emit("teacher-slide-info", {
-        slideIndex, totalSlides: currentSlides.length, type: "question",
-        question: slide.question, options: slide.options,
-        questionIndex, totalQuestions: currentQuestions.length
-      });
+      io.emit("question", { index: questionIndex, total: currentQuestions.length, question: slide.question, options: slide.options, type: slide.questionType || "mcq", timeLimit: slide.timeLimit || 20 });
+      io.emit("teacher-slide-info", { slideIndex, totalSlides: currentSlides.length, type: "question", question: slide.question, options: slide.options, questionIndex, totalQuestions: currentQuestions.length });
       io.emit("answer-status", getAnswerStatus());
       io.emit("detailed-answer-status", getDetailedAnswerStatus());
-      console.log(`Question ${questionIndex + 1}/${currentQuestions.length}: ${slide.question}`);
     }
   });
 
   socket.on("submit-answer", (answerIndex) => {
     const student = students.get(socket.id);
     if (!student || !currentQuestion || student.hasAnswered) return;
-
     const responseTime = Date.now() - questionStartTime;
     const timeLimitMs = (currentQuestion.timeLimit || 20) * 1000;
     const isCorrect = answerIndex === currentQuestion.correctIndex;
     const points = calculatePoints(isCorrect, responseTime, timeLimitMs);
 
-    student.hasAnswered = true;
-    student.score += points;
+    student.hasAnswered = true; student.score += points;
     student.answers.push({ questionIndex, answerIndex, isCorrect, points, responseTime });
 
-    // Save answer to database
     if (currentSessionId) {
-      try {
-        db.recordAnswer(currentSessionId, student.name, questionIndex, currentQuestion.question, answerIndex, isCorrect, points, responseTime);
-      } catch (e) {
-        console.error("Failed to record answer:", e.message);
-      }
+      try { db.recordAnswer(currentSessionId, student.name, student.code || null, questionIndex, currentQuestion.question, answerIndex, isCorrect, points, responseTime); } catch (e) {}
     }
 
-    pendingResults.set(socket.id, {
-      isCorrect, points, totalScore: student.score, correctIndex: currentQuestion.correctIndex
-    });
-
+    pendingResults.set(socket.id, { isCorrect, points, totalScore: student.score, correctIndex: currentQuestion.correctIndex });
     socket.emit("answer-received");
     io.emit("answer-status", getAnswerStatus());
     io.emit("detailed-answer-status", getDetailedAnswerStatus());
@@ -320,10 +276,7 @@ io.on("connection", (socket) => {
     pendingResults.forEach((result, sid) => { io.to(sid).emit("answer-result", result); });
     students.forEach((student, sid) => {
       if (!student.hasAnswered) {
-        io.to(sid).emit("answer-result", {
-          isCorrect: false, points: 0, totalScore: student.score,
-          correctIndex: currentQuestion.correctIndex, didNotAnswer: true
-        });
+        io.to(sid).emit("answer-result", { isCorrect: false, points: 0, totalScore: student.score, correctIndex: currentQuestion.correctIndex, didNotAnswer: true });
       }
     });
     io.emit("question-results", getQuestionResults());
@@ -332,9 +285,7 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     const student = students.get(socket.id);
     if (student) {
-      console.log(`Student left: ${student.name}`);
-      students.delete(socket.id);
-      pendingResults.delete(socket.id);
+      students.delete(socket.id); pendingResults.delete(socket.id);
       io.emit("student-list", getStudentList());
       io.emit("answer-status", getAnswerStatus());
       io.emit("detailed-answer-status", getDetailedAnswerStatus());
@@ -342,49 +293,33 @@ io.on("connection", (socket) => {
   });
 });
 
-// ====== HELPERS ======
 function getStudentList() { return Array.from(students.values()).map(s => ({ name: s.name, score: s.score })); }
 function getLeaderboard() { return Array.from(students.values()).map(s => ({ name: s.name, score: s.score })).sort((a, b) => b.score - a.score); }
 function getAnswerStatus() { return { answered: Array.from(students.values()).filter(s => s.hasAnswered).length, total: students.size }; }
 function getDetailedAnswerStatus() { return Array.from(students.values()).map(s => ({ name: s.name, hasAnswered: s.hasAnswered })); }
 function getQuestionResults() {
-  const optionCounts = currentQuestion.options.map(() => 0);
-  let correctCount = 0;
-  students.forEach(s => {
-    const a = s.answers[s.answers.length - 1];
-    if (a && a.questionIndex === questionIndex) { optionCounts[a.answerIndex]++; if (a.isCorrect) correctCount++; }
-  });
-  return {
-    question: currentQuestion.question, options: currentQuestion.options,
-    correctIndex: currentQuestion.correctIndex, optionCounts, correctCount,
-    totalStudents: students.size, leaderboard: getLeaderboard().slice(0, 5)
-  };
+  const oc = currentQuestion.options.map(() => 0); let cc = 0;
+  students.forEach(s => { const a = s.answers[s.answers.length - 1]; if (a && a.questionIndex === questionIndex) { oc[a.answerIndex]++; if (a.isCorrect) cc++; } });
+  return { question: currentQuestion.question, options: currentQuestion.options, correctIndex: currentQuestion.correctIndex, optionCounts: oc, correctCount: cc, totalStudents: students.size, leaderboard: getLeaderboard().slice(0, 5) };
 }
 
-// ====== START ======
 function getLocalIP() {
   const interfaces = os.networkInterfaces();
-  for (const name of Object.keys(interfaces)) {
-    for (const iface of interfaces[name]) {
-      if (iface.family === "IPv4" && !iface.internal) return iface.address;
-    }
-  }
+  for (const name of Object.keys(interfaces)) { for (const iface of interfaces[name]) { if (iface.family === "IPv4" && !iface.internal) return iface.address; } }
   return "localhost";
 }
 
 const PORT = 3000;
 server.listen(PORT, "0.0.0.0", () => {
   const localIP = getLocalIP();
-  console.log("");
-  console.log("===========================================");
+  console.log("\n===========================================");
   console.log("   CLASSROOM CONNECT SERVER IS RUNNING");
   console.log("   Database: classroom-connect.db");
-  console.log("===========================================");
-  console.log("");
+  console.log("===========================================\n");
   console.log(`   Teacher:   http://localhost:${PORT}/teacher.html`);
   console.log(`   Builder:   http://localhost:${PORT}/builder.html`);
-  console.log(`   Students:  http://${localIP}:${PORT}/student.html`);
-  console.log("");
-  console.log("===========================================");
-  console.log("");
+  console.log(`   Roster:    http://localhost:${PORT}/roster.html`);
+  console.log(`   History:   http://localhost:${PORT}/history.html`);
+  console.log(`   Students:  http://${localIP}:${PORT}/student.html\n`);
+  console.log("===========================================\n");
 });
