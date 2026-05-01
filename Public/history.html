@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classroom Connect — Session History</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #0f172a; color: #f1f5f9; min-height: 100vh; padding: 30px 20px;
+        }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 {
+            font-size: 2.2rem; font-weight: 800;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px;
+        }
+        .header p { color: #94a3b8; font-size: 1rem; }
+        .nav-link { display: inline-block; color: #3b82f6; text-decoration: none; margin-top: 8px; font-size: 0.9rem; }
+        .nav-link:hover { text-decoration: underline; }
+        .lang-toggle {
+            position: fixed; top: 16px; right: 16px; background: #334155; color: #e2e8f0;
+            border: 1px solid #475569; padding: 6px 14px; border-radius: 8px; font-size: 0.85rem;
+            font-weight: 700; cursor: pointer; z-index: 100;
+        }
+        .lang-toggle:hover { background: #475569; }
+        .main-layout { max-width: 800px; margin: 0 auto; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 24px; margin-bottom: 16px; }
+        .btn { padding: 12px 24px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; }
+        .btn:hover { opacity: 0.9; } .btn:active { transform: scale(0.98); }
+        .btn-secondary { background: #334155; color: #e2e8f0; }
+        .btn-sm { padding: 8px 16px; font-size: 0.85rem; }
+        .screen { display: none; } .screen.active { display: block; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .top-bar h2 { font-size: 1.3rem; }
+        .empty-state { text-align: center; padding: 40px; color: #64748b; }
+        .empty-state .icon { font-size: 2.5rem; margin-bottom: 8px; }
+
+        /* Session list */
+        .session-item {
+            background: #0f172a; border: 2px solid #334155; border-radius: 12px;
+            padding: 16px; margin-bottom: 10px; cursor: pointer; transition: border-color 0.2s;
+        }
+        .session-item:hover { border-color: #3b82f6; }
+        .session-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 4px; }
+        .session-meta { color: #64748b; font-size: 0.85rem; display: flex; gap: 16px; flex-wrap: wrap; }
+        .session-meta span { display: flex; align-items: center; gap: 4px; }
+
+        /* Detail tabs */
+        .tab-bar { display: flex; gap: 4px; margin-bottom: 16px; background: #0f172a; border-radius: 10px; padding: 4px; }
+        .tab {
+            flex: 1; padding: 10px; text-align: center; border-radius: 8px; cursor: pointer;
+            font-size: 0.85rem; font-weight: 600; color: #94a3b8; transition: all 0.2s;
+        }
+        .tab.active { background: #334155; color: #f1f5f9; }
+        .tab:hover:not(.active) { color: #e2e8f0; }
+        .tab-content { display: none; } .tab-content.active { display: block; }
+
+        /* Attendance */
+        .attendance-item {
+            display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+            background: #0f172a; border-radius: 8px; margin-bottom: 6px;
+        }
+        .attendance-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; }
+        .attendance-name { font-size: 0.95rem; }
+        .attendance-time { color: #64748b; font-size: 0.8rem; margin-left: auto; }
+
+        /* Scores */
+        .score-item {
+            display: flex; align-items: center; gap: 14px; padding: 12px 16px;
+            background: #0f172a; border-radius: 10px; margin-bottom: 6px;
+        }
+        .score-rank { font-size: 1.3rem; font-weight: 800; width: 32px; text-align: center; }
+        .rank-1 { color: #fbbf24; } .rank-2 { color: #94a3b8; } .rank-3 { color: #b45309; }
+        .score-name { flex: 1; font-weight: 600; }
+        .score-detail { text-align: right; }
+        .score-points { font-weight: 800; color: #3b82f6; font-size: 1rem; }
+        .score-accuracy { color: #64748b; font-size: 0.8rem; }
+
+        /* Questions */
+        .question-item {
+            background: #0f172a; border-radius: 10px; padding: 14px 16px; margin-bottom: 10px;
+        }
+        .question-item-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 6px; }
+        .question-item-text { font-weight: 600; font-size: 0.95rem; flex: 1; }
+        .question-item-stat { color: #10b981; font-size: 0.85rem; font-weight: 600; white-space: nowrap; margin-left: 12px; }
+        .question-bar { height: 6px; background: #1e293b; border-radius: 3px; overflow: hidden; }
+        .question-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(135deg, #10b981, #059669); }
+
+        /* Summary stats */
+        .stats-row { display: flex; gap: 12px; margin-bottom: 16px; }
+        .stat-card {
+            flex: 1; background: #0f172a; border-radius: 10px; padding: 16px; text-align: center;
+        }
+        .stat-number { font-size: 1.5rem; font-weight: 800; color: #3b82f6; }
+        .stat-label { color: #94a3b8; font-size: 0.8rem; margin-top: 2px; }
+    </style>
+</head>
+<body>
+    <button class="lang-toggle" id="langToggle" onclick="toggleLanguage()">FR</button>
+    <div class="header">
+        <h1 id="historyTitle"></h1>
+        <p id="historySubtitle"></p>
+        <a href="/teacher.html" class="nav-link" id="backLink"></a>
+    </div>
+    <div class="main-layout">
+
+        <!-- SESSION LIST -->
+        <div class="screen active" id="listScreen">
+            <div id="sessionList"></div>
+        </div>
+
+        <!-- SESSION DETAIL -->
+        <div class="screen" id="detailScreen">
+            <div class="top-bar">
+                <h2 id="detailTitle"></h2>
+                <button class="btn btn-secondary btn-sm" onclick="backToList()" id="backBtn"></button>
+            </div>
+
+            <div class="stats-row" id="statsRow"></div>
+
+            <div class="tab-bar">
+                <div class="tab active" onclick="showTab('attendance')" id="tabAttendance"></div>
+                <div class="tab" onclick="showTab('scores')" id="tabScores"></div>
+                <div class="tab" onclick="showTab('questions')" id="tabQuestions"></div>
+            </div>
+
+            <div class="tab-content active" id="attendanceContent"></div>
+            <div class="tab-content" id="scoresContent"></div>
+            <div class="tab-content" id="questionsContent"></div>
+        </div>
+    </div>
+
+    <script src="/i18n.js"></script>
+    <script>
+        function showScreen(id) {
+            document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+            document.getElementById(id).classList.add("active");
+        }
+
+        function updateUI() {
+            document.getElementById("langToggle").textContent = t("langToggle");
+            document.getElementById("historyTitle").textContent = t("historyTitle");
+            document.getElementById("historySubtitle").textContent = t("historySubtitle");
+            document.getElementById("backLink").textContent = t("backToDashboard");
+            document.getElementById("backBtn").textContent = t("back");
+            document.getElementById("tabAttendance").textContent = t("attendance");
+            document.getElementById("tabScores").textContent = t("leaderboardLabel");
+            document.getElementById("tabQuestions").textContent = t("questionBreakdown");
+            loadSessions();
+        }
+
+        // ====== TABS ======
+        function showTab(tabName) {
+            document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+            document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+
+            if (tabName === "attendance") {
+                document.getElementById("tabAttendance").classList.add("active");
+                document.getElementById("attendanceContent").classList.add("active");
+            } else if (tabName === "scores") {
+                document.getElementById("tabScores").classList.add("active");
+                document.getElementById("scoresContent").classList.add("active");
+            } else if (tabName === "questions") {
+                document.getElementById("tabQuestions").classList.add("active");
+                document.getElementById("questionsContent").classList.add("active");
+            }
+        }
+
+        // ====== SESSION LIST ======
+        async function loadSessions() {
+            const res = await fetch("/api/sessions");
+            const sessions = await res.json();
+            const container = document.getElementById("sessionList");
+
+            if (sessions.length === 0) {
+                container.innerHTML = `<div class="empty-state"><div class="icon">📊</div><div>${t("noSessionsYet")}</div></div>`;
+                return;
+            }
+
+            container.innerHTML = sessions.map(s => {
+                const date = new Date(s.started_at + "Z").toLocaleDateString(currentLang === "fr" ? "fr-FR" : "en-US", {
+                    year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit"
+                });
+                return `
+                    <div class="session-item" onclick="openSession('${s.id}')">
+                        <div class="session-title">${escapeHtml(s.lesson_title || "Untitled")}</div>
+                        <div class="session-meta">
+                            <span>📅 ${date}</span>
+                            <span>👥 ${tFormat("studentsAttended", s.student_count)}</span>
+                            <span>❓ ${tFormat("questionsAsked", s.total_questions)}</span>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function backToList() {
+            showScreen("listScreen");
+            loadSessions();
+        }
+
+        // ====== SESSION DETAIL ======
+        async function openSession(sessionId) {
+            const res = await fetch(`/api/sessions/${sessionId}`);
+            const data = await res.json();
+
+            const session = data.session;
+            const attendance = data.attendance;
+            const scores = data.scores;
+            const answers = data.answers;
+
+            const date = new Date(session.started_at + "Z").toLocaleDateString(currentLang === "fr" ? "fr-FR" : "en-US", {
+                year: "numeric", month: "short", day: "numeric"
+            });
+
+            document.getElementById("detailTitle").textContent = session.lesson_title || "Untitled";
+
+            // Stats
+            const avgScore = scores.length > 0 ? Math.round(scores.reduce((sum, s) => sum + s.total_score, 0) / scores.length) : 0;
+            const avgAccuracy = scores.length > 0 ? Math.round(scores.reduce((sum, s) => sum + (s.total_answered > 0 ? (s.correct_count / s.total_answered) * 100 : 0), 0) / scores.length) : 0;
+
+            document.getElementById("statsRow").innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${attendance.length}</div>
+                    <div class="stat-label">${t("students")}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${session.total_questions}</div>
+                    <div class="stat-label">${t("questionsLabel")}s</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${avgScore}</div>
+                    <div class="stat-label">${t("score")} avg</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${avgAccuracy}%</div>
+                    <div class="stat-label">${t("correctAnswer")}</div>
+                </div>
+            `;
+
+            // Attendance tab
+            if (attendance.length === 0) {
+                document.getElementById("attendanceContent").innerHTML = `<div class="empty-state">${t("noAnswersRecorded")}</div>`;
+            } else {
+                document.getElementById("attendanceContent").innerHTML = attendance.map(a => {
+                    const time = new Date(a.joined_at + "Z").toLocaleTimeString(currentLang === "fr" ? "fr-FR" : "en-US", {
+                        hour: "2-digit", minute: "2-digit"
+                    });
+                    return `<div class="attendance-item">
+                        <div class="attendance-dot"></div>
+                        <div class="attendance-name">${escapeHtml(a.student_name)}</div>
+                        <div class="attendance-time">${time}</div>
+                    </div>`;
+                }).join("");
+            }
+
+            // Scores tab
+            if (scores.length === 0) {
+                document.getElementById("scoresContent").innerHTML = `<div class="empty-state">${t("noAnswersRecorded")}</div>`;
+            } else {
+                document.getElementById("scoresContent").innerHTML = scores.map((s, i) => {
+                    const rankClass = i < 3 ? `rank-${i + 1}` : "";
+                    const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}`;
+                    return `<div class="score-item">
+                        <div class="score-rank ${rankClass}">${medal}</div>
+                        <div class="score-name">${escapeHtml(s.student_name)}</div>
+                        <div class="score-detail">
+                            <div class="score-points">${s.total_score} ${t("pts")}</div>
+                            <div class="score-accuracy">${tFormat("correctCount", s.correct_count, s.total_answered)}</div>
+                        </div>
+                    </div>`;
+                }).join("");
+            }
+
+            // Questions tab — group answers by question
+            if (answers.length === 0) {
+                document.getElementById("questionsContent").innerHTML = `<div class="empty-state">${t("noAnswersRecorded")}</div>`;
+            } else {
+                const questionMap = new Map();
+                answers.forEach(a => {
+                    if (!questionMap.has(a.question_index)) {
+                        questionMap.set(a.question_index, {
+                            text: a.question_text || `${t("question")} ${a.question_index + 1}`,
+                            total: 0,
+                            correct: 0
+                        });
+                    }
+                    const q = questionMap.get(a.question_index);
+                    q.total++;
+                    if (a.is_correct) q.correct++;
+                });
+
+                document.getElementById("questionsContent").innerHTML = Array.from(questionMap.entries())
+                    .sort((a, b) => a[0] - b[0])
+                    .map(([idx, q]) => {
+                        const pct = q.total > 0 ? Math.round((q.correct / q.total) * 100) : 0;
+                        return `<div class="question-item">
+                            <div class="question-item-header">
+                                <div class="question-item-text">${escapeHtml(q.text)}</div>
+                                <div class="question-item-stat">${pct}% — ${tFormat("gotItRight", q.correct)}</div>
+                            </div>
+                            <div class="question-bar"><div class="question-bar-fill" style="width:${pct}%"></div></div>
+                        </div>`;
+                    }).join("");
+            }
+
+            showTab("attendance");
+            showScreen("detailScreen");
+        }
+
+        function escapeHtml(str) {
+            if (!str) return "";
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+
+        // Init
+        loadSessions();
+        updateUI();
+    </script>
+</body>
+</html>

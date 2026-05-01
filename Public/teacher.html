@@ -17,7 +17,8 @@
             -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px;
         }
         .header p { color: #94a3b8; font-size: 1rem; }
-        .nav-link { display: inline-block; color: #3b82f6; text-decoration: none; margin-top: 8px; font-size: 0.9rem; }
+        .nav-links { margin-top: 10px; display: flex; justify-content: center; gap: 20px; }
+        .nav-link { color: #3b82f6; text-decoration: none; font-size: 0.9rem; }
         .nav-link:hover { text-decoration: underline; }
         .lang-toggle {
             position: fixed; top: 16px; right: 16px; background: #334155; color: #e2e8f0;
@@ -86,7 +87,11 @@
     <div class="header">
         <h1>Classroom Connect</h1>
         <p id="headerSubtitle"></p>
-        <a href="/builder.html" class="nav-link" id="builderLink"></a>
+        <div class="nav-links">
+            <a href="/builder.html" class="nav-link" id="builderLink"></a>
+            <a href="/roster.html" class="nav-link" id="rosterLink"></a>
+            <a href="/history.html" class="nav-link" id="historyLink"></a>
+        </div>
     </div>
     <div class="main-layout">
         <div class="card connection-info">
@@ -172,6 +177,8 @@
             document.getElementById("langToggle").textContent = t("langToggle");
             document.getElementById("headerSubtitle").textContent = t("teacherDashboard");
             document.getElementById("builderLink").textContent = t("openBuilder");
+            document.getElementById("rosterLink").textContent = t("openRoster");
+            document.getElementById("historyLink").textContent = t("openHistory");
             document.getElementById("connectLabel").textContent = t("studentsConnectTo");
             document.getElementById("selectLessonTitle").textContent = t("selectLesson");
             document.getElementById("lobbyTitle").textContent = t("studentLobby");
@@ -189,9 +196,7 @@
             renderLessonList(lastLessons);
         }
 
-        async function loadLessons() {
-            const res = await fetch("/api/lessons"); lastLessons = await res.json(); renderLessonList(lastLessons);
-        }
+        async function loadLessons() { const res = await fetch("/api/lessons"); lastLessons = await res.json(); renderLessonList(lastLessons); }
 
         function renderLessonList(lessons) {
             const container = document.getElementById("lessonSelect");
@@ -203,8 +208,7 @@
                 const cs = l.contentCount + " " + t("contentSlides") + (l.contentCount !== 1 ? "s" : "");
                 const qs = l.questionCount + " " + t("questionsLabel") + (l.questionCount !== 1 ? "s" : "");
                 return `<div class="lesson-select-item ${selectedLessonId === l.id ? 'selected' : ''}" onclick="selectLesson('${l.id}')">
-                    <h3>${l.title}</h3><div class="lesson-select-meta">${cs} \u00b7 ${qs}</div>
-                </div>`;
+                    <h3>${l.title}</h3><div class="lesson-select-meta">${cs} · ${qs}</div></div>`;
             }).join("");
         }
 
@@ -231,8 +235,7 @@
                 document.getElementById("contentTitle").textContent = data.title;
                 document.getElementById("contentBody").textContent = data.body;
                 const img = document.getElementById("contentImage");
-                if (data.image) { img.src = data.image; img.style.display = "block"; }
-                else { img.style.display = "none"; }
+                if (data.image) { img.src = data.image; img.style.display = "block"; } else { img.style.display = "none"; }
             } else if (data.type === "question") {
                 questionIndex = data.questionIndex;
                 showScreen("questionScreen");
@@ -250,7 +253,7 @@
 
         socket.on("detailed-answer-status", (students) => {
             document.getElementById("studentTracker").innerHTML = students.map(s =>
-                s.hasAnswered ? `<div class="tracker-chip answered"><span>\u2713</span> ${s.name}</div>` : `<div class="tracker-chip waiting"><span>\u23F3</span> ${s.name}</div>`
+                s.hasAnswered ? `<div class="tracker-chip answered"><span>✓</span> ${s.name}</div>` : `<div class="tracker-chip waiting"><span>⏳</span> ${s.name}</div>`
             ).join("");
         });
 
@@ -259,12 +262,12 @@
         socket.on("question-results", (results) => {
             showScreen("resultsScreen");
             document.getElementById("resultsQuestionText").textContent = results.question;
-            document.getElementById("resultsSlideCounter").textContent = t("question") + " " + (questionIndex + 1) + " \u2014 " + t("results");
+            document.getElementById("resultsSlideCounter").textContent = t("question") + " " + (questionIndex + 1) + " — " + t("results");
             const maxCount = Math.max(...results.optionCounts, 1);
             const sLabel = (n) => n === 1 ? t("student") : t("students");
             document.getElementById("resultsBars").innerHTML = results.options.map((opt, i) => {
                 const count = results.optionCounts[i], isCorrect = i === results.correctIndex, width = (count / maxCount) * 100;
-                return `<div class="results-bar-container"><div class="results-bar-label"><span class="option-text">${opt}${isCorrect?" \u2713":""}</span><span class="option-count">${count} ${sLabel(count)}</span></div><div class="results-bar"><div class="results-bar-fill ${isCorrect?"correct":"incorrect"}" style="width:${width}%"></div></div></div>`;
+                return `<div class="results-bar-container"><div class="results-bar-label"><span class="option-text">${opt}${isCorrect?" ✓":""}</span><span class="option-count">${count} ${sLabel(count)}</span></div><div class="results-bar"><div class="results-bar-fill ${isCorrect?"correct":"incorrect"}" style="width:${width}%"></div></div></div>`;
             }).join("");
             document.getElementById("correctSummary").textContent = `${results.correctCount} ${t("ofAnswered")} ${results.totalStudents} ${t("answeredCorrectly")}`;
             if (results.leaderboard.length > 0) {
@@ -277,7 +280,7 @@
             showScreen("leaderboardScreen");
             document.getElementById("leaderboardList").innerHTML = leaderboard.map((s, i) => {
                 const rankClass = i < 3 ? `rank-${i+1}` : "";
-                const medal = i === 0 ? "\uD83E\uDD47" : i === 1 ? "\uD83E\uDD48" : i === 2 ? "\uD83E\uDD49" : `${i+1}`;
+                const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i+1}`;
                 return `<div class="leaderboard-item"><div class="leaderboard-rank ${rankClass}">${medal}</div><div class="leaderboard-name">${s.name}</div><div class="leaderboard-score">${s.score} ${t("pts")}</div></div>`;
             }).join("");
         });

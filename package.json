@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/MoussaJuniorSidibe/Classroom-Connect#readme",
   "dependencies": {
+    "better-sqlite3": "^12.9.0",
     "express": "^5.2.1",
     "socket.io": "^4.8.3"
   }
