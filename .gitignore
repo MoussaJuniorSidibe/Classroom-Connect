@@ -3,3 +3,4 @@ classroom-connect.db
 classroom-connect.db-wal
 classroom-connect.db-shm
 uploads/
+lessons/
