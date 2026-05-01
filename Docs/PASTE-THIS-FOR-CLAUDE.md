@@ -162,14 +162,14 @@ Lesson builder with content/question slides, lesson saving/loading/deleting, tea
 - **Student codes — COMPLETE.** Roster connected to live sessions. Students join with 4-digit codes. Teacher optionally selects a class when starting session.
 - **Cloud sync — POSTPONED.** Not cancelled, just not needed yet. Can be added at any stage, even after the app is fully packaged and in use. See Cloud Sync section.
 
-### Phase 4: Polish, Packaging & Launch
-- **QR code for student joining** — teacher's screen displays QR code, students scan to connect (DECIDED)
-- **Capacitor packaging** — Android first (covers majority of target users), iOS if demand exists (requires Mac + $99/yr Apple Developer account)
-- **UI/UX overhaul and brand identity** (see UI Vision section)
-- Additional question types
-- Exportable reports
-- Performance optimization for low-end devices
-- User testing with real teachers
+### Phase 4: Polish, Packaging & Launch — LOCKED PLAN
+- **Step 1: Exportable Reports — NOT STARTED.** Add download button on session history page. Exports session results as a spreadsheet (.xlsx) — student names, scores, per-question breakdown. Works fully offline (generated on the server, downloaded via browser). Makes the app immediately useful for real grading workflows.
+- **Step 2: QR Code for Student Joining — NOT STARTED.** Teacher dashboard displays a QR code that students scan to open the student page. Eliminates typing IP addresses. Already decided as the chosen method.
+- **Step 3: Additional Question Types — NOT STARTED.** Add at least short answer and/or image-based questions to give teachers more flexibility in lesson design.
+- **Step 4: User Testing — NOT STARTED.** Pause building. Test with a small group of real users (even 2-3 friends or a colleague). Collect feedback. Fix what comes up before continuing.
+- **Step 5: UI/UX Overhaul — NOT STARTED.** Complete visual redesign with real brand identity. Requires Moussa to collect visual references first (see UI Vision section).
+- **Step 6: Capacitor Packaging — NOT STARTED.** Wrap the app into an installable Android app. Teacher taps an icon, everything runs. Android first, iOS if demand exists (requires Mac + $99/yr Apple Developer account).
+- **Step 7: Pilot Launch — NOT STARTED.** Put it in the hands of real teachers in a real classroom.
 
 ## Packaging & Platform Strategy (Phase 4)
 
@@ -263,16 +263,12 @@ Classroom-Connect/
 
 ## Current Status
 <!-- UPDATE THIS SECTION AFTER EACH SESSION -->
-- **Current Phase:** Phase 3 COMPLETE. Cloud sync postponed by choice.
-- **Last Session:** April 30, 2026 — Planning session: discussed project direction, decided to postpone cloud sync, confirmed QR code for student joining, clarified packaging strategy (Android first, students never install an app)
-- **Next Step:** Polish existing features, test with real users, then Phase 4 (QR code, Capacitor packaging, UI overhaul)
+- **Current Phase:** Phase 4 — Step 1 (Exportable Reports) is next to build.
+- **Last Session:** April 30, 2026 — Planning session: locked Phase 4 step-by-step plan, postponed cloud sync, confirmed QR code for student joining, clarified packaging strategy
+- **Next Step:** Phase 4 Step 1 — Exportable Reports (history.html + server.js)
 
 ## Priority Order Going Forward
-1. **Polish existing features** — UI improvements, new question types, export features
-2. **Test with real users** — even a small group to discover what needs fixing
-3. **Phase 4: QR code + Capacitor packaging** — turn it into an installable Android app with professional student onboarding
-4. **Phase 4: UI/UX overhaul** — brand identity, visual polish
-5. **Cloud sync with Supabase** — add whenever it becomes needed
+Follow the Phase 4 step-by-step plan above (Steps 1-7). Cloud sync with Supabase comes after Phase 4, whenever it becomes needed.
 
 ## Session Log
 <!-- ADD NEW ENTRIES AFTER EACH SESSION -->
@@ -287,4 +283,4 @@ Classroom-Connect/
 | April 30, 2026 | Phase 3 Step 2: Student roster management — classes and student lists with database storage | Step 3: History |
 | April 30, 2026 | Phase 3 Step 3: Session history page — attendance, scores, question breakdown | Student codes |
 | April 30, 2026 | Phase 3: Student codes — 4-digit codes, roster connected to live sessions, teacher class selection | Cloud sync (new session) |
-| April 30, 2026 | Planning session: Postponed cloud sync, chose QR code for student joining, clarified packaging strategy (Android first, teacher-only app, students use browser), established priority order for remaining work | Polish features + real user testing |
+| April 30, 2026 | Planning session: Postponed cloud sync, chose QR code for student joining, clarified packaging strategy (Android first, teacher-only app, students use browser), locked Phase 4 step-by-step plan (7 steps from exportable reports through pilot launch) | Phase 4 Step 1: Exportable Reports |
