@@ -10,62 +10,70 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 app.use(express.static("public"));
-app.use(express.json({ limit: "10mb" }));
+app.use(express.json({ limit: "20mb" }));
+
+// Serve uploaded images
+const UPLOADS_DIR = path.join(__dirname, "uploads");
+if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR);
+app.use("/uploads", express.static(UPLOADS_DIR));
 
 // ====== LESSON STORAGE ======
 const LESSONS_DIR = path.join(__dirname, "lessons");
-if (!fs.existsSync(LESSONS_DIR)) {
-  fs.mkdirSync(LESSONS_DIR);
-}
+if (!fs.existsSync(LESSONS_DIR)) fs.mkdirSync(LESSONS_DIR);
 
-// API: Get all lessons
 app.get("/api/lessons", (req, res) => {
   const files = fs.readdirSync(LESSONS_DIR).filter(f => f.endsWith(".json"));
   const lessons = files.map(f => {
     const data = JSON.parse(fs.readFileSync(path.join(LESSONS_DIR, f), "utf-8"));
     return {
-      id: data.id,
-      title: data.title,
+      id: data.id, title: data.title,
       slideCount: data.slides.length,
       questionCount: data.slides.filter(s => s.type === "question").length,
       contentCount: data.slides.filter(s => s.type === "content").length,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt
+      createdAt: data.createdAt, updatedAt: data.updatedAt
     };
   });
   res.json(lessons);
 });
 
-// API: Get one lesson
 app.get("/api/lessons/:id", (req, res) => {
   const filePath = path.join(LESSONS_DIR, `${req.params.id}.json`);
-  if (!fs.existsSync(filePath)) {
-    return res.status(404).json({ error: "Lesson not found" });
-  }
-  const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-  res.json(data);
+  if (!fs.existsSync(filePath)) return res.status(404).json({ error: "Lesson not found" });
+  res.json(JSON.parse(fs.readFileSync(filePath, "utf-8")));
 });
 
-// API: Save a lesson (create or update)
 app.post("/api/lessons", (req, res) => {
   const lesson = req.body;
-  if (!lesson.id) {
-    lesson.id = "lesson_" + Date.now();
-    lesson.createdAt = new Date().toISOString();
-  }
+  if (!lesson.id) { lesson.id = "lesson_" + Date.now(); lesson.createdAt = new Date().toISOString(); }
   lesson.updatedAt = new Date().toISOString();
-  const filePath = path.join(LESSONS_DIR, `${lesson.id}.json`);
-  fs.writeFileSync(filePath, JSON.stringify(lesson, null, 2));
+  fs.writeFileSync(path.join(LESSONS_DIR, `${lesson.id}.json`), JSON.stringify(lesson, null, 2));
   res.json({ success: true, id: lesson.id });
 });
 
-// API: Delete a lesson
 app.delete("/api/lessons/:id", (req, res) => {
   const filePath = path.join(LESSONS_DIR, `${req.params.id}.json`);
-  if (fs.existsSync(filePath)) {
-    fs.unlinkSync(filePath);
-  }
+  if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
   res.json({ success: true });
+});
+
+// ====== IMAGE UPLOAD ======
+app.post("/api/upload-image", (req, res) => {
+  const { filename, data } = req.body;
+  if (!filename || !data) return res.status(400).json({ error: "Missing filename or data" });
+
+  // Extract base64 data (remove data URL prefix if present)
+  const base64Data = data.replace(/^data:image\/\w+;base64,/, "");
+  const buffer = Buffer.from(base64Data, "base64");
+
+  // Generate unique filename
+  const ext = path.extname(filename).toLowerCase() || ".jpg";
+  const safeName = "img_" + Date.now() + "_" + Math.random().toString(36).substring(2, 8) + ext;
+  const filePath = path.join(UPLOADS_DIR, safeName);
+
+  fs.writeFileSync(filePath, buffer);
+  console.log(`Image uploaded: ${safeName} (${(buffer.length / 1024).toFixed(1)} KB)`);
+
+  res.json({ success: true, url: "/uploads/" + safeName });
 });
 
 // ====== GAME STATE ======
@@ -86,8 +94,7 @@ function calculatePoints(isCorrect, responseTimeMs, timeLimitMs) {
   const basePoints = 1000;
   const maxSpeedBonus = 500;
   const timeRatio = Math.max(0, 1 - (responseTimeMs / timeLimitMs));
-  const speedBonus = Math.round(maxSpeedBonus * timeRatio);
-  return basePoints + speedBonus;
+  return basePoints + Math.round(maxSpeedBonus * timeRatio);
 }
 
 // ====== SOCKET CONNECTIONS ======
@@ -96,62 +103,41 @@ io.on("connection", (socket) => {
 
   socket.on("student-join", (name) => {
     students.set(socket.id, {
-      name: name,
-      joinedAt: new Date(),
-      score: 0,
-      answers: [],
-      hasAnswered: false
+      name, joinedAt: new Date(), score: 0, answers: [], hasAnswered: false
     });
     console.log(`Student joined: ${name}`);
     io.emit("student-list", getStudentList());
     io.emit("answer-status", getAnswerStatus());
     io.emit("detailed-answer-status", getDetailedAnswerStatus());
 
-    // If session is active, send current slide
     if (sessionActive && slideIndex >= 0 && slideIndex < currentSlides.length) {
       const slide = currentSlides[slideIndex];
       if (slide.type === "content") {
         socket.emit("content-slide", {
-          index: slideIndex,
-          total: currentSlides.length,
-          title: slide.title || "",
-          body: slide.body || ""
+          index: slideIndex, total: currentSlides.length,
+          title: slide.title || "", body: slide.body || "", image: slide.image || null
         });
       } else if (slide.type === "question") {
         const qIdx = currentQuestions.indexOf(slide);
         socket.emit("question", {
-          index: qIdx,
-          total: currentQuestions.length,
-          question: slide.question,
-          options: slide.options,
-          type: slide.questionType || "mcq",
-          timeLimit: slide.timeLimit || 20
+          index: qIdx, total: currentQuestions.length,
+          question: slide.question, options: slide.options,
+          type: slide.questionType || "mcq", timeLimit: slide.timeLimit || 20
         });
       }
     }
   });
 
-  // Teacher loads a lesson and starts session
   socket.on("start-session", (lessonId) => {
     const filePath = path.join(LESSONS_DIR, `${lessonId}.json`);
-    if (!fs.existsSync(filePath)) {
-      socket.emit("error", "Lesson not found");
-      return;
-    }
+    if (!fs.existsSync(filePath)) { socket.emit("error", "Lesson not found"); return; }
 
     currentLesson = JSON.parse(fs.readFileSync(filePath, "utf-8"));
     currentSlides = currentLesson.slides;
     currentQuestions = currentSlides.filter(s => s.type === "question");
-    sessionActive = true;
-    slideIndex = -1;
-    questionIndex = -1;
-    currentQuestion = null;
+    sessionActive = true; slideIndex = -1; questionIndex = -1; currentQuestion = null;
 
-    students.forEach((student) => {
-      student.score = 0;
-      student.answers = [];
-      student.hasAnswered = false;
-    });
+    students.forEach(s => { s.score = 0; s.answers = []; s.hasAnswered = false; });
 
     io.emit("session-started", {
       title: currentLesson.title,
@@ -161,77 +147,48 @@ io.on("connection", (socket) => {
     console.log(`Session started with lesson: ${currentLesson.title}`);
   });
 
-  // Teacher advances to next slide
   socket.on("next-slide", () => {
     slideIndex++;
     pendingResults.clear();
 
     if (slideIndex >= currentSlides.length) {
-      // Session is over
-      const leaderboard = getLeaderboard();
-      io.emit("session-ended", leaderboard);
-      sessionActive = false;
-      currentQuestion = null;
-      currentLesson = null;
-      console.log("Session ended! Final leaderboard sent.");
+      io.emit("session-ended", getLeaderboard());
+      sessionActive = false; currentQuestion = null; currentLesson = null;
+      console.log("Session ended!");
       return;
     }
 
     const slide = currentSlides[slideIndex];
 
     if (slide.type === "content") {
-      // Send content slide to everyone
       io.emit("content-slide", {
-        index: slideIndex,
-        total: currentSlides.length,
-        title: slide.title || "",
-        body: slide.body || ""
+        index: slideIndex, total: currentSlides.length,
+        title: slide.title || "", body: slide.body || "", image: slide.image || null
       });
-
-      // Tell teacher it's a content slide
       io.emit("teacher-slide-info", {
-        slideIndex: slideIndex,
-        totalSlides: currentSlides.length,
-        type: "content",
-        title: slide.title || "",
-        body: slide.body || ""
+        slideIndex, totalSlides: currentSlides.length, type: "content",
+        title: slide.title || "", body: slide.body || "", image: slide.image || null
       });
-
       console.log(`Content slide ${slideIndex + 1}/${currentSlides.length}: ${slide.title}`);
 
     } else if (slide.type === "question") {
       questionIndex++;
       currentQuestion = slide;
       questionStartTime = Date.now();
+      students.forEach(s => { s.hasAnswered = false; });
 
-      students.forEach((student) => {
-        student.hasAnswered = false;
-      });
-
-      // Send question to students
       io.emit("question", {
-        index: questionIndex,
-        total: currentQuestions.length,
-        question: slide.question,
-        options: slide.options,
-        type: slide.questionType || "mcq",
-        timeLimit: slide.timeLimit || 20
+        index: questionIndex, total: currentQuestions.length,
+        question: slide.question, options: slide.options,
+        type: slide.questionType || "mcq", timeLimit: slide.timeLimit || 20
       });
-
-      // Tell teacher about the question
       io.emit("teacher-slide-info", {
-        slideIndex: slideIndex,
-        totalSlides: currentSlides.length,
-        type: "question",
-        question: slide.question,
-        options: slide.options,
-        questionIndex: questionIndex,
-        totalQuestions: currentQuestions.length
+        slideIndex, totalSlides: currentSlides.length, type: "question",
+        question: slide.question, options: slide.options,
+        questionIndex, totalQuestions: currentQuestions.length
       });
-
       io.emit("answer-status", getAnswerStatus());
       io.emit("detailed-answer-status", getDetailedAnswerStatus());
-
       console.log(`Question ${questionIndex + 1}/${currentQuestions.length}: ${slide.question}`);
     }
   });
@@ -247,50 +204,29 @@ io.on("connection", (socket) => {
 
     student.hasAnswered = true;
     student.score += points;
-    student.answers.push({
-      questionIndex: questionIndex,
-      answerIndex: answerIndex,
-      isCorrect: isCorrect,
-      points: points,
-      responseTime: responseTime
-    });
+    student.answers.push({ questionIndex, answerIndex, isCorrect, points, responseTime });
 
     pendingResults.set(socket.id, {
-      isCorrect: isCorrect,
-      points: points,
-      totalScore: student.score,
-      correctIndex: currentQuestion.correctIndex
+      isCorrect, points, totalScore: student.score, correctIndex: currentQuestion.correctIndex
     });
 
     socket.emit("answer-received");
     io.emit("answer-status", getAnswerStatus());
     io.emit("detailed-answer-status", getDetailedAnswerStatus());
-
-    console.log(`${student.name} submitted answer (result hidden until reveal)`);
   });
 
   socket.on("show-results", () => {
     if (!currentQuestion) return;
-
-    pendingResults.forEach((result, socketId) => {
-      io.to(socketId).emit("answer-result", result);
-    });
-
-    students.forEach((student, socketId) => {
+    pendingResults.forEach((result, sid) => { io.to(sid).emit("answer-result", result); });
+    students.forEach((student, sid) => {
       if (!student.hasAnswered) {
-        io.to(socketId).emit("answer-result", {
-          isCorrect: false,
-          points: 0,
-          totalScore: student.score,
-          correctIndex: currentQuestion.correctIndex,
-          didNotAnswer: true
+        io.to(sid).emit("answer-result", {
+          isCorrect: false, points: 0, totalScore: student.score,
+          correctIndex: currentQuestion.correctIndex, didNotAnswer: true
         });
       }
     });
-
-    const results = getQuestionResults();
-    io.emit("question-results", results);
-    console.log("Teacher revealed results!");
+    io.emit("question-results", getQuestionResults());
   });
 
   socket.on("disconnect", () => {
@@ -306,64 +242,31 @@ io.on("connection", (socket) => {
   });
 });
 
-// ====== HELPER FUNCTIONS ======
-function getStudentList() {
-  return Array.from(students.values()).map(s => ({
-    name: s.name,
-    score: s.score
-  }));
-}
-
-function getLeaderboard() {
-  return Array.from(students.values())
-    .map(s => ({ name: s.name, score: s.score }))
-    .sort((a, b) => b.score - a.score);
-}
-
-function getAnswerStatus() {
-  const total = students.size;
-  const answered = Array.from(students.values()).filter(s => s.hasAnswered).length;
-  return { answered, total };
-}
-
-function getDetailedAnswerStatus() {
-  return Array.from(students.values()).map(s => ({
-    name: s.name,
-    hasAnswered: s.hasAnswered
-  }));
-}
-
+// ====== HELPERS ======
+function getStudentList() { return Array.from(students.values()).map(s => ({ name: s.name, score: s.score })); }
+function getLeaderboard() { return Array.from(students.values()).map(s => ({ name: s.name, score: s.score })).sort((a, b) => b.score - a.score); }
+function getAnswerStatus() { const total = students.size; return { answered: Array.from(students.values()).filter(s => s.hasAnswered).length, total }; }
+function getDetailedAnswerStatus() { return Array.from(students.values()).map(s => ({ name: s.name, hasAnswered: s.hasAnswered })); }
 function getQuestionResults() {
   const optionCounts = currentQuestion.options.map(() => 0);
   let correctCount = 0;
-
-  students.forEach((student) => {
-    const lastAnswer = student.answers[student.answers.length - 1];
-    if (lastAnswer && lastAnswer.questionIndex === questionIndex) {
-      optionCounts[lastAnswer.answerIndex]++;
-      if (lastAnswer.isCorrect) correctCount++;
-    }
+  students.forEach(s => {
+    const a = s.answers[s.answers.length - 1];
+    if (a && a.questionIndex === questionIndex) { optionCounts[a.answerIndex]++; if (a.isCorrect) correctCount++; }
   });
-
   return {
-    question: currentQuestion.question,
-    options: currentQuestion.options,
-    correctIndex: currentQuestion.correctIndex,
-    optionCounts: optionCounts,
-    correctCount: correctCount,
-    totalStudents: students.size,
-    leaderboard: getLeaderboard().slice(0, 5)
+    question: currentQuestion.question, options: currentQuestion.options,
+    correctIndex: currentQuestion.correctIndex, optionCounts, correctCount,
+    totalStudents: students.size, leaderboard: getLeaderboard().slice(0, 5)
   };
 }
 
-// ====== START SERVER ======
+// ====== START ======
 function getLocalIP() {
   const interfaces = os.networkInterfaces();
   for (const name of Object.keys(interfaces)) {
     for (const iface of interfaces[name]) {
-      if (iface.family === "IPv4" && !iface.internal) {
-        return iface.address;
-      }
+      if (iface.family === "IPv4" && !iface.internal) return iface.address;
     }
   }
   return "localhost";

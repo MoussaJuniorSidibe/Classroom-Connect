@@ -19,117 +19,96 @@
         .header p { color: #94a3b8; font-size: 1rem; }
         .nav-link { display: inline-block; color: #3b82f6; text-decoration: none; margin-top: 8px; font-size: 0.9rem; }
         .nav-link:hover { text-decoration: underline; }
-
         .lang-toggle {
-            position: fixed; top: 16px; right: 16px;
-            background: #334155; color: #e2e8f0; border: 1px solid #475569;
-            padding: 6px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 700;
-            cursor: pointer; z-index: 100; transition: all 0.2s;
+            position: fixed; top: 16px; right: 16px; background: #334155; color: #e2e8f0;
+            border: 1px solid #475569; padding: 6px 14px; border-radius: 8px; font-size: 0.85rem;
+            font-weight: 700; cursor: pointer; z-index: 100;
         }
         .lang-toggle:hover { background: #475569; }
-
         .main-layout { max-width: 800px; margin: 0 auto; }
         .card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 24px; margin-bottom: 16px; }
-
-        label {
-            display: block; color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px;
-            text-transform: uppercase; letter-spacing: 1px;
-        }
-        input[type="text"], input[type="number"], textarea, select {
+        label { display: block; color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
+        input[type="text"], input[type="number"], textarea {
             width: 100%; padding: 12px 16px; background: #0f172a; border: 2px solid #334155;
             border-radius: 10px; color: #f1f5f9; font-size: 1rem; font-family: inherit;
-            outline: none; margin-bottom: 16px; transition: border-color 0.2s;
+            outline: none; margin-bottom: 16px;
         }
-        input:focus, textarea:focus, select:focus { border-color: #3b82f6; }
+        input:focus, textarea:focus { border-color: #3b82f6; }
         textarea { resize: vertical; min-height: 80px; }
-
-        .btn {
-            padding: 12px 24px; border: none; border-radius: 10px; font-size: 1rem;
-            font-weight: 700; cursor: pointer; transition: transform 0.1s, opacity 0.2s;
-        }
+        .btn { padding: 12px 24px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; }
         .btn:hover { opacity: 0.9; } .btn:active { transform: scale(0.98); }
         .btn-primary { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; }
         .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: white; }
         .btn-secondary { background: #334155; color: #e2e8f0; }
+        .btn-danger { background: #ef4444; color: white; }
         .btn-sm { padding: 8px 16px; font-size: 0.85rem; }
-        .btn-full { width: 100%; }
         .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
-
         .lesson-title-input { font-size: 1.3rem; font-weight: 700; padding: 16px; }
         .add-slide-bar { display: flex; gap: 10px; margin-bottom: 20px; }
         .add-slide-bar .btn { flex: 1; }
-
         .slide-item {
             background: #0f172a; border: 2px solid #334155; border-radius: 12px;
-            padding: 16px; margin-bottom: 10px; animation: slideIn 0.3s ease; transition: border-color 0.2s;
+            padding: 16px; margin-bottom: 10px; transition: border-color 0.2s;
         }
         .slide-item:hover { border-color: #475569; }
         .slide-item.editing { border-color: #3b82f6; }
-
         .slide-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
         .slide-number {
             background: #334155; color: #94a3b8; width: 32px; height: 32px; border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.85rem; font-weight: 700; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; flex-shrink: 0;
         }
         .slide-type-badge { padding: 3px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
         .badge-content { background: #1e3a5f; color: #60a5fa; }
         .badge-question { background: #3b1f63; color: #c084fc; }
         .slide-title-text { flex: 1; font-weight: 600; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .slide-actions { display: flex; gap: 4px; flex-shrink: 0; }
-
         .icon-btn {
-            background: none; border: 1px solid #334155; color: #94a3b8;
-            width: 32px; height: 32px; border-radius: 6px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; font-size: 0.85rem; transition: all 0.2s;
+            background: none; border: 1px solid #334155; color: #94a3b8; width: 32px; height: 32px;
+            border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.85rem;
         }
         .icon-btn:hover { background: #334155; color: #f1f5f9; }
         .icon-btn.delete:hover { background: #450a0a; color: #ef4444; border-color: #ef4444; }
-
-        .slide-editor {
-            display: none; background: #1e293b; border: 2px solid #3b82f6;
-            border-radius: 12px; padding: 20px; margin-bottom: 10px; animation: slideIn 0.3s ease;
-        }
+        .slide-editor { display: none; background: #1e293b; border: 2px solid #3b82f6; border-radius: 12px; padding: 20px; margin-bottom: 10px; }
         .slide-editor.active { display: block; }
         .slide-editor h3 { font-size: 1.1rem; margin-bottom: 16px; color: #e2e8f0; }
-
         .option-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
         .option-row input[type="text"] { flex: 1; margin-bottom: 0; }
         .correct-radio { width: 20px; height: 20px; cursor: pointer; accent-color: #10b981; }
-
         .empty-slides { text-align: center; padding: 40px; color: #64748b; }
         .empty-slides .icon { font-size: 2.5rem; margin-bottom: 8px; }
-
         .save-bar { display: flex; gap: 10px; justify-content: space-between; align-items: center; }
         .save-status { color: #64748b; font-size: 0.85rem; }
         .save-status.saved { color: #10b981; }
-
         .screen { display: none; } .screen.active { display: block; }
-
         .lesson-list-item {
-            background: #0f172a; border: 2px solid #334155; border-radius: 12px;
-            padding: 16px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s;
-            display: flex; justify-content: space-between; align-items: center;
+            background: #0f172a; border: 2px solid #334155; border-radius: 12px; padding: 16px;
+            margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
         }
         .lesson-list-item:hover { border-color: #3b82f6; }
         .lesson-info h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 4px; }
         .lesson-meta { color: #64748b; font-size: 0.85rem; }
         .lesson-actions { display: flex; gap: 6px; }
 
-        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Image upload styles */
+        .image-upload-area {
+            margin-bottom: 16px;
+        }
+        .image-preview {
+            width: 100%; max-height: 200px; object-fit: contain; border-radius: 8px;
+            background: #0f172a; border: 1px solid #334155; margin-bottom: 8px;
+        }
+        .image-btn-row { display: flex; gap: 8px; }
+        .upload-status { color: #f59e0b; font-size: 0.85rem; margin-top: 4px; }
     </style>
 </head>
 <body>
     <button class="lang-toggle" id="langToggle" onclick="toggleLanguage()">FR</button>
-
     <div class="header">
         <h1 id="builderTitle"></h1>
         <p id="builderSubtitle"></p>
         <a href="/teacher.html" class="nav-link" id="backLink"></a>
     </div>
-
     <div class="main-layout">
-        <!-- LESSON LIST -->
         <div class="screen active" id="listScreen">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
                 <h2 id="myLessonsTitle"></h2>
@@ -137,22 +116,17 @@
             </div>
             <div id="lessonList"></div>
         </div>
-
-        <!-- EDITOR -->
         <div class="screen" id="editorScreen">
             <div class="card">
                 <label id="titleLabel"></label>
                 <input type="text" id="lessonTitle" class="lesson-title-input">
             </div>
-
             <div class="add-slide-bar">
                 <button class="btn btn-secondary" onclick="addContentSlide()" id="addContentBtn"></button>
                 <button class="btn btn-secondary" onclick="addQuestionSlide('mcq')" id="addMCQBtn"></button>
                 <button class="btn btn-secondary" onclick="addQuestionSlide('truefalse')" id="addTFBtn"></button>
             </div>
-
             <div class="slide-list" id="slideList"></div>
-
             <div class="card">
                 <div class="save-bar">
                     <span class="save-status" id="saveStatus"></span>
@@ -165,12 +139,16 @@
         </div>
     </div>
 
+    <!-- Hidden file input for image uploads -->
+    <input type="file" id="imageFileInput" accept="image/*" style="display:none;" onchange="handleImageSelected(event)">
+
     <script src="/i18n.js"></script>
     <script>
         let currentLessonId = null;
         let slides = [];
         let editingSlideIndex = -1;
         let saveStatusState = "notSaved";
+        let pendingImageSlideIndex = -1;
 
         function showScreen(id) {
             document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
@@ -191,18 +169,7 @@
             document.getElementById("addTFBtn").textContent = t("addTrueFalse");
             document.getElementById("backBtn").textContent = t("back");
             document.getElementById("saveBtn").textContent = t("saveLesson");
-
-            if (saveStatusState === "saved") {
-                document.getElementById("saveStatus").textContent = t("saved");
-                document.getElementById("saveStatus").className = "save-status saved";
-            } else if (saveStatusState === "unsaved") {
-                document.getElementById("saveStatus").textContent = t("unsavedChanges");
-                document.getElementById("saveStatus").className = "save-status";
-            } else {
-                document.getElementById("saveStatus").textContent = t("notSaved");
-                document.getElementById("saveStatus").className = "save-status";
-            }
-
+            updateSaveStatus();
             renderSlides();
             loadLessons();
         }
@@ -212,12 +179,10 @@
             const res = await fetch("/api/lessons");
             const lessons = await res.json();
             const container = document.getElementById("lessonList");
-
             if (lessons.length === 0) {
                 container.innerHTML = `<div class="empty-slides"><div class="icon">\uD83D\uDCDA</div><div>${t("noLessonsYet")}</div></div>`;
                 return;
             }
-
             container.innerHTML = lessons.map(l => {
                 const cs = l.contentCount + " " + t("contentSlides") + (l.contentCount !== 1 ? "s" : "");
                 const qs = l.questionCount + " " + t("questionsLabel") + (l.questionCount !== 1 ? "s" : "");
@@ -227,8 +192,8 @@
                         <div class="lesson-meta">${cs} \u00b7 ${qs}</div>
                     </div>
                     <div class="lesson-actions">
-                        <button class="icon-btn" onclick="editLesson('${l.id}')" title="Edit">\u270F\uFE0F</button>
-                        <button class="icon-btn delete" onclick="deleteLesson('${l.id}', event)" title="Delete">\uD83D\uDDD1\uFE0F</button>
+                        <button class="icon-btn" onclick="editLesson('${l.id}')">\u270F\uFE0F</button>
+                        <button class="icon-btn delete" onclick="deleteLesson('${l.id}', event)">\uD83D\uDDD1\uFE0F</button>
                     </div>
                 </div>`;
             }).join("");
@@ -261,7 +226,7 @@
 
         // ====== SLIDES ======
         function addContentSlide() {
-            slides.push({ type: "content", title: "", body: "" });
+            slides.push({ type: "content", title: "", body: "", image: null });
             editingSlideIndex = slides.length - 1; markUnsaved(); renderSlides();
         }
 
@@ -304,12 +269,13 @@
                 const badgeClass = isContent ? "badge-content" : "badge-question";
                 const badgeText = isContent ? t("content") : (slide.questionType === "truefalse" ? t("trueFalseLabel") : t("mcqLabel"));
                 const displayTitle = isContent ? (slide.title || t("untitledSlide")) : (slide.question || t("untitledQuestion"));
+                const hasImage = isContent && slide.image ? " \uD83D\uDDBC\uFE0F" : "";
 
                 let html = `<div class="slide-item ${isEditing ? 'editing' : ''}" onclick="toggleEdit(${i})">
                     <div class="slide-header">
                         <div class="slide-number">${i + 1}</div>
                         <span class="slide-type-badge ${badgeClass}">${badgeText}</span>
-                        <div class="slide-title-text">${escapeHtml(displayTitle)}</div>
+                        <div class="slide-title-text">${escapeHtml(displayTitle)}${hasImage}</div>
                         <div class="slide-actions" onclick="event.stopPropagation()">
                             <button class="icon-btn" onclick="moveSlide(${i},-1)" ${i === 0 ? 'disabled style="opacity:0.3"' : ''}>\u2191</button>
                             <button class="icon-btn" onclick="moveSlide(${i},1)" ${i === slides.length - 1 ? 'disabled style="opacity:0.3"' : ''}>\u2193</button>
@@ -325,12 +291,24 @@
 
         function renderEditor(slide, i) {
             if (slide.type === "content") {
+                const imageSection = slide.image
+                    ? `<img src="${slide.image}" class="image-preview">
+                       <div class="image-btn-row">
+                           <button class="btn btn-sm btn-secondary" onclick="triggerImageUpload(${i})">${t("changeImage")}</button>
+                           <button class="btn btn-sm btn-danger" onclick="removeImage(${i})">${t("removeImage")}</button>
+                       </div>`
+                    : `<button class="btn btn-sm btn-secondary" onclick="triggerImageUpload(${i})">${t("addImage")}</button>`;
+
                 return `<div class="slide-editor active" onclick="event.stopPropagation()">
                     <h3>${t("editContentSlide")}</h3>
                     <label>${t("slideTitle")}</label>
                     <input type="text" value="${escapeHtml(slide.title)}" oninput="updateField(${i},'title',this.value)" placeholder="${t("slideTitlePlaceholder")}">
                     <label>${t("contentLabel")}</label>
                     <textarea rows="5" oninput="updateField(${i},'body',this.value)" placeholder="${t("contentPlaceholder")}">${escapeHtml(slide.body)}</textarea>
+                    <label>${t("imageLabel")}</label>
+                    <div class="image-upload-area" id="imageArea_${i}">
+                        ${imageSection}
+                    </div>
                     <button class="btn btn-sm btn-secondary" onclick="toggleEdit(${i})">${t("done")}</button>
                 </div>`;
             }
@@ -375,6 +353,65 @@
             </div>`;
         }
 
+        // ====== IMAGE UPLOAD ======
+        function triggerImageUpload(slideIndex) {
+            pendingImageSlideIndex = slideIndex;
+            document.getElementById("imageFileInput").click();
+        }
+
+        async function handleImageSelected(event) {
+            const file = event.target.files[0];
+            if (!file || pendingImageSlideIndex < 0) return;
+
+            const slideIndex = pendingImageSlideIndex;
+            pendingImageSlideIndex = -1;
+
+            // Show uploading status
+            const area = document.getElementById("imageArea_" + slideIndex);
+            if (area) area.innerHTML = `<div class="upload-status">${t("uploading")}</div>`;
+
+            try {
+                // Read file as base64
+                const base64 = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+
+                // Upload to server
+                const res = await fetch("/api/upload-image", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ filename: file.name, data: base64 })
+                });
+
+                const result = await res.json();
+
+                if (result.success) {
+                    slides[slideIndex].image = result.url;
+                    markUnsaved();
+                    renderSlides();
+                } else {
+                    alert(t("uploadFailed"));
+                    renderSlides();
+                }
+            } catch (err) {
+                console.error("Upload error:", err);
+                alert(t("uploadFailed"));
+                renderSlides();
+            }
+
+            // Reset file input so same file can be selected again
+            event.target.value = "";
+        }
+
+        function removeImage(slideIndex) {
+            slides[slideIndex].image = null;
+            markUnsaved();
+            renderSlides();
+        }
+
         // ====== DATA UPDATES ======
         function updateField(i, field, value) {
             slides[i][field] = value; markUnsaved();
@@ -400,7 +437,6 @@
             const title = document.getElementById("lessonTitle").value.trim();
             if (!title) { document.getElementById("lessonTitle").style.borderColor = "#ef4444"; document.getElementById("lessonTitle").focus(); return; }
             if (slides.length === 0) { alert(t("addSlideFirst")); return; }
-
             const lesson = { id: currentLessonId, title, slides };
             const res = await fetch("/api/lessons", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(lesson) });
             const data = await res.json();
@@ -422,7 +458,6 @@
             return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
         }
 
-        // Init
         loadLessons();
         updateUI();
     </script>

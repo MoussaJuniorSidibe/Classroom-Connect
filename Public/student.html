@@ -6,141 +6,89 @@
     <title>Classroom Connect</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background: #0f172a; color: #f1f5f9;
             min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
         }
-
         .container { max-width: 420px; width: 100%; }
-        .screen { display: none; }
-        .screen.active { display: block; }
-
+        .screen { display: none; } .screen.active { display: block; }
         .lang-toggle {
-            position: fixed; top: 16px; right: 16px;
-            background: #334155; color: #e2e8f0; border: 1px solid #475569;
-            padding: 6px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 700;
-            cursor: pointer; z-index: 100; transition: all 0.2s;
+            position: fixed; top: 16px; right: 16px; background: #334155; color: #e2e8f0;
+            border: 1px solid #475569; padding: 6px 14px; border-radius: 8px; font-size: 0.85rem;
+            font-weight: 700; cursor: pointer; z-index: 100;
         }
         .lang-toggle:hover { background: #475569; }
-
         .title {
-            font-size: 2rem; font-weight: 800;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin-bottom: 8px; text-align: center;
+            font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; text-align: center;
         }
         .subtitle { color: #94a3b8; margin-bottom: 32px; text-align: center; }
-
-        .card {
-            background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 28px;
-        }
-        .card label {
-            display: block; color: #94a3b8; font-size: 0.85rem;
-            margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;
-        }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 28px; }
+        .card label { display: block; color: #94a3b8; font-size: 0.85rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
         .card input {
-            width: 100%; padding: 14px 18px; background: #0f172a;
-            border: 2px solid #334155; border-radius: 10px; color: #f1f5f9;
-            font-size: 1.1rem; outline: none; margin-bottom: 20px; transition: border-color 0.2s;
+            width: 100%; padding: 14px 18px; background: #0f172a; border: 2px solid #334155;
+            border-radius: 10px; color: #f1f5f9; font-size: 1.1rem; outline: none; margin-bottom: 20px;
         }
         .card input:focus { border-color: #3b82f6; }
-
-        .btn {
-            width: 100%; padding: 14px; border: none; border-radius: 10px;
-            font-size: 1.1rem; font-weight: 700; cursor: pointer;
-            transition: transform 0.1s, opacity 0.2s;
-        }
-        .btn:hover { opacity: 0.9; }
-        .btn:active { transform: scale(0.98); }
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: 700; cursor: pointer; }
+        .btn:hover { opacity: 0.9; } .btn:active { transform: scale(0.98); }
         .btn-primary { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; }
-
         .welcome-name { font-size: 1.2rem; color: #8b5cf6; font-weight: 700; margin-bottom: 8px; text-align: center; }
         .waiting-message { color: #94a3b8; font-size: 1rem; margin-bottom: 24px; text-align: center; }
-
-        .pulse {
-            display: inline-block; width: 10px; height: 10px;
-            background: #10b981; border-radius: 50%; margin-right: 8px; animation: pulse 2s infinite;
-        }
+        .pulse { display: inline-block; width: 10px; height: 10px; background: #10b981; border-radius: 50%; margin-right: 8px; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-        .count-box {
-            background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 24px; text-align: center;
-        }
+        .count-box { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 24px; text-align: center; }
         .count-box .number { font-size: 2.5rem; font-weight: 800; color: #3b82f6; }
         .count-box .label { color: #94a3b8; font-size: 0.9rem; margin-top: 4px; }
 
-        .slide-counter {
-            text-align: center; color: #94a3b8; font-size: 0.85rem;
-            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+        /* Content slide — larger display */
+        .content-card {
+            background: #1e293b; border: 1px solid #334155; border-radius: 16px;
+            padding: 32px 28px; min-height: 50vh; display: flex; flex-direction: column; justify-content: center;
         }
-        .slide-type-indicator {
-            display: inline-block; padding: 3px 10px; border-radius: 6px;
-            font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 12px;
-        }
+        .slide-counter { text-align: center; color: #94a3b8; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+        .slide-type-indicator { display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 16px; }
         .type-content { background: #1e3a5f; color: #60a5fa; }
+        .content-slide-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 16px; line-height: 1.4; }
+        .content-slide-body { color: #cbd5e1; font-size: 1.1rem; line-height: 1.8; white-space: pre-wrap; }
+        .content-slide-image { width: 100%; max-height: 300px; object-fit: contain; border-radius: 10px; margin-top: 20px; background: #0f172a; }
 
-        .content-slide-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 12px; line-height: 1.4; }
-        .content-slide-body { color: #cbd5e1; font-size: 1rem; line-height: 1.7; white-space: pre-wrap; }
-
-        .question-meta {
-            color: #94a3b8; font-size: 0.85rem; text-transform: uppercase;
-            letter-spacing: 1px; margin-bottom: 8px; text-align: center;
-        }
+        .question-meta { color: #94a3b8; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; text-align: center; }
         .question-text { font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; line-height: 1.4; text-align: center; }
-
         .timer { font-size: 1.1rem; color: #f59e0b; font-weight: 700; margin-bottom: 20px; text-align: center; }
         .timer.urgent { color: #ef4444; animation: pulse 0.5s infinite; }
-
         .options { display: flex; flex-direction: column; gap: 10px; }
         .option-btn {
-            padding: 16px; background: #0f172a; border: 2px solid #334155;
-            border-radius: 12px; color: #f1f5f9; font-size: 1.05rem; font-weight: 600;
-            cursor: pointer; transition: all 0.2s; text-align: left;
+            padding: 16px; background: #0f172a; border: 2px solid #334155; border-radius: 12px;
+            color: #f1f5f9; font-size: 1.05rem; font-weight: 600; cursor: pointer; text-align: left;
         }
         .option-btn:hover { border-color: #3b82f6; background: #1a2744; }
         .option-btn:active { transform: scale(0.98); }
         .option-btn.selected { border-color: #3b82f6; background: #1e3a5f; }
         .option-btn.disabled { pointer-events: none; opacity: 0.7; }
-        .option-letter {
-            display: inline-block; width: 28px; height: 28px; line-height: 28px;
-            text-align: center; background: #334155; border-radius: 6px;
-            margin-right: 10px; font-size: 0.85rem; font-weight: 700;
-        }
+        .option-letter { display: inline-block; width: 28px; height: 28px; line-height: 28px; text-align: center; background: #334155; border-radius: 6px; margin-right: 10px; font-size: 0.85rem; font-weight: 700; }
 
         .locked-icon { font-size: 3.5rem; margin-bottom: 12px; text-align: center; }
         .locked-text { font-size: 1.3rem; font-weight: 700; color: #3b82f6; margin-bottom: 8px; text-align: center; }
 
         .feedback-icon { font-size: 4rem; margin-bottom: 12px; text-align: center; }
         .feedback-text { font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; text-align: center; }
-        .feedback-correct { color: #10b981; }
-        .feedback-incorrect { color: #ef4444; }
+        .feedback-correct { color: #10b981; } .feedback-incorrect { color: #ef4444; }
         .feedback-points { font-size: 1.2rem; color: #3b82f6; font-weight: 700; margin-bottom: 8px; text-align: center; }
         .feedback-total { color: #94a3b8; font-size: 1rem; text-align: center; }
 
-        .final-title {
-            font-size: 1.8rem; font-weight: 800; margin-bottom: 20px; text-align: center;
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .leaderboard-item {
-            display: flex; align-items: center; gap: 12px; padding: 12px 16px;
-            background: #1e293b; border: 1px solid #334155; border-radius: 10px;
-            margin-bottom: 8px; animation: slideIn 0.3s ease;
-        }
+        .final-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 20px; text-align: center; background: linear-gradient(135deg, #fbbf24, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .leaderboard-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: #1e293b; border: 1px solid #334155; border-radius: 10px; margin-bottom: 8px; }
         .leaderboard-item.me { border-color: #3b82f6; background: #1e3a5f; }
         .lb-rank { font-size: 1.3rem; font-weight: 800; width: 36px; text-align: center; }
         .rank-1 { color: #fbbf24; } .rank-2 { color: #94a3b8; } .rank-3 { color: #b45309; }
         .lb-name { flex: 1; font-weight: 600; font-size: 1rem; }
         .lb-score { font-weight: 800; color: #3b82f6; font-size: 1rem; }
-
-        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
     <button class="lang-toggle" id="langToggle" onclick="toggleLanguage()">FR</button>
-
     <div class="container">
         <div class="screen active" id="joinScreen">
             <div class="title">Classroom Connect</div>
@@ -155,9 +103,7 @@
         <div class="screen" id="waitingScreen">
             <div class="title">Classroom Connect</div>
             <div class="welcome-name" id="welcomeName"></div>
-            <div class="waiting-message" id="waitingMsg">
-                <span class="pulse"></span><span id="waitingText"></span>
-            </div>
+            <div class="waiting-message"><span class="pulse"></span><span id="waitingText"></span></div>
             <div class="count-box">
                 <div class="number" id="waitingCount">0</div>
                 <div class="label" id="connectedLabel"></div>
@@ -165,11 +111,12 @@
         </div>
 
         <div class="screen" id="contentScreen">
-            <div class="card">
+            <div class="content-card">
                 <div class="slide-counter" id="contentSlideCounter"></div>
                 <span class="slide-type-indicator type-content" id="contentTypeLabel"></span>
                 <div class="content-slide-title" id="studentContentTitle"></div>
                 <div class="content-slide-body" id="studentContentBody"></div>
+                <img class="content-slide-image" id="studentContentImage" style="display:none;">
             </div>
         </div>
 
@@ -181,11 +128,9 @@
         </div>
 
         <div class="screen" id="lockedScreen">
-            <div class="locked-icon">🔒</div>
+            <div class="locked-icon" id="lockedIcon">🔒</div>
             <div class="locked-text" id="lockedText"></div>
-            <div class="waiting-message">
-                <span class="pulse"></span><span id="lockedWaitText"></span>
-            </div>
+            <div class="waiting-message"><span class="pulse"></span><span id="lockedWaitText"></span></div>
         </div>
 
         <div class="screen" id="feedbackScreen">
@@ -194,9 +139,7 @@
             <div class="feedback-points" id="feedbackPoints"></div>
             <div class="feedback-total" id="feedbackTotal"></div>
             <br>
-            <div class="waiting-message">
-                <span class="pulse"></span><span id="feedbackWaitText"></span>
-            </div>
+            <div class="waiting-message"><span class="pulse"></span><span id="feedbackWaitText"></span></div>
         </div>
 
         <div class="screen" id="leaderboardScreen">
@@ -209,16 +152,10 @@
     <script src="/i18n.js"></script>
     <script>
         const socket = io();
-        let playerName = "";
-        let timerInterval = null;
-        let lastLeaderboard = [];
+        let playerName = "", timerInterval = null, lastLeaderboard = [];
 
-        function showScreen(id) {
-            document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-            document.getElementById(id).classList.add("active");
-        }
+        function showScreen(id) { document.querySelectorAll(".screen").forEach(s => s.classList.remove("active")); document.getElementById(id).classList.add("active"); }
 
-        // Update all UI text based on current language
         function updateUI() {
             document.getElementById("langToggle").textContent = t("langToggle");
             document.getElementById("joinSubtitle").textContent = t("joinSubtitle");
@@ -232,20 +169,11 @@
             document.getElementById("lockedWaitText").textContent = t("waitingForReveal");
             document.getElementById("feedbackWaitText").textContent = t("waitingNextSlide");
             document.getElementById("finalTitle").textContent = t("finalResults");
-
-            if (playerName) {
-                document.getElementById("welcomeName").textContent = t("welcome") + " " + playerName + "!";
-            }
-
-            // Re-render leaderboard if visible
-            if (lastLeaderboard.length > 0 && document.getElementById("leaderboardScreen").classList.contains("active")) {
-                renderLeaderboard(lastLeaderboard);
-            }
+            if (playerName) document.getElementById("welcomeName").textContent = t("welcome") + " " + playerName + "!";
+            if (lastLeaderboard.length > 0 && document.getElementById("leaderboardScreen").classList.contains("active")) renderLeaderboard(lastLeaderboard);
         }
 
-        document.getElementById("nameInput").addEventListener("keypress", (e) => {
-            if (e.key === "Enter") joinSession();
-        });
+        document.getElementById("nameInput").addEventListener("keypress", (e) => { if (e.key === "Enter") joinSession(); });
 
         function joinSession() {
             const name = document.getElementById("nameInput").value.trim();
@@ -256,10 +184,7 @@
             document.getElementById("welcomeName").textContent = t("welcome") + " " + name + "!";
         }
 
-        socket.on("student-list", (students) => {
-            document.getElementById("waitingCount").textContent = students.length;
-        });
-
+        socket.on("student-list", (students) => { document.getElementById("waitingCount").textContent = students.length; });
         socket.on("session-started", () => {});
 
         socket.on("content-slide", (data) => {
@@ -267,47 +192,39 @@
             document.getElementById("contentSlideCounter").textContent = tFormat("slideOf", data.index + 1, data.total);
             document.getElementById("studentContentTitle").textContent = data.title;
             document.getElementById("studentContentBody").textContent = data.body;
+            const img = document.getElementById("studentContentImage");
+            if (data.image) { img.src = data.image; img.style.display = "block"; }
+            else { img.style.display = "none"; }
         });
 
         socket.on("question", (data) => {
             showScreen("questionScreen");
             document.getElementById("questionMeta").textContent = tFormat("questionOf", data.index + 1, data.total);
             document.getElementById("questionText").textContent = data.question;
-
-            const letters = ["A", "B", "C", "D", "E", "F"];
-            document.getElementById("optionsContainer").innerHTML = data.options.map((opt, i) => {
-                const letter = letters[i] || String(i + 1);
-                return `<button class="option-btn" onclick="submitAnswer(${i}, this)">
-                    <span class="option-letter">${letter}</span>${opt}
-                </button>`;
-            }).join("");
-
+            const letters = ["A","B","C","D","E","F"];
+            document.getElementById("optionsContainer").innerHTML = data.options.map((opt, i) =>
+                `<button class="option-btn" onclick="submitAnswer(${i}, this)"><span class="option-letter">${letters[i]||i+1}</span>${opt}</button>`
+            ).join("");
             startTimer(data.timeLimit);
         });
 
         function startTimer(seconds) {
             clearInterval(timerInterval);
             let remaining = seconds;
-            const timerEl = document.getElementById("timer");
-            timerEl.textContent = `\u23F1 ${remaining}s`;
-            timerEl.className = "timer";
-
+            const el = document.getElementById("timer");
+            el.textContent = "⏱ " + remaining + "s"; el.className = "timer";
             timerInterval = setInterval(() => {
                 remaining--;
-                timerEl.textContent = `\u23F1 ${remaining}s`;
-                if (remaining <= 5) timerEl.className = "timer urgent";
-                if (remaining <= 0) {
-                    clearInterval(timerInterval);
-                    timerEl.textContent = "\u23F1 " + t("timeUp");
-                    document.querySelectorAll(".option-btn").forEach(btn => btn.classList.add("disabled"));
-                }
+                el.textContent = "⏱ " + remaining + "s";
+                if (remaining <= 5) el.className = "timer urgent";
+                if (remaining <= 0) { clearInterval(timerInterval); el.textContent = "⏱ " + t("timeUp"); document.querySelectorAll(".option-btn").forEach(b => b.classList.add("disabled")); }
             }, 1000);
         }
 
-        function submitAnswer(index, btnElement) {
+        function submitAnswer(index, btn) {
             clearInterval(timerInterval);
-            document.querySelectorAll(".option-btn").forEach(btn => btn.classList.add("disabled"));
-            btnElement.classList.add("selected");
+            document.querySelectorAll(".option-btn").forEach(b => b.classList.add("disabled"));
+            btn.classList.add("selected");
             socket.emit("submit-answer", index);
         }
 
@@ -315,49 +232,35 @@
 
         socket.on("answer-result", (result) => {
             showScreen("feedbackScreen");
-
             if (result.didNotAnswer) {
-                document.getElementById("feedbackIcon").textContent = "\u23F0";
+                document.getElementById("feedbackIcon").textContent = "⏰";
                 document.getElementById("feedbackText").textContent = t("timeRanOut");
                 document.getElementById("feedbackText").className = "feedback-text feedback-incorrect";
                 document.getElementById("feedbackPoints").textContent = "+0 " + t("points");
             } else if (result.isCorrect) {
-                document.getElementById("feedbackIcon").textContent = "\uD83C\uDF89";
+                document.getElementById("feedbackIcon").textContent = "🎉";
                 document.getElementById("feedbackText").textContent = t("correct");
                 document.getElementById("feedbackText").className = "feedback-text feedback-correct";
                 document.getElementById("feedbackPoints").textContent = "+" + result.points + " " + t("points");
             } else {
-                document.getElementById("feedbackIcon").textContent = "\uD83D\uDE14";
+                document.getElementById("feedbackIcon").textContent = "😔";
                 document.getElementById("feedbackText").textContent = t("notQuite");
                 document.getElementById("feedbackText").className = "feedback-text feedback-incorrect";
                 document.getElementById("feedbackPoints").textContent = "+0 " + t("points");
             }
-
             document.getElementById("feedbackTotal").textContent = t("totalScore") + " " + result.totalScore + " " + t("pts");
         });
 
         function renderLeaderboard(leaderboard) {
             document.getElementById("leaderboardList").innerHTML = leaderboard.map((s, i) => {
-                const isMe = s.name === playerName;
-                const rankClass = i < 3 ? `rank-${i+1}` : "";
-                const medal = i === 0 ? "\uD83E\uDD47" : i === 1 ? "\uD83E\uDD48" : i === 2 ? "\uD83E\uDD49" : `${i+1}`;
-                return `
-                    <div class="leaderboard-item ${isMe ? 'me' : ''}">
-                        <div class="lb-rank ${rankClass}">${medal}</div>
-                        <div class="lb-name">${s.name}${isMe ? " " + t("you") : ""}</div>
-                        <div class="lb-score">${s.score} ${t("pts")}</div>
-                    </div>
-                `;
+                const isMe = s.name === playerName, rankClass = i < 3 ? `rank-${i+1}` : "";
+                const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i+1}`;
+                return `<div class="leaderboard-item ${isMe?'me':''}"><div class="lb-rank ${rankClass}">${medal}</div><div class="lb-name">${s.name}${isMe?" "+t("you"):""}</div><div class="lb-score">${s.score} ${t("pts")}</div></div>`;
             }).join("");
         }
 
-        socket.on("session-ended", (leaderboard) => {
-            lastLeaderboard = leaderboard;
-            showScreen("leaderboardScreen");
-            renderLeaderboard(leaderboard);
-        });
+        socket.on("session-ended", (leaderboard) => { lastLeaderboard = leaderboard; showScreen("leaderboardScreen"); renderLeaderboard(leaderboard); });
 
-        // Initialize UI text
         updateUI();
     </script>
 </body>

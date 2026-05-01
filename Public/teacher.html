@@ -19,79 +19,51 @@
         .header p { color: #94a3b8; font-size: 1rem; }
         .nav-link { display: inline-block; color: #3b82f6; text-decoration: none; margin-top: 8px; font-size: 0.9rem; }
         .nav-link:hover { text-decoration: underline; }
-
         .lang-toggle {
-            position: fixed; top: 16px; right: 16px;
-            background: #334155; color: #e2e8f0; border: 1px solid #475569;
-            padding: 6px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 700;
-            cursor: pointer; z-index: 100; transition: all 0.2s;
+            position: fixed; top: 16px; right: 16px; background: #334155; color: #e2e8f0;
+            border: 1px solid #475569; padding: 6px 14px; border-radius: 8px; font-size: 0.85rem;
+            font-weight: 700; cursor: pointer; z-index: 100;
         }
         .lang-toggle:hover { background: #475569; }
-
         .main-layout { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
         .card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 24px; }
         .connection-info { text-align: center; padding: 16px 24px; }
         .connection-info label { color: #94a3b8; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
         .connection-info .address { font-size: 1.5rem; font-weight: 700; color: #3b82f6; margin-top: 4px; font-family: monospace; }
-
-        .btn {
-            padding: 14px 28px; border: none; border-radius: 10px; font-size: 1.1rem;
-            font-weight: 700; cursor: pointer; transition: transform 0.1s, opacity 0.2s; width: 100%;
-        }
+        .btn { padding: 14px 28px; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: 700; cursor: pointer; width: 100%; }
         .btn:hover { opacity: 0.9; } .btn:active { transform: scale(0.98); }
         .btn-primary { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; }
         .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: white; }
         .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
-        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
         .badge { background: #3b82f6; color: white; padding: 4px 14px; border-radius: 20px; font-weight: 700; font-size: 0.9rem; }
         .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .section-header h2 { font-size: 1.2rem; }
-
-        .lesson-select-item {
-            background: #0f172a; border: 2px solid #334155; border-radius: 12px;
-            padding: 16px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s;
-        }
+        .lesson-select-item { background: #0f172a; border: 2px solid #334155; border-radius: 12px; padding: 16px; margin-bottom: 10px; cursor: pointer; }
         .lesson-select-item:hover { border-color: #3b82f6; }
         .lesson-select-item.selected { border-color: #3b82f6; background: #1e3a5f; }
         .lesson-select-item h3 { font-size: 1.05rem; margin-bottom: 4px; }
         .lesson-select-meta { color: #64748b; font-size: 0.85rem; }
-
         .student-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-        .student-chip {
-            display: flex; align-items: center; gap: 8px; padding: 8px 14px;
-            background: #0f172a; border-radius: 8px; font-size: 0.95rem; animation: slideIn 0.3s ease;
-        }
+        .student-chip { display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: #0f172a; border-radius: 8px; font-size: 0.95rem; }
         .student-dot { width: 10px; height: 10px; border-radius: 50%; }
         .empty-state { text-align: center; padding: 20px; color: #64748b; }
-
         .slide-counter { text-align: center; color: #94a3b8; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-        .slide-type-indicator {
-            display: inline-block; padding: 3px 10px; border-radius: 6px;
-            font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 12px;
-        }
+        .slide-type-indicator { display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 12px; }
         .type-content { background: #1e3a5f; color: #60a5fa; }
         .type-question { background: #3b1f63; color: #c084fc; }
         .content-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 12px; line-height: 1.4; }
         .content-body { color: #cbd5e1; font-size: 1.05rem; line-height: 1.7; white-space: pre-wrap; }
+        .content-image { width: 100%; max-height: 400px; object-fit: contain; border-radius: 10px; margin-top: 16px; background: #0f172a; }
         .question-text { font-size: 1.4rem; font-weight: 700; margin-bottom: 20px; line-height: 1.4; }
-
-        .answer-summary {
-            display: flex; align-items: center; justify-content: center; gap: 12px;
-            padding: 14px; background: #0f172a; border-radius: 10px; margin-bottom: 12px;
-        }
+        .answer-summary { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 14px; background: #0f172a; border-radius: 10px; margin-bottom: 12px; }
         .answer-summary .count { font-size: 2rem; font-weight: 800; color: #3b82f6; }
         .answer-summary .label { color: #94a3b8; font-size: 0.95rem; }
-
         .student-tracker { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
-        .tracker-chip {
-            display: flex; align-items: center; gap: 6px; padding: 6px 12px;
-            border-radius: 8px; font-size: 0.85rem; font-weight: 600; transition: all 0.3s ease;
-        }
+        .tracker-chip { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; }
         .tracker-chip.waiting { background: #1a1f2e; border: 1px solid #334155; color: #64748b; }
-        .tracker-chip.answered { background: #064e3b; border: 1px solid #10b981; color: #a7f3d0; animation: chipPop 0.3s ease; }
+        .tracker-chip.answered { background: #064e3b; border: 1px solid #10b981; color: #a7f3d0; }
         .all-answered-hint { text-align: center; color: #10b981; font-weight: 600; margin-bottom: 12px; display: none; }
-
         .results-bar-container { margin-bottom: 12px; }
         .results-bar-label { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.95rem; }
         .results-bar-label .option-text { color: #e2e8f0; } .results-bar-label .option-count { color: #94a3b8; }
@@ -100,48 +72,31 @@
         .results-bar-fill.correct { background: linear-gradient(135deg, #10b981, #059669); }
         .results-bar-fill.incorrect { background: linear-gradient(135deg, #ef4444, #dc2626); }
         .correct-indicator { color: #10b981; font-weight: 700; }
-
-        .leaderboard-item {
-            display: flex; align-items: center; gap: 16px; padding: 14px 16px;
-            background: #0f172a; border-radius: 10px; margin-bottom: 8px; animation: slideIn 0.3s ease;
-        }
+        .leaderboard-item { display: flex; align-items: center; gap: 16px; padding: 14px 16px; background: #0f172a; border-radius: 10px; margin-bottom: 8px; }
         .leaderboard-rank { font-size: 1.5rem; font-weight: 800; width: 40px; text-align: center; }
         .rank-1 { color: #fbbf24; } .rank-2 { color: #94a3b8; } .rank-3 { color: #b45309; }
         .leaderboard-name { flex: 1; font-size: 1.1rem; font-weight: 600; }
         .leaderboard-score { font-size: 1.1rem; font-weight: 800; color: #3b82f6; }
-
-        .final-title {
-            text-align: center; font-size: 1.8rem; font-weight: 800; margin-bottom: 24px;
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-
+        .final-title { text-align: center; font-size: 1.8rem; font-weight: 800; margin-bottom: 24px; background: linear-gradient(135deg, #fbbf24, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .screen { display: none; } .screen.active { display: block; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes chipPop { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
     <button class="lang-toggle" id="langToggle" onclick="toggleLanguage()">FR</button>
-
     <div class="header">
         <h1>Classroom Connect</h1>
         <p id="headerSubtitle"></p>
         <a href="/builder.html" class="nav-link" id="builderLink"></a>
     </div>
-
     <div class="main-layout">
         <div class="card connection-info">
             <label id="connectLabel"></label>
             <div class="address" id="studentAddress">Loading...</div>
         </div>
 
-        <!-- LOBBY -->
         <div class="screen active" id="lobbyScreen">
             <div class="card">
-                <div class="section-header">
-                    <h2 id="selectLessonTitle"></h2>
-                </div>
+                <div class="section-header"><h2 id="selectLessonTitle"></h2></div>
                 <div id="lessonSelect"><div class="empty-state">Loading...</div></div>
             </div>
             <div class="card" style="margin-top:16px;">
@@ -155,19 +110,18 @@
             <button class="btn btn-primary" id="startBtn" onclick="startSession()" disabled></button>
         </div>
 
-        <!-- CONTENT SLIDE -->
         <div class="screen" id="contentScreen">
             <div class="card">
                 <div class="slide-counter" id="contentSlideCounter"></div>
                 <span class="slide-type-indicator type-content" id="contentTypeLabel"></span>
                 <div class="content-title" id="contentTitle"></div>
                 <div class="content-body" id="contentBody"></div>
+                <img class="content-image" id="contentImage" style="display:none;">
             </div>
             <br>
             <button class="btn btn-success" id="contentNextBtn" onclick="nextSlide()"></button>
         </div>
 
-        <!-- QUESTION -->
         <div class="screen" id="questionScreen">
             <div class="card">
                 <div class="slide-counter" id="questionSlideCounter"></div>
@@ -183,21 +137,17 @@
             </div>
         </div>
 
-        <!-- RESULTS -->
         <div class="screen" id="resultsScreen">
             <div class="card">
                 <div class="slide-counter" id="resultsSlideCounter"></div>
                 <div class="question-text" id="resultsQuestionText" style="font-size:1.1rem;margin-bottom:16px;"></div>
                 <div id="resultsBars"></div>
-                <div style="text-align:center;margin-top:12px;margin-bottom:16px;">
-                    <span id="correctSummary" class="correct-indicator"></span>
-                </div>
+                <div style="text-align:center;margin-top:12px;margin-bottom:16px;"><span id="correctSummary" class="correct-indicator"></span></div>
                 <div id="miniLeaderboard" style="margin-bottom:16px;"></div>
                 <button class="btn btn-success" id="resultsNextBtn" onclick="nextSlide()"></button>
             </div>
         </div>
 
-        <!-- FINAL LEADERBOARD -->
         <div class="screen" id="leaderboardScreen">
             <div class="card">
                 <div class="final-title" id="finalTitle"></div>
@@ -211,18 +161,12 @@
     <script>
         const socket = io();
         const colors = ["#3b82f6","#8b5cf6","#ec4899","#f59e0b","#10b981","#ef4444","#06b6d4","#f97316"];
-        let selectedLessonId = null;
-        let questionIndex = -1;
-        let lastStudentList = [];
-        let lastLessons = [];
+        let selectedLessonId = null, questionIndex = -1, lastStudentList = [], lastLessons = [];
 
         const address = window.location.hostname + ":" + window.location.port + "/student.html";
         document.getElementById("studentAddress").textContent = address;
 
-        function showScreen(id) {
-            document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-            document.getElementById(id).classList.add("active");
-        }
+        function showScreen(id) { document.querySelectorAll(".screen").forEach(s => s.classList.remove("active")); document.getElementById(id).classList.add("active"); }
 
         function updateUI() {
             document.getElementById("langToggle").textContent = t("langToggle");
@@ -241,17 +185,12 @@
             document.getElementById("revealBtn").textContent = t("revealAnswer");
             document.getElementById("resultsNextBtn").textContent = t("nextSlide");
             document.getElementById("finalTitle").textContent = t("finalLeaderboard");
-
-            // Re-render dynamic content
             renderStudentList(lastStudentList);
             renderLessonList(lastLessons);
         }
 
-        // ====== LESSONS ======
         async function loadLessons() {
-            const res = await fetch("/api/lessons");
-            lastLessons = await res.json();
-            renderLessonList(lastLessons);
+            const res = await fetch("/api/lessons"); lastLessons = await res.json(); renderLessonList(lastLessons);
         }
 
         function renderLessonList(lessons) {
@@ -264,41 +203,23 @@
                 const cs = l.contentCount + " " + t("contentSlides") + (l.contentCount !== 1 ? "s" : "");
                 const qs = l.questionCount + " " + t("questionsLabel") + (l.questionCount !== 1 ? "s" : "");
                 return `<div class="lesson-select-item ${selectedLessonId === l.id ? 'selected' : ''}" onclick="selectLesson('${l.id}')">
-                    <h3>${l.title}</h3>
-                    <div class="lesson-select-meta">${cs} · ${qs}</div>
+                    <h3>${l.title}</h3><div class="lesson-select-meta">${cs} \u00b7 ${qs}</div>
                 </div>`;
             }).join("");
         }
 
         function selectLesson(id) { selectedLessonId = id; updateStartButton(); renderLessonList(lastLessons); }
+        function updateStartButton() { document.getElementById("startBtn").disabled = !selectedLessonId || lastStudentList.length === 0; }
 
-        function updateStartButton() {
-            document.getElementById("startBtn").disabled = !selectedLessonId || lastStudentList.length === 0;
-        }
-
-        // ====== STUDENTS ======
-        socket.on("student-list", (students) => {
-            lastStudentList = students;
-            renderStudentList(students);
-            updateStartButton();
-        });
+        socket.on("student-list", (students) => { lastStudentList = students; renderStudentList(students); updateStartButton(); });
 
         function renderStudentList(students) {
-            const list = document.getElementById("studentList");
-            const count = document.getElementById("studentCount");
+            const list = document.getElementById("studentList"), count = document.getElementById("studentCount");
             count.textContent = students.length + " " + (students.length === 1 ? t("student") : t("students"));
-
-            if (students.length === 0) {
-                list.innerHTML = `<div class="empty-state">${t("waitingForStudents")}</div>`;
-            } else {
-                list.innerHTML = students.map((s, i) => {
-                    const color = colors[i % colors.length];
-                    return `<div class="student-chip"><div class="student-dot" style="background:${color}"></div>${s.name}</div>`;
-                }).join("");
-            }
+            if (students.length === 0) { list.innerHTML = `<div class="empty-state">${t("waitingForStudents")}</div>`; }
+            else { list.innerHTML = students.map((s, i) => `<div class="student-chip"><div class="student-dot" style="background:${colors[i%colors.length]}"></div>${s.name}</div>`).join(""); }
         }
 
-        // ====== SESSION ======
         function startSession() { if (!selectedLessonId) return; socket.emit("start-session", selectedLessonId); }
         socket.on("session-started", () => { questionIndex = -1; nextSlide(); });
         function nextSlide() { socket.emit("next-slide"); }
@@ -309,6 +230,9 @@
                 document.getElementById("contentSlideCounter").textContent = tFormat("slideOf", data.slideIndex + 1, data.totalSlides);
                 document.getElementById("contentTitle").textContent = data.title;
                 document.getElementById("contentBody").textContent = data.body;
+                const img = document.getElementById("contentImage");
+                if (data.image) { img.src = data.image; img.style.display = "block"; }
+                else { img.style.display = "none"; }
             } else if (data.type === "question") {
                 questionIndex = data.questionIndex;
                 showScreen("questionScreen");
@@ -321,15 +245,12 @@
         socket.on("answer-status", (status) => {
             document.getElementById("answeredCount").textContent = status.answered;
             document.getElementById("totalStudents").textContent = status.total;
-            document.getElementById("allAnsweredHint").style.display =
-                (status.answered === status.total && status.total > 0) ? "block" : "none";
+            document.getElementById("allAnsweredHint").style.display = (status.answered === status.total && status.total > 0) ? "block" : "none";
         });
 
         socket.on("detailed-answer-status", (students) => {
             document.getElementById("studentTracker").innerHTML = students.map(s =>
-                s.hasAnswered
-                    ? `<div class="tracker-chip answered"><span>\u2713</span> ${s.name}</div>`
-                    : `<div class="tracker-chip waiting"><span>\u23F3</span> ${s.name}</div>`
+                s.hasAnswered ? `<div class="tracker-chip answered"><span>\u2713</span> ${s.name}</div>` : `<div class="tracker-chip waiting"><span>\u23F3</span> ${s.name}</div>`
             ).join("");
         });
 
@@ -339,36 +260,16 @@
             showScreen("resultsScreen");
             document.getElementById("resultsQuestionText").textContent = results.question;
             document.getElementById("resultsSlideCounter").textContent = t("question") + " " + (questionIndex + 1) + " \u2014 " + t("results");
-
             const maxCount = Math.max(...results.optionCounts, 1);
             const sLabel = (n) => n === 1 ? t("student") : t("students");
-
             document.getElementById("resultsBars").innerHTML = results.options.map((opt, i) => {
-                const count = results.optionCounts[i];
-                const isCorrect = i === results.correctIndex;
-                const width = (count / maxCount) * 100;
-                return `<div class="results-bar-container">
-                    <div class="results-bar-label">
-                        <span class="option-text">${opt}${isCorrect ? " \u2713" : ""}</span>
-                        <span class="option-count">${count} ${sLabel(count)}</span>
-                    </div>
-                    <div class="results-bar"><div class="results-bar-fill ${isCorrect ? "correct" : "incorrect"}" style="width:${width}%"></div></div>
-                </div>`;
+                const count = results.optionCounts[i], isCorrect = i === results.correctIndex, width = (count / maxCount) * 100;
+                return `<div class="results-bar-container"><div class="results-bar-label"><span class="option-text">${opt}${isCorrect?" \u2713":""}</span><span class="option-count">${count} ${sLabel(count)}</span></div><div class="results-bar"><div class="results-bar-fill ${isCorrect?"correct":"incorrect"}" style="width:${width}%"></div></div></div>`;
             }).join("");
-
-            document.getElementById("correctSummary").textContent =
-                `${results.correctCount} ${t("ofAnswered")} ${results.totalStudents} ${t("answeredCorrectly")}`;
-
+            document.getElementById("correctSummary").textContent = `${results.correctCount} ${t("ofAnswered")} ${results.totalStudents} ${t("answeredCorrectly")}`;
             if (results.leaderboard.length > 0) {
-                document.getElementById("miniLeaderboard").innerHTML =
-                    `<h3 style="margin-bottom:10px;font-size:1rem;color:#94a3b8;">${t("top5")}</h3>` +
-                    results.leaderboard.map((s, i) => `
-                        <div class="leaderboard-item" style="padding:8px 12px;margin-bottom:4px;">
-                            <div class="leaderboard-rank rank-${i+1}" style="font-size:1.1rem;width:28px;">${i+1}</div>
-                            <div class="leaderboard-name" style="font-size:0.95rem;">${s.name}</div>
-                            <div class="leaderboard-score" style="font-size:0.95rem;">${s.score} ${t("pts")}</div>
-                        </div>
-                    `).join("");
+                document.getElementById("miniLeaderboard").innerHTML = `<h3 style="margin-bottom:10px;font-size:1rem;color:#94a3b8;">${t("top5")}</h3>` +
+                    results.leaderboard.map((s, i) => `<div class="leaderboard-item" style="padding:8px 12px;margin-bottom:4px;"><div class="leaderboard-rank rank-${i+1}" style="font-size:1.1rem;width:28px;">${i+1}</div><div class="leaderboard-name" style="font-size:0.95rem;">${s.name}</div><div class="leaderboard-score" style="font-size:0.95rem;">${s.score} ${t("pts")}</div></div>`).join("");
             }
         });
 
@@ -377,17 +278,11 @@
             document.getElementById("leaderboardList").innerHTML = leaderboard.map((s, i) => {
                 const rankClass = i < 3 ? `rank-${i+1}` : "";
                 const medal = i === 0 ? "\uD83E\uDD47" : i === 1 ? "\uD83E\uDD48" : i === 2 ? "\uD83E\uDD49" : `${i+1}`;
-                return `<div class="leaderboard-item">
-                    <div class="leaderboard-rank ${rankClass}">${medal}</div>
-                    <div class="leaderboard-name">${s.name}</div>
-                    <div class="leaderboard-score">${s.score} ${t("pts")}</div>
-                </div>`;
+                return `<div class="leaderboard-item"><div class="leaderboard-rank ${rankClass}">${medal}</div><div class="leaderboard-name">${s.name}</div><div class="leaderboard-score">${s.score} ${t("pts")}</div></div>`;
             }).join("");
         });
 
-        // Init
-        loadLessons();
-        updateUI();
+        loadLessons(); updateUI();
     </script>
 </body>
 </html>

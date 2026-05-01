@@ -3,39 +3,29 @@
 
 const translations = {
   en: {
-    // Common
     brand: "Classroom Connect",
     pts: "pts",
     student: "student",
     students: "students",
     langToggle: "FR",
 
-    // Student - Join
     joinSubtitle: "Enter your name to join the session",
     yourName: "Your Name",
     namePlaceholder: "Type your name...",
     joinButton: "Join Session",
 
-    // Student - Waiting
     welcome: "Welcome,",
-    waitingForTeacher: "Connected — waiting for the teacher to start...",
+    waitingForTeacher: "Connected \u2014 waiting for the teacher to start...",
     studentsConnected: "students connected",
 
-    // Student - Content slide
     slideOf: "Slide {0} of {1}",
     lessonLabel: "Lesson",
-
-    // Student - Question
     questionOf: "Question {0} of {1}",
-
-    // Student - Timer
     timeUp: "Time's up!",
 
-    // Student - Locked
     answerLocked: "Answer locked in!",
     waitingForReveal: "Waiting for the teacher to reveal the answer...",
 
-    // Student - Feedback
     correct: "Correct!",
     notQuite: "Not quite!",
     timeRanOut: "Time ran out!",
@@ -43,11 +33,9 @@ const translations = {
     totalScore: "Total score:",
     waitingNextSlide: "Waiting for the next slide...",
 
-    // Student - Leaderboard
     finalResults: "\uD83C\uDFC6 Final Results",
     you: "(You)",
 
-    // Teacher
     teacherDashboard: "Teacher Dashboard",
     openBuilder: "\u2192 Open Lesson Builder",
     studentsConnectTo: "Students connect to:",
@@ -69,7 +57,6 @@ const translations = {
     top5: "Top 5",
     finalLeaderboard: "\uD83C\uDFC6 Final Leaderboard",
 
-    // Builder
     lessonBuilder: "Lesson Builder",
     builderSubtitle: "Create interactive lessons for your classroom",
     backToDashboard: "\u2190 Back to Teacher Dashboard",
@@ -113,42 +100,40 @@ const translations = {
     untitledQuestion: "Untitled question",
     mcqLabel: "MCQ",
     trueFalseLabel: "True/False",
+
+    // Image
+    imageLabel: "Image (optional)",
+    addImage: "Add Image",
+    changeImage: "Change Image",
+    removeImage: "Remove Image",
+    uploading: "Uploading...",
+    uploadFailed: "Upload failed. Please try again.",
   },
 
   fr: {
-    // Common
     brand: "Classroom Connect",
     pts: "pts",
     student: "\u00e9l\u00e8ve",
     students: "\u00e9l\u00e8ves",
     langToggle: "EN",
 
-    // Student - Join
     joinSubtitle: "Entrez votre nom pour rejoindre la session",
     yourName: "Votre Nom",
     namePlaceholder: "Tapez votre nom...",
     joinButton: "Rejoindre",
 
-    // Student - Waiting
     welcome: "Bienvenue,",
-    waitingForTeacher: "Connect\u00e9 — en attente du professeur...",
+    waitingForTeacher: "Connect\u00e9 \u2014 en attente du professeur...",
     studentsConnected: "\u00e9l\u00e8ves connect\u00e9(e)s",
 
-    // Student - Content slide
     slideOf: "Diapo {0} sur {1}",
     lessonLabel: "Le\u00e7on",
-
-    // Student - Question
     questionOf: "Question {0} sur {1}",
-
-    // Student - Timer
     timeUp: "Temps \u00e9coul\u00e9 !",
 
-    // Student - Locked
     answerLocked: "R\u00e9ponse enregistr\u00e9e !",
     waitingForReveal: "En attente de la r\u00e9v\u00e9lation par le professeur...",
 
-    // Student - Feedback
     correct: "Correct !",
     notQuite: "Pas tout \u00e0 fait !",
     timeRanOut: "Temps \u00e9coul\u00e9 !",
@@ -156,11 +141,9 @@ const translations = {
     totalScore: "Score total :",
     waitingNextSlide: "En attente de la prochaine diapo...",
 
-    // Student - Leaderboard
     finalResults: "\uD83C\uDFC6 R\u00e9sultats Finaux",
     you: "(Vous)",
 
-    // Teacher
     teacherDashboard: "Tableau de Bord \u2014 Professeur",
     openBuilder: "\u2192 Cr\u00e9er une Le\u00e7on",
     studentsConnectTo: "Les \u00e9l\u00e8ves se connectent \u00e0 :",
@@ -182,7 +165,6 @@ const translations = {
     top5: "Top 5",
     finalLeaderboard: "\uD83C\uDFC6 Classement Final",
 
-    // Builder
     lessonBuilder: "Cr\u00e9ateur de Le\u00e7ons",
     builderSubtitle: "Cr\u00e9ez des le\u00e7ons interactives pour votre classe",
     backToDashboard: "\u2190 Retour au Tableau de Bord",
@@ -226,32 +208,31 @@ const translations = {
     untitledQuestion: "Question sans titre",
     mcqLabel: "QCM",
     trueFalseLabel: "Vrai/Faux",
+
+    // Image
+    imageLabel: "Image (optionnel)",
+    addImage: "Ajouter une Image",
+    changeImage: "Changer l'Image",
+    removeImage: "Supprimer l'Image",
+    uploading: "Envoi en cours...",
+    uploadFailed: "\u00c9chec de l'envoi. Veuillez r\u00e9essayer.",
   }
 };
 
-// Language management
 let currentLang = localStorage.getItem("cc-lang") || "en";
 
-function t(key) {
-  return translations[currentLang][key] || translations["en"][key] || key;
-}
+function t(key) { return translations[currentLang][key] || translations["en"][key] || key; }
 
 function tFormat(key, ...args) {
   let str = t(key);
-  args.forEach((arg, i) => {
-    str = str.replace(`{${i}}`, arg);
-  });
+  args.forEach((arg, i) => { str = str.replace(`{${i}}`, arg); });
   return str;
 }
 
 function setLanguage(lang) {
   currentLang = lang;
   localStorage.setItem("cc-lang", lang);
-  if (typeof updateUI === "function") {
-    updateUI();
-  }
+  if (typeof updateUI === "function") updateUI();
 }
 
-function toggleLanguage() {
-  setLanguage(currentLang === "en" ? "fr" : "en");
-}
+function toggleLanguage() { setLanguage(currentLang === "en" ? "fr" : "en"); }

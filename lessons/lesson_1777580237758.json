@@ -5,7 +5,8 @@
     {
       "type": "content",
       "title": "If-Clause",
-      "body": "Here is the lesson"
+      "body": "Here is the lesson",
+      "image": "/uploads/img_1777598765856_32lzc7.png"
     },
     {
       "type": "question",
@@ -37,5 +38,5 @@
       "timeLimit": 15
     }
   ],
-  "updatedAt": "2026-04-30T20:17:19.361Z"
+  "updatedAt": "2026-05-01T01:26:18.276Z"
 }
