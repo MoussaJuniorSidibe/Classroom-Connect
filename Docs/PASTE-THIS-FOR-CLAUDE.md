@@ -3,10 +3,10 @@
 ## IMPORTANT: How to start a session with Claude
 This file alone is NOT enough for Claude to build correctly. The project is a system of interrelated elements — code files reference each other through shared event names, variable names, CSS patterns, and architecture. Claude needs to see the actual code to build anything that matches.
 
-**Every new session, Moussa must share THREE things:**
+**Every new session, Moussa shares THREE things:**
 
-1. **This file** — paste it first for the big picture
-2. **The relevant code files** — paste the actual code from the files that the feature will touch. Open them in VS Code, Ctrl+A to select all, copy, and paste with a label like "Here is server.js:" before each one.
+1. **This file** — for the big picture
+2. **The relevant code files** — drag-and-drop the actual files (server.js, database.js, contents of public/, etc.) so Claude can read them. Pasting code in the message body also works but uploading is cleaner.
 3. **What you want to work on** — be specific about the feature or fix
 
 **Which code files to share depends on the task:**
@@ -23,7 +23,9 @@ This file alone is NOT enough for Claude to build correctly. The project is a sy
 
 **If the files are too long for one message**, split them across messages or share the most relevant ones first. Claude should ask for any additional files it needs.
 
-**Claude: when you receive this file, if Moussa has not shared the code files, ask him to paste the relevant ones before building anything.**
+**Claude: when you receive this file, if Moussa has not shared the code files, ask him to upload the relevant ones before building anything.**
+
+A separate guide called `How-to-Start-a-New-Claude-Session.docx` lives in the Docs/ folder and walks Moussa through the process step-by-step.
 
 ---
 
@@ -37,6 +39,7 @@ Classroom Connect is an offline-first interactive classroom learning platform. A
 ## Collaboration Rules
 - When Moussa wants to discuss or learn, Claude stays in discussion mode. No building until Moussa gives a clear signal like "let's build this" or "code it."
 - When Moussa flags something as a concern, Claude explains first whether it's an actual issue or expected behavior at this stage, and they decide together before touching code.
+- **When Claude sees a better approach than what's been proposed, Claude raises it openly and explains the trade-offs.** Moussa is the designer and makes the final call, but he relies on Claude to surface developer-side options he might not see. Don't stay quiet about a better path.
 - Claude explains technical concepts in plain language as we build.
 - At the end of each session, Claude tells Moussa exactly what to update in this file and gives the Git commands to push to GitHub.
 - Claude always provides complete files — never asks Moussa to make manual code edits.
@@ -56,6 +59,8 @@ Classroom Connect is an offline-first interactive classroom learning platform. A
 - **Translations:** Shared i18n.js file loaded by all HTML pages
 - **Lesson storage:** JSON files saved in /lessons/ directory
 - **Image storage:** Uploaded images saved in /uploads/ directory
+- **QR code generation:** `qrcode` npm package (server-side, returns data URL)
+- **Reports export:** `exceljs` npm package (planned — replacing the interim CSV implementation with .xlsx)
 - **Mobile packaging:** Capacitor (Phase 4 — for teacher's device only)
 - **Cloud sync:** Supabase recommended (postponed — see Cloud Sync section)
 
@@ -70,8 +75,8 @@ Every architecture choice — SQLite, Socket.IO over local WiFi, local file stor
 2. Teacher enables WiFi hotspot (or uses a portable router for 40+ students)
 3. The app starts a local server automatically
 4. Students connect their phones to the teacher's WiFi — any phone with a browser works
-5. Students scan a **QR code** displayed on the teacher's screen (Phase 4 feature) — the student page opens in their browser
-6. Students enter their 4-digit code and they're in the session
+5. Students scan a **QR code** displayed on the teacher's screen — the student page opens in their browser (BUILT)
+6. Students enter their 4-digit code (or, for open sessions, their name) and they're in the session
 7. All communication flows over this local network via Socket.IO — no internet needed
 8. Data saves locally on the teacher's device (SQLite database)
 
@@ -81,18 +86,20 @@ Students only need a browser. The teacher's device serves the student page direc
 - No app download, no account creation, no storage space needed on student devices
 - The only device that runs the Classroom Connect app is the teacher's device
 
-### QR Code for Student Joining (Phase 4)
-**Decided:** The teacher's screen will display a QR code that students scan to open the student page instantly. This replaces the need to type an IP address manually. This is the chosen method — more professional and easier for students.
+### QR Code for Student Joining (BUILT — Phase 4 Step 2)
+The teacher's screen displays a QR code that students scan to open the student page instantly. This replaces the need to type an IP address manually. Backed by the `qrcode` npm package; the server generates a data URL via `/api/server-info` and the teacher dashboard renders it inline.
 
 ## Key Architecture Details (for Claude)
 
 ### Socket.IO events
-student-join, student-join-code, join-success, join-error, start-session (sends {lessonId, classId}), next-slide, submit-answer, answer-received, answer-result, show-results, question-results, content-slide, teacher-slide-info, session-started, session-ended, student-list, answer-status, detailed-answer-status
+student-join, student-join-code, join-success, join-error, join-mode (server → client; tells students to use code or name screen based on whether teacher has a class selected), select-class (teacher → server), start-session (sends {lessonId, classId}), next-slide, submit-answer, answer-received, answer-result, show-results, question-results, content-slide, teacher-slide-info, session-started, session-ended, student-list, answer-status, detailed-answer-status
 
 ### REST API endpoints
 **Lessons:** GET /api/lessons, GET /api/lessons/:id, POST /api/lessons, DELETE /api/lessons/:id
 **Images:** POST /api/upload-image (accepts { filename, data } as base64)
 **Sessions:** GET /api/sessions, GET /api/sessions/:id (returns session + attendance + scores + answers)
+**Session Export:** GET /api/sessions/:id/export — currently returns CSV with UTF-8 BOM; will be upgraded to return an .xlsx workbook (multi-sheet, formatted)
+**Server Info & QR Code:** GET /api/server-info — returns local IP, port, student URL, and QR code data URL
 **Classes:** GET /api/classes, POST /api/classes, PUT /api/classes/:id, DELETE /api/classes/:id
 **Students:** GET /api/classes/:id/students, POST /api/classes/:id/students, PUT /api/students/:id, DELETE /api/students/:id
 **Code lookup:** GET /api/lookup-code/:code (returns student name, code, class info)
@@ -109,8 +116,14 @@ student-join, student-join-code, join-success, join-error, start-session (sends 
 - Each student in the roster automatically gets a unique 4-digit code (1000-9999)
 - Codes are generated on student creation and displayed on the roster page
 - Students type their code to join a session — the system looks up their name
-- Fallback: students without a code can join by typing their name (for sessions without a class selected)
-- The student join page shows code input by default, with a link to switch to name input
+- Fallback: students without a code can join by typing their name (only allowed when no class is selected)
+- The student join page shows code input by default when a class is selected; switches to name input when no class is selected (controlled by the server's `join-mode` event)
+
+### Class-aware session logic (BUILT — Phase 4 Step 2 companion fix)
+- When the teacher selects a class on the dashboard, the server emits `join-mode: { usesCodes: true }` to all connected students. Their join screen switches to code-only.
+- When the teacher selects "no class," the server emits `join-mode: { usesCodes: false }`. Students see the name screen.
+- Code-based joins are validated: if a class is selected, the code must belong to a student in that class (otherwise `join-error: "wrong-class"`).
+- Name-based joins are rejected outright when a class is selected (`join-error: "class-required"`).
 
 ### Translation system
 All UI text uses t("key") and tFormat("key", args) functions from i18n.js. New features must add translation keys to both en and fr objects in i18n.js.
@@ -133,9 +146,12 @@ Dark theme (#0f172a background, #1e293b cards, #334155 borders). Buttons use gra
 - **Student Codes:** Roster connected to live sessions via code-based joining — BUILT
 - **Session History:** View past sessions with attendance, scores, and question breakdown — BUILT
 - **Database:** All session data saved permanently to SQLite, linked to student codes — BUILT
+- **QR Code on Teacher Dashboard:** Students scan to open student page — BUILT (tested May 5, 2026)
+- **Class-aware session logic:** Class selected = code-only with validation; no class = name-only — BUILT (tested May 5, 2026)
+- **Session Export:** Download session results — BUILT as CSV (May 1, 2026); upgrading to .xlsx (in progress)
 
 ### Student Features
-- Join via 4-digit code (or name as fallback) in browser — BUILT
+- Join via QR code, then 4-digit code (or name as fallback) in browser — BUILT
 - View content slides (with images) on their device — BUILT
 - Answer questions with timer and immediate lock — BUILT
 - Feedback after teacher reveals — BUILT
@@ -162,10 +178,10 @@ Lesson builder with content/question slides, lesson saving/loading/deleting, tea
 - **Student codes — COMPLETE.** Roster connected to live sessions. Students join with 4-digit codes. Teacher optionally selects a class when starting session.
 - **Cloud sync — POSTPONED.** Not cancelled, just not needed yet. Can be added at any stage, even after the app is fully packaged and in use. See Cloud Sync section.
 
-### Phase 4: Polish, Packaging & Launch — LOCKED PLAN
-- **Step 1: Exportable Reports — NOT STARTED.** Add download button on session history page. Exports session results as a spreadsheet (.xlsx) — student names, scores, per-question breakdown. Works fully offline (generated on the server, downloaded via browser). Makes the app immediately useful for real grading workflows.
-- **Step 2: QR Code for Student Joining — NOT STARTED.** Teacher dashboard displays a QR code that students scan to open the student page. Eliminates typing IP addresses. Already decided as the chosen method.
-- **Step 3: Additional Question Types — NOT STARTED.** Add at least short answer and/or image-based questions to give teachers more flexibility in lesson design.
+### Phase 4: Polish, Packaging & Launch — IN PROGRESS
+- **Step 1: Exportable Reports — COMPLETE ✓ (CSV) / xlsx upgrade IN PROGRESS.** Built initially as CSV with UTF-8 BOM (May 1, 2026) for fast turnaround. Decision made May 5, 2026 to upgrade to .xlsx for a teacher-friendly format: multiple sheets (Scores / Attendance / Question Breakdown), proper number/percentage/date cell types, bold headers, frozen first row, color-highlighted top 3. The xlsx version replaces the CSV. Library: `exceljs`. This is the immediate next code task.
+- **Step 2: QR Code for Student Joining — COMPLETE ✓ (built and tested May 2026).** Teacher dashboard displays a QR code that students scan to open the student page. Eliminates typing IP addresses. Implementation also bundled a class/code logic fix: class selected = code-only join with class-match validation; no class = name-only join. Server broadcasts `join-mode` so the student screen reflects the teacher's selection in real time.
+- **Step 3: Additional Question Types — NEXT.** Add at least short answer and/or image-based questions to give teachers more flexibility in lesson design. To be discussed before building: which types, how grading works (especially for short answer — exact match, case-insensitive, multiple acceptable answers?), and how each fits into builder.html and the live flow in teacher.html / student.html.
 - **Step 4: User Testing — NOT STARTED.** Pause building. Test with a small group of real users (even 2-3 friends or a colleague). Collect feedback. Fix what comes up before continuing.
 - **Step 5: UI/UX Overhaul — NOT STARTED.** Complete visual redesign with real brand identity. Requires Moussa to collect visual references first (see UI Vision section).
 - **Step 6: Capacitor Packaging — NOT STARTED.** Wrap the app into an installable Android app. Teacher taps an icon, everything runs. Android first, iOS if demand exists (requires Mac + $99/yr Apple Developer account).
@@ -207,11 +223,11 @@ Lesson builder with content/question slides, lesson saving/loading/deleting, tea
 
 ## UI & Branding Vision
 
-**IMPORTANT — Claude must read this section and act on it when Phase 4 begins.**
+**IMPORTANT — Claude must read this section and act on it when Phase 4 Step 5 begins.**
 
-The current UI is functional scaffolding — not the final product. By Phase 4, Classroom Connect needs a complete visual overhaul with a real brand identity, custom icons, and polished design.
+The current UI is functional scaffolding — not the final product. By Phase 4 Step 5, Classroom Connect needs a complete visual overhaul with a real brand identity, custom icons, and polished design.
 
-**CLAUDE ACTION ITEM — When Phase 4 begins, prompt Moussa with this:**
+**CLAUDE ACTION ITEM — When Phase 4 Step 5 begins, prompt Moussa with this:**
 "Before we start the UI overhaul, I need you to collect visual references. Screenshot apps, websites, or designs you think feel right for Classroom Connect — the colors, the mood, the energy, the style. Also think about whether you want to create custom illustrations or icons that give the app a distinctive look. Share those references with me and describe what you want. That will be much more productive than me guessing at your taste."
 
 ## Debugging & Development Process
@@ -239,9 +255,9 @@ lessons/
 ## Current Project File Structure
 ```
 Classroom-Connect/
-  server.js             — Node.js server (Express + Socket.IO + all API endpoints)
+  server.js             — Node.js server (Express + Socket.IO + all API endpoints, including QR code and export)
   database.js           — SQLite database module (tables, queries, student codes, data access)
-  package.json          — Dependencies (express, socket.io, better-sqlite3)
+  package.json          — Dependencies (express, socket.io, better-sqlite3, qrcode; exceljs to be added)
   .gitignore            — Excludes node_modules, database, uploads, lessons from GitHub
   classroom-connect.db  — SQLite database file (local only, not on GitHub)
   node_modules/         — Installed libraries (local only, not on GitHub)
@@ -249,26 +265,30 @@ Classroom-Connect/
   uploads/              — Uploaded images (local only, not on GitHub)
   Docs/                 — Project documentation
     PASTE-THIS-FOR-CLAUDE.md  — This file (context for Claude sessions)
-    Classroom-Connect-Project-Documentation.docx — Full project doc (v1)
-    Classroom-Connect-Project-Documentation v2.docx — Full project doc (v2)
-    Classroom-Connect-Project-Documentation-v3.docx — Full project doc (v3)
+    How-to-Start-a-New-Claude-Session.docx — Step-by-step guide for Moussa
+    Classroom-Connect-Project-Documentation-v5.docx — Full project doc (current — V5)
+    [older versions kept for history: v1, v2, v3, v4]
   public/               — Files served to browsers (all bilingual FR/EN)
     i18n.js             — Shared translations (English + French)
-    teacher.html        — Teacher dashboard (lobby, lesson + class select, live session, results)
-    student.html        — Student interface (code join, name fallback, slides, answers, leaderboard)
+    teacher.html        — Teacher dashboard (lobby with QR, lesson + class select, live session, results)
+    student.html        — Student interface (code/name join controlled by server, slides, answers, leaderboard)
     builder.html        — Lesson builder (content + question slides + images)
     roster.html         — Student roster (classes, students with 4-digit codes)
-    history.html        — Session history (attendance, scores, question breakdown)
+    history.html        — Session history (attendance, scores, question breakdown, export button)
 ```
 
 ## Current Status
 <!-- UPDATE THIS SECTION AFTER EACH SESSION -->
-- **Current Phase:** Phase 4 — Step 2 (QR Code + Class Logic Fix) BUILT, needs testing. Step 3 (Question Types) is next.
-- **Last Session:** May 1, 2026 — Built Phase 4 Step 1 (CSV export) and Step 2 (QR code on teacher dashboard). Fixed class/code session logic: class selected = code-only join with class validation, no class = name-only join. Renamed Public to public for Linux compatibility. Created session transition guide document.
-- **Next Step:** Test the class/code fix, then Phase 4 Step 3 — Additional Question Types
+- **Current Phase:** Phase 4 — Steps 1 and 2 COMPLETE. Step 1 (export) being upgraded from CSV to .xlsx as the immediate next code task. Step 3 (Additional Question Types) is queued after the xlsx upgrade.
+- **Last Session:** May 5, 2026 — Verified Phase 4 Step 2 (QR code + class/code logic) working in real testing. Decided to upgrade Step 1 export from CSV to .xlsx for a teacher-friendly format (multiple sheets, formatted cells, bold headers, frozen rows). Rebuilt project documentation as Version 5.0 (.docx) and refreshed this file. Added explicit "Claude raises better approaches" rule to the Collaboration Rules section.
+- **Next Step:** Build the .xlsx export upgrade using `exceljs`, then move to Phase 4 Step 3 (Additional Question Types) — discussion first, then build.
 
 ## Priority Order Going Forward
-Follow the Phase 4 step-by-step plan above (Steps 1-7). Cloud sync with Supabase comes after Phase 4, whenever it becomes needed.
+1. .xlsx export upgrade (immediate)
+2. Phase 4 Step 3: Additional Question Types (discuss → build)
+3. Phase 4 Step 4: User Testing
+4. Phase 4 Steps 5–7 in order
+5. Cloud sync with Supabase comes after Phase 4, whenever it becomes needed.
 
 ## Session Log
 <!-- ADD NEW ENTRIES AFTER EACH SESSION -->
@@ -284,4 +304,6 @@ Follow the Phase 4 step-by-step plan above (Steps 1-7). Cloud sync with Supabase
 | April 30, 2026 | Phase 3 Step 3: Session history page — attendance, scores, question breakdown | Student codes |
 | April 30, 2026 | Phase 3: Student codes — 4-digit codes, roster connected to live sessions, teacher class selection | Cloud sync (new session) |
 | April 30, 2026 | Planning session: Postponed cloud sync, chose QR code for student joining, clarified packaging strategy (Android first, teacher-only app, students use browser), locked Phase 4 step-by-step plan (7 steps from exportable reports through pilot launch) | Phase 4 Step 1: Exportable Reports |
-| May 1, 2026 | Phase 4 Step 1 COMPLETE: CSV export on session history. Phase 4 Step 2: QR code on teacher dashboard, class/code session logic fix (class = code-only with validation, no class = name-only). Renamed Public to public. Created session transition guide. | Test class/code fix, then Step 3 |
+| May 1, 2026 | Phase 4 Step 1: Built CSV export endpoint (`/api/sessions/:id/export`) with UTF-8 BOM for French character support, download button on session history page | Phase 4 Step 2 |
+| May 1, 2026 | Phase 4 Step 2: Built QR code on teacher dashboard via `qrcode` npm package and `/api/server-info`. Companion fix: class/code session logic — class selected = code-only with class-match validation; no class = name-only. Server broadcasts `join-mode`. Renamed Public to public for Linux compatibility. Created session transition guide. | Test class/code fix |
+| May 5, 2026 | Verified Phase 4 Step 2 working in real testing. Decided to upgrade Step 1 export from CSV to .xlsx (teacher-friendly: multi-sheet, formatted, typed cells). Rebuilt project documentation as Version 5.0 (.docx). Refreshed this file. Added explicit "Claude raises better approaches" rule to the Collaboration Rules section. | Build .xlsx export upgrade, then Phase 4 Step 3 (Question Types) |
